@@ -332,6 +332,7 @@ Rectangle {
                 onClicked: {
                     var pos = pathView.mapFromItem(wrapper, mouse.x, mouse.y)
                     var index = pathView.indexAt(pos.x, pos.y)
+                    var distance = Math.abs(pathView.currentIndex - index)
 
                     if (index < 0)
                         return
@@ -352,13 +353,17 @@ Rectangle {
                         return
                     }
 
+                    if (distance > 1) {
+                        pathView.positionViewAtIndex(index, PathView.SnapPosition)
+                    }
+
                     if (pathView.currentIndex > index) {
-                            pathView.decrementCurrentIndex()
+                        pathView.decrementCurrentIndex()
                         return
                     }
 
                     if (pathView.currentIndex < index) {
-                            pathView.incrementCurrentIndex()
+                        pathView.incrementCurrentIndex()
                         return
                     }
                 }
@@ -371,7 +376,7 @@ Rectangle {
 
     PathView {
         id: pathView
-        pathItemCount: 3
+        pathItemCount: 5
         anchors.fill: parent
         model: listModel
         delegate: delegate
