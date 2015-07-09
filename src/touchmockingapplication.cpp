@@ -117,12 +117,6 @@ bool TouchMockingApplication::notify(QObject* target, QEvent* event)
         sendTouchEvent(window, m_heldTouchPoints.isEmpty() ? QEvent::TouchEnd : QEvent::TouchUpdate, static_cast<QKeyEvent*>(event)->timestamp());
     }
 
-    if (event->type() == QEvent::Wheel) {
-        // Eat wheel events.
-        event->accept();
-        return true;
-    }
-
     if (isMouseEvent(event)) {
         const QMouseEvent* const mouseEvent = static_cast<QMouseEvent*>(event);
 

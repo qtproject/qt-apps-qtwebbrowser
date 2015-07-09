@@ -8,12 +8,11 @@ ToolButton {
     id: root
 
     property string source;
-    property string color: "white";
+    property string color: "white"
     style: ButtonStyle {
         background: Rectangle {
-            implicitWidth: 30
-            implicitHeight: 30
-            radius: 4
+            implicitWidth: 40
+            implicitHeight: 40
             color: root.color
             Image {
                 source: root.source

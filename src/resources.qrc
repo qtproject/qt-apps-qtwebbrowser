@@ -6,9 +6,8 @@
         <file>qml/LoadIndicator.qml</file>
         <file>qml/MockTouchPoint.qml</file>
         <file>qml/PageView.qml</file>
-
+        <file>qml/URLBar.qml</file>
         <file>qml/assets/UIButton.qml</file>
-
         <file alias="busy.png">qml/assets/icons/busy.png</file>
         <file alias="home.png">qml/assets/icons/home.png</file>
         <file alias="tabs.png">qml/assets/icons/tabs.png</file>
@@ -17,5 +16,6 @@
         <file alias="refresh.png">qml/assets/icons/refresh.png</file>
         <file alias="stop.png">qml/assets/icons/stop.png</file>
         <file alias="touchpoint.png">qml/assets/icons/touchpoint.png</file>
+        <file alias="icon.png">qml/assets/icons/icon.png</file>
     </qresource>
 </RCC>

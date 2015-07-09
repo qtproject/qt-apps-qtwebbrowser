@@ -21,6 +21,7 @@ OTHER_FILES = \
     qml/LoadIndicator.qml \
     qml/MockTouchPoint.qml \
     qml/PageView.qml \
+    qml/URLBar.qml \
 
 QT += qml quick webengine
 QT_PRIVATE += quick-private gui-private core-private

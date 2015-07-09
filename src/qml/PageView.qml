@@ -36,9 +36,9 @@
 ****************************************************************************/
 
 import QtQuick 2.0
-import QtWebEngine 1.2
+import QtWebEngine 1.3
 import QtWebEngine.experimental 1.0
-import QtQuick.Controls 1.4
+import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.3
 import QtGraphicalEffects 1.0
@@ -46,14 +46,15 @@ import QtGraphicalEffects 1.0
 Rectangle {
     id: root
     property int animationDuration: 200
-    property int tabDisplacement: 100
+    property int tabDisplacement: 50
     property int itemWidth: root.width / 2
-    property int itemHeight: root.height / 2
+    property int itemHeight: root.height / 2 - 50
+
+    property string background: "#83bfe5"
 
     property alias currentIndex: pathView.currentIndex
     property alias count: pathView.count
     property Item currentWebView: {
-        console.log(count)
         return get(currentIndex) ? get(currentIndex).item.webView : null
     }
 
@@ -68,7 +69,7 @@ Rectangle {
             property alias title: webEngineView.title
 
             property var image: QtObject {
-                property string imageUrl: "qrc:///busy.png"
+                property string imageUrl: "qrc:///icon.png"
                 property string url: "about:blank"
             }
 
@@ -114,17 +115,15 @@ Rectangle {
             WebEngineView {
                 id: webEngineView
 
-                //visible: parent.visible
-
                 anchors {
                     fill: parent
                     top: permBar.bottom
                 }
 
-//                settings.autoLoadImages: appSettings.autoLoadImages
-//                settings.javascriptEnabled: appSettings.javaScriptEnabled
-//                settings.errorPageEnabled: appSettings.errorPageEnabled
-//                settings.pluginsEnabled: appSettings.pluginsEnabled
+                settings.autoLoadImages: appSettings.autoLoadImages
+                settings.javascriptEnabled: appSettings.javaScriptEnabled
+                settings.errorPageEnabled: appSettings.errorPageEnabled
+                settings.pluginsEnabled: appSettings.pluginsEnabled
 
                 onCertificateError: {
                     if (!acceptedCertificates.shouldAutoAccept(error)){
@@ -136,22 +135,20 @@ Rectangle {
                 }
 
                 onNewViewRequested: {
+                    var tab
                     if (!request.userInitiated)
                         print("Warning: Blocked a popup window.")
                     else if (request.destination == WebEngineView.NewViewInTab) {
-                        var tab = tabs.createEmptyTab()
+                        tab = tabs.createEmptyTab()
                         tabs.currentIndex = tabs.count - 1
-                        console.log("newWindow inTab")
                         request.openIn(tab.webView)
                     } else if (request.destination == WebEngineView.NewViewInBackgroundTab) {
-                        var tab = tabs.createEmptyTab()
-                        console.log("newWindow inBackTab")
+                        tab = tabs.createEmptyTab()
                         request.openIn(tab.webView)
                     } else if (request.destination == WebEngineView.NewViewInDialog) {
                         var dialog = engine.rootWindow.newDialog()
                         request.openIn(dialog.currentWebView)
                     } else {
-                        console.log("newWindow BLA")
                         var window = engine.rootWindow.newWindow()
                         request.openIn(window.currentWebView)
                     }
@@ -233,25 +230,27 @@ Rectangle {
 
     function add(component) {
         var element = {"item": null }
-        element.item = component.createObject(root, { "anchors.top": root.top, "anchors.left": root.left, "width": root.width, "height": root.height })
+        element.item = component.createObject(root, { "width": root.width, "height": root.height })
 
         if (element.item == null) {
-            // Error Handling
-            console.log("Error creating object");
+            console.log("PageView::add(): Error creating object");
             return
         }
 
         element.item.webView.profile = engine.rootWindow.defaultProfile()
         element.item.webView.url = "about:blank"
-        element.index = listModel.count
         listModel.append(element)
 
-        console.log("index " + element.index)
+        pathView.positionViewAtIndex(listModel.count - 1, PathView.SnapPosition)
+
         return element.item
     }
 
     function remove(index) {
         listModel.remove(index)
+        pathView.model = listModel
+        if (listModel.count == 0)
+            engine.rootWindow.close()
     }
 
     function get(index) {
@@ -264,27 +263,23 @@ Rectangle {
         Rectangle {
             id: wrapper
 
-            state: index == pathView.currentIndex ? root.viewState : "list"
-
             property real visibility: 1.0
+            property bool isCurrentItem: PathView.isCurrentItem
 
             visible: visibility != 0.0
-
-            onStateChanged: {
-                console.log("WRAPPER " + state)
-            }
+            state: isCurrentItem ? root.viewState : "list"
 
             states: [
                 State {
                     name: "page"
-                    PropertyChanges { target: wrapper; x: 0; y: 0; width: root.width; height: root.height; color: "grey"; visibility: 0.0 }
-                    PropertyChanges { target: pathView; interactive: false }
+                    PropertyChanges { target: wrapper; width: root.width; height: root.height; visibility: 0.0 }
+                    PropertyChanges { target: pathView; interactive: false; }
                     PropertyChanges { target: item; opacity: 1.0; visible: visibility < 0.1; z: 5 }
                 },
                 State {
                     name: "list"
-                    PropertyChanges { target: wrapper; width: itemWidth; height: itemHeight; color: "white"; visibility: 1.0 }
-                    PropertyChanges { target: pathView; interactive: true }
+                    PropertyChanges { target: wrapper; width: itemWidth; height: itemHeight; visibility: 1.0 }
+                    PropertyChanges { target: pathView; interactive: true; }
                     PropertyChanges { target: item; opacity: 0.0; visible: opacity != 0.0 }
                 }
             ]
@@ -294,50 +289,36 @@ Rectangle {
                     ParallelAnimation {
                         ColorAnimation { property: "color"; duration: animationDuration }
                         PropertyAnimation { properties: "x,y"; duration: animationDuration }
-                        PropertyAnimation { properties: "width,height"; duration: animationDuration; easing.type: Easing.OutQuad }
-                        PropertyAnimation { properties: "visibility"; duration: animationDuration; easing.type: Easing.OutQuad }
+                        PropertyAnimation { properties: "width,height"; duration: animationDuration}
+                        PropertyAnimation { properties: "visibility"; duration: animationDuration }
                     }
                 }
             }
 
             width: itemWidth; height: itemHeight
-            scale: PathView.isCurrentItem ? 1 : 0.5
-            z: PathView.isCurrentItem ? 1 : 0
+            scale: isCurrentItem ? 1 : 0.5
+            z: isCurrentItem ? 1 : 0
 
-            Column {
-                anchors.fill: wrapper
-                Rectangle {
-                    color: "#83bfe5"
-
-
-                    Image {
-                        smooth: false
-                        source: item.image.imageUrl
-                        anchors.fill: parent
-                    }
-
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    width: wrapper.width
-                    height: wrapper.height
-                }
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: item.title
-                    font.pointSize: 12
-                    color: wrapper.PathView.isCurrentItem ? uiBorderColor : uiColor
-                }
+            function indexForPosition(x, y) {
+                var pos = pathView.mapFromItem(wrapper, x, y)
+                return pathView.indexAt(pos.x, pos.y)
             }
+
+            function itemForPosition(x, y) {
+                var pos = pathView.mapFromItem(wrapper, x, y)
+                return pathView.itemAt(pos.x, pos.y)
+            }
+
             MouseArea {
                 anchors.fill: wrapper
                 onClicked: {
-                    var pos = pathView.mapFromItem(wrapper, mouse.x, mouse.y)
-                    var index = pathView.indexAt(pos.x, pos.y)
+                    var index = indexForPosition(mouse.x, mouse.y)
                     var distance = Math.abs(pathView.currentIndex - index)
 
                     if (index < 0)
                         return
 
-                    if (index === pathView.currentIndex) {
+                    if (index == pathView.currentIndex) {
                         if (root.viewState == "list")
                             root.viewState = "page"
                         return
@@ -355,6 +336,7 @@ Rectangle {
 
                     if (distance > 1) {
                         pathView.positionViewAtIndex(index, PathView.SnapPosition)
+                        return
                     }
 
                     if (pathView.currentIndex > index) {
@@ -366,6 +348,52 @@ Rectangle {
                         pathView.incrementCurrentIndex()
                         return
                     }
+                }
+            }
+
+            Column {
+                anchors.fill: wrapper
+                Rectangle {
+                    color: background
+
+                    Image {
+                        smooth: true
+                        source: item.image.imageUrl
+                        anchors.fill: parent
+                    }
+
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: wrapper.width
+                    height: wrapper.height
+                    Rectangle {
+                        visible: wrapper.isCurrentItem && !pathView.moving
+                        width: 40
+                        height: 40
+                        radius: width / 2
+                        color: uiBorderColor
+                        anchors {
+                            horizontalCenter: parent.right
+                            verticalCenter: parent.top
+                        }
+                        Image {
+                            anchors.fill: parent
+                            source: "qrc:///stop.png"
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    var index = indexForPosition(mouse.x, mouse.y)
+                                    itemForPosition(mouse.x, mouse.y).visible = false
+                                    remove(index)
+                                }
+                            }
+                        }
+                    }
+                }
+                Text {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: item.title
+                    font.pointSize: 12
+                    color: wrapper.PathView.isCurrentItem ? "black" : uiColor
                 }
             }
             Behavior on scale {
@@ -383,17 +411,26 @@ Rectangle {
         preferredHighlightBegin: 0.5
         preferredHighlightEnd: 0.5
 
+        snapMode: PathView.SnapToItem
+
+        focus: interactive
+
+        Rectangle {
+            color: background
+            anchors.fill: parent
+        }
+
         path: Path {
             id: path
-            startX: 0 - itemWidth / 4; startY: root.height / 2 - tabDisplacement
-            //PathLine { x: root.width; y: root.height / 2 }
+            startX: -tabDisplacement; startY: root.height / 2 - tabDisplacement - 25
+            PathCurve { x: 0; y: root.height / 2 - tabDisplacement }
             PathCurve { x: root.width / 4; y: root.height / 2 - tabDisplacement / 2 }
             PathCurve { x: root.width / 2; y: root.height / 2 }
             PathCurve { x: 3/4 * root.width; y: root.height / 2 - tabDisplacement / 2 }
-            PathCurve { x: root.width + itemWidth / 4; y: root.height / 2 - tabDisplacement }
+            PathCurve { x: root.width; y: root.height / 2 - tabDisplacement }
+            PathCurve { x: root.width + tabDisplacement; y: root.height / 2 - tabDisplacement - 25 }
         }
 
-        focus: true
         Keys.onLeftPressed: decrementCurrentIndex()
         Keys.onRightPressed: incrementCurrentIndex()
     }

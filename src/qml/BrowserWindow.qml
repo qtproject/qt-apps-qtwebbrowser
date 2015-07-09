@@ -57,8 +57,8 @@ Item {
     property int previousVisibility: Window.Windowed
 
     property string uiColor: "#46a1da"
+    property string uiBorderColor: "#7ebde5"
     property string uiSelectionColor: "#fad84a"
-    property string uiBorderColor: "#377fac"
 
     property QtObject otrProfile: WebEngineProfile {
         offTheRecord: true
@@ -74,8 +74,8 @@ Item {
         }
     }
 
+    width: 1024
     height: 600
-    width: 800
     visible: true
 
     Settings {
@@ -120,9 +120,9 @@ Item {
     Action {
         shortcut: "Ctrl+W"
         onTriggered: {
-            if (tabs.count == 1)
-                browserWindow.close()
-            else
+            if (tabs.count == 1) {
+                engine.rootWindow.close()
+            } else
                 tabs.remove(tabs.currentIndex)
         }
     }
@@ -139,12 +139,6 @@ Item {
         id: navigationBar
 
         style: ToolBarStyle {
-            padding {
-                left: 8
-                right: 8
-                top: 3
-                bottom: 3
-            }
             background: Rectangle {
                 implicitWidth: 100
                 implicitHeight: 50
@@ -153,7 +147,7 @@ Item {
         }
 
         RowLayout {
-            anchors.fill: parent;
+            anchors.fill: parent
 
             UIButton {
                 id: backButton
@@ -162,7 +156,14 @@ Item {
                 onClicked: tabs.currentWebView.goBack()
                 enabled: tabs.currentWebView && tabs.currentWebView.canGoBack
             }
-
+            Rectangle {
+                width: 1
+                anchors {
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+                color: uiBorderColor
+            }
             UIButton {
                 id: forwardButton
                 source: "qrc:///next.png"
@@ -170,46 +171,31 @@ Item {
                 onClicked: tabs.currentWebView.goForward()
                 enabled: tabs.currentWebView && tabs.currentWebView.canGoForward
             }
-
-
-            TextField {
+            Rectangle {
+                width: 1
+                anchors {
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+                color: uiBorderColor
+            }
+            URLBar {
                 id: addressBar
-                UIButton {
-                    id: reloadButton
-                    source: currentWebView && currentWebView.loading ? "qrc:///stop.png" : "qrc:///refresh.png"
-                    anchors {
-                        rightMargin: 10
-                        right: parent.right
-                        verticalCenter: addressBar.verticalCenter;
-                    }
-                    onClicked: currentWebView.loading ? currentWebView.stop() : currentWebView.reload()
-                }
-                style: TextFieldStyle {
-                    textColor: "black"
-                    font.family: "Helvetica"
-                    font.pointSize: 18
-                    selectionColor: uiSelectionColor
-                    background: Rectangle {
-                        implicitWidth: 200
-                        implicitHeight: 40
-                        border.color: uiBorderColor
-                        border.width: 1
-                    }
-                    padding {
-                        right: 10
-                        left: 10
-                    }
-                }
-                focus: true
                 Layout.fillWidth: true
                 text: tabs.currentWebView ? tabs.currentWebView.url : "about:blank"
                 onAccepted: {
-                    console.log("WEBVIEW "+ tabs.get(tabs.currentIndex).item.webView.url)
                     tabs.get(tabs.currentIndex).item.webView.url = engine.fromUserInput(text)
                     tabs.viewState = "page"
                 }
             }
-
+            Rectangle {
+                width: 1
+                anchors {
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+                color: uiBorderColor
+            }
             UIButton {
                 id: pageViewButton
                 source: "qrc:///tabs.png"
@@ -220,10 +206,16 @@ Item {
                     } else {
                         tabs.viewState = "list"
                     }
-                    console.log("BUTTON  " + tabs.viewState)
                 }
             }
-
+            Rectangle {
+                width: 1
+                anchors {
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+                color: uiBorderColor
+            }
             ToolButton {
                 id: settingsMenuButton
                 menu: Menu {
@@ -256,7 +248,15 @@ Item {
                         text: "Off The Record"
                         checkable: true
                         checked: currentWebView ? currentWebView.profile.offTheRecord : true
-                        onToggled: currentWebView.profile = (checked ? otrProfile : engine.rootWindow.defaultProfile());
+                        onToggled: {
+                            if (!currentWebView)
+                                return
+                            if (checked)
+                                currentWebView.profile = otrProfile
+                            else
+                                currentWebView.profile = engine.rootWindow.defaultProfile();
+
+                        }
                     }
                     MenuItem {
                         id: httpDiskCacheEnabled
@@ -303,7 +303,7 @@ Item {
 
         Component.onCompleted: {
             var tab = createEmptyTab()
-            tab.webView.url = "about:blank"
+            tab.webView.url = engine.fromUserInput("qt.io")
         }
     }
 
