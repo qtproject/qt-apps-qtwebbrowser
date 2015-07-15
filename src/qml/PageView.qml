@@ -50,14 +50,12 @@ Rectangle {
     property int itemWidth: root.width / 2
     property int itemHeight: root.height / 2 - 50
 
+    property bool interactive: true
+
     property string background: "#83bfe5"
 
     property alias currentIndex: pathView.currentIndex
     property alias count: pathView.count
-    property Item currentWebView: {
-        return get(currentIndex) ? get(currentIndex).item.webView : null
-    }
-
 
     property string viewState: "page"
 
@@ -69,19 +67,8 @@ Rectangle {
             property alias title: webEngineView.title
 
             property var image: QtObject {
-                property string imageUrl: "qrc:///icon.png"
+                property string imageUrl: "qrc:///icon"
                 property string url: "about:blank"
-            }
-
-            function grabImage() {
-                if (image.url == webEngineView.url)
-                    return
-
-                image.url = webEngineView.url
-                webEngineView.grabToImage(function(result) {
-                    image.imageUrl = result.url;
-                    console.log("grabImage("+result.url+")")
-                });
             }
 
             visible: opacity != 0.0
@@ -120,11 +107,24 @@ Rectangle {
                     top: permBar.bottom
                 }
 
+                function takeSnapshot() {
+                    console.log("takeSnapshot")
+                    if (tabItem.image.url == webEngineView.url)
+                        return
+
+                    tabItem.image.url = webEngineView.url
+                    blur.grabToImage(function(result) {
+                        tabItem.image.imageUrl = result.url;
+                        console.log("takeSnapshot("+result.url+")")
+                    });
+                }
+
+/*
                 settings.autoLoadImages: appSettings.autoLoadImages
                 settings.javascriptEnabled: appSettings.javaScriptEnabled
                 settings.errorPageEnabled: appSettings.errorPageEnabled
                 settings.pluginsEnabled: appSettings.pluginsEnabled
-
+*/
                 onCertificateError: {
                     if (!acceptedCertificates.shouldAutoAccept(error)){
                         error.defer()
@@ -171,11 +171,33 @@ Rectangle {
                     permBar.requestedFeature = feature;
                     permBar.visible = true;
                 }
+            }
 
-                onLoadingChanged: {
-                    if (!loading && visible)
-                        grabImage()
+            Desaturate {
+                id: desaturate
+                visible: desaturation != 0.0
+                anchors.fill: webEngineView
+                source: webEngineView
+                desaturation: root.interactive ? 0.0 : 1.0
+
+                Behavior on desaturation {
+                    NumberAnimation { duration: animationDuration }
                 }
+            }
+
+            FastBlur {
+                id: blur
+                visible: radius != 0.0
+                anchors.fill: desaturate
+                source: desaturate
+                radius: desaturate.desaturation * 25
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                enabled: !root.interactive
+
+                onWheel: wheel.accepted = true
             }
 
             Rectangle {
@@ -200,17 +222,17 @@ Rectangle {
                     }
                     ToolButton {
                         id: findBackwardButton
-                        iconSource: "qrc:///previous.png"
+                        iconSource: "qrc:///previous"
                         onClicked: webEngineView.findText(findTextField.text, WebEngineView.FindBackward)
                     }
                     ToolButton {
                         id: findForwardButton
-                        iconSource: "qrc:///next.png"
+                        iconSource: "qrc:///next"
                         onClicked: webEngineView.findText(findTextField.text)
                     }
                     ToolButton {
                         id: findCancelButton
-                        iconSource: "qrc:///stop.png"
+                        iconSource: "qrc:///stop"
                         onClicked: findBar.visible = false
                     }
                 }
@@ -224,7 +246,6 @@ Rectangle {
 
     function createEmptyTab() {
         var tab = add(tabComponent)
-        //timer.running = true
         return tab
     }
 
@@ -248,7 +269,6 @@ Rectangle {
 
     function remove(index) {
         listModel.remove(index)
-        pathView.model = listModel
         if (listModel.count == 0)
             engine.rootWindow.close()
     }
@@ -285,13 +305,10 @@ Rectangle {
             ]
 
             transitions: Transition {
-                SequentialAnimation {
-                    ParallelAnimation {
-                        ColorAnimation { property: "color"; duration: animationDuration }
-                        PropertyAnimation { properties: "x,y"; duration: animationDuration }
-                        PropertyAnimation { properties: "width,height"; duration: animationDuration}
-                        PropertyAnimation { properties: "visibility"; duration: animationDuration }
-                    }
+                ParallelAnimation {
+                    PropertyAnimation { property: "visibility"; duration: animationDuration }
+                    PropertyAnimation { properties: "x,y"; duration: animationDuration }
+                    PropertyAnimation { properties: "width,height"; duration: animationDuration}
                 }
             }
 
@@ -367,18 +384,21 @@ Rectangle {
                     height: wrapper.height
                     Rectangle {
                         visible: wrapper.isCurrentItem && !pathView.moving
-                        width: 40
-                        height: 40
+                        width: 45
+                        height: 45
                         radius: width / 2
-                        color: uiBorderColor
+                        color: closeButton.pressed ? buttonHighlightColor : "white"
+                        border.width: 1
+                        border.color: "black"
                         anchors {
                             horizontalCenter: parent.right
                             verticalCenter: parent.top
                         }
                         Image {
                             anchors.fill: parent
-                            source: "qrc:///stop.png"
+                            source: "qrc:///close"
                             MouseArea {
+                                id: closeButton
                                 anchors.fill: parent
                                 onClicked: {
                                     var index = indexForPosition(mouse.x, mouse.y)
@@ -393,7 +413,7 @@ Rectangle {
                     anchors.horizontalCenter: parent.horizontalCenter
                     text: item.title
                     font.pointSize: 12
-                    color: wrapper.PathView.isCurrentItem ? "black" : uiColor
+                    color: wrapper.isCurrentItem ? "black" : uiColor
                 }
             }
             Behavior on scale {

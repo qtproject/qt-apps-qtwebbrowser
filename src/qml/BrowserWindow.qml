@@ -52,32 +52,27 @@ import "assets"
 Item {
     id: browserWindow
 
-    property alias currentWebView: tabs.currentWebView
+    property Item currentWebView: {
+        return tabs.get(tabs.currentIndex) ? tabs.get(tabs.currentIndex).item.webView : null
+    }
+
     property int visibility: Window.Windowed
     property int previousVisibility: Window.Windowed
 
+    property int toolBarHeight: 70
     property string uiColor: "#46a1da"
     property string uiBorderColor: "#7ebde5"
+    property string buttonHighlightColor: "#e6e6e6"
     property string uiSelectionColor: "#fad84a"
 
     property QtObject otrProfile: WebEngineProfile {
         offTheRecord: true
     }
 
-    property bool isFullScreen: visibility == Window.FullScreen
-    onIsFullScreenChanged: {
-        // This is for the case where the system forces us to leave fullscreen.
-        if (currentWebView && !isFullScreen) {
-            currentWebView.state = ""
-            if (currentWebView.isFullScreen)
-                currentWebView.fullScreenCancelled()
-        }
-    }
-
     width: 1024
     height: 600
     visible: true
-
+/*
     Settings {
         id : appSettings
         property alias autoLoadImages: loadImages.checked;
@@ -85,7 +80,7 @@ Item {
         property alias errorPageEnabled: errorPageEnabled.checked;
         property alias pluginsEnabled: pluginsEnabled.checked;
     }
-
+*/
     Action {
         shortcut: "Ctrl+D"
         onTriggered: {
@@ -97,8 +92,8 @@ Item {
         id: focus
         shortcut: "Ctrl+L"
         onTriggered: {
-            addressBar.forceActiveFocus();
-            addressBar.selectAll();
+            navigation.addressBar.forceActiveFocus();
+            navigation.addressBar.selectAll();
         }
     }
     Action {
@@ -113,181 +108,23 @@ Item {
         onTriggered: {
             tabs.createEmptyTab()
             tabs.currentIndex = tabs.count - 1
-            addressBar.forceActiveFocus();
-            addressBar.selectAll();
+            navigation.addressBar.forceActiveFocus();
+            navigation.addressBar.selectAll();
         }
     }
     Action {
         shortcut: "Ctrl+W"
-        onTriggered: {
-            if (tabs.count == 1) {
-                engine.rootWindow.close()
-            } else
-                tabs.remove(tabs.currentIndex)
-        }
+        onTriggered: tabs.remove(tabs.currentIndex)
     }
 
-    Action {
-        shortcut: "Escape"
-        onTriggered: {
-            if (browserWindow.isFullScreen)
-                browserWindow.visibility = browserWindow.previousVisibility
+    NavigationBar {
+        id: navigation
+        anchors {
+            top: parent.top
+            left: parent.left
+            right: parent.right
         }
     }
-
-    ToolBar {
-        id: navigationBar
-
-        style: ToolBarStyle {
-            background: Rectangle {
-                implicitWidth: 100
-                implicitHeight: 50
-                color: "#46a1da"
-            }
-        }
-
-        RowLayout {
-            anchors.fill: parent
-
-            UIButton {
-                id: backButton
-                source: "qrc:///previous.png"
-                color: uiColor
-                onClicked: tabs.currentWebView.goBack()
-                enabled: tabs.currentWebView && tabs.currentWebView.canGoBack
-            }
-            Rectangle {
-                width: 1
-                anchors {
-                    top: parent.top
-                    bottom: parent.bottom
-                }
-                color: uiBorderColor
-            }
-            UIButton {
-                id: forwardButton
-                source: "qrc:///next.png"
-                color: uiColor
-                onClicked: tabs.currentWebView.goForward()
-                enabled: tabs.currentWebView && tabs.currentWebView.canGoForward
-            }
-            Rectangle {
-                width: 1
-                anchors {
-                    top: parent.top
-                    bottom: parent.bottom
-                }
-                color: uiBorderColor
-            }
-            URLBar {
-                id: addressBar
-                Layout.fillWidth: true
-                text: tabs.currentWebView ? tabs.currentWebView.url : "about:blank"
-                onAccepted: {
-                    tabs.get(tabs.currentIndex).item.webView.url = engine.fromUserInput(text)
-                    tabs.viewState = "page"
-                }
-            }
-            Rectangle {
-                width: 1
-                anchors {
-                    top: parent.top
-                    bottom: parent.bottom
-                }
-                color: uiBorderColor
-            }
-            UIButton {
-                id: pageViewButton
-                source: "qrc:///tabs.png"
-                color: uiColor
-                onClicked: {
-                    if (tabs.viewState == "list") {
-                        tabs.viewState = "page"
-                    } else {
-                        tabs.viewState = "list"
-                    }
-                }
-            }
-            Rectangle {
-                width: 1
-                anchors {
-                    top: parent.top
-                    bottom: parent.bottom
-                }
-                color: uiBorderColor
-            }
-            ToolButton {
-                id: settingsMenuButton
-                menu: Menu {
-                    MenuItem {
-                        id: loadImages
-                        text: "Autoload images"
-                        checkable: true
-                        checked: true
-                    }
-                    MenuItem {
-                        id: javaScriptEnabled
-                        text: "JavaScript On"
-                        checkable: true
-                        checked: true
-                    }
-                    MenuItem {
-                        id: errorPageEnabled
-                        text: "ErrorPage On"
-                        checkable: true
-                        checked: true
-                    }
-                    MenuItem {
-                        id: pluginsEnabled
-                        text: "Plugins On"
-                        checkable: true
-                        checked: true
-                    }
-                    MenuItem {
-                        id: offTheRecordEnabled
-                        text: "Off The Record"
-                        checkable: true
-                        checked: currentWebView ? currentWebView.profile.offTheRecord : true
-                        onToggled: {
-                            if (!currentWebView)
-                                return
-                            if (checked)
-                                currentWebView.profile = otrProfile
-                            else
-                                currentWebView.profile = engine.rootWindow.defaultProfile();
-
-                        }
-                    }
-                    MenuItem {
-                        id: httpDiskCacheEnabled
-                        text: "HTTP Disk Cache"
-                        checkable: currentWebView && !currentWebView.profile.offTheRecord
-                        checked: currentWebView && (currentWebView.profile.httpCacheType == WebEngineProfile.DiskHttpCache)
-                        onToggled: currentWebView.profile.httpCacheType = checked ? WebEngineProfile.DiskHttpCache : WebEngineProfile.MemoryHttpCache;
-                    }
-                }
-            }
-        }
-        ProgressBar {
-            id: progressBar
-            height: 3
-            anchors {
-                left: parent.left
-                top: parent.bottom
-                right: parent.right
-                leftMargin: -parent.leftMargin
-                rightMargin: -parent.rightMargin
-            }
-            style: ProgressBarStyle {
-                background: Item {}
-            }
-            z: -2;
-            minimumValue: 0
-            maximumValue: 100
-            value: (currentWebView && currentWebView.loadProgress < 100) ? currentWebView.loadProgress : 0
-        }
-    }
-
     PageView {
         id: tabs
 
@@ -295,7 +132,7 @@ Item {
         itemHeight: browserWindow.height / 2
 
         anchors {
-            top: navigationBar.bottom
+            top: navigation.bottom
             left: parent.left
             right: parent.right
             bottom: parent.bottom
@@ -303,12 +140,18 @@ Item {
 
         Component.onCompleted: {
             var tab = createEmptyTab()
+            navigation.webView = tab.webView
             tab.webView.url = engine.fromUserInput("qt.io")
+        }
+        onCurrentIndexChanged: {
+            if (!tabs.get(tabs.currentIndex))
+                return
+            navigation.webView = tabs.get(tabs.currentIndex).item.webView
         }
     }
 
     QtObject{
-        id:acceptedCertificates
+        id: acceptedCertificates
 
         property var acceptedUrls : []
 

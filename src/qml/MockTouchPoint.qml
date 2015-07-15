@@ -44,7 +44,7 @@ Item {
     property int pointId: 0
 
     Image {
-        source: "qrc:///touchpoint.png"
+        source: "qrc:///touchpoint"
         x: -(width / 2)
         y: -(height / 2)
         height: parent.height

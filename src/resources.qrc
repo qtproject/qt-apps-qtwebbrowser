@@ -3,19 +3,22 @@
         <file>qml/BrowserDialog.qml</file>
         <file>qml/BrowserWindow.qml</file>
         <file>qml/FeaturePermissionBar.qml</file>
-        <file>qml/LoadIndicator.qml</file>
         <file>qml/MockTouchPoint.qml</file>
         <file>qml/PageView.qml</file>
-        <file>qml/URLBar.qml</file>
+        <file>qml/NavigationBar.qml</file>
         <file>qml/assets/UIButton.qml</file>
-        <file alias="busy.png">qml/assets/icons/busy.png</file>
-        <file alias="home.png">qml/assets/icons/home.png</file>
-        <file alias="tabs.png">qml/assets/icons/tabs.png</file>
-        <file alias="next.png">qml/assets/icons/next.png</file>
-        <file alias="previous.png">qml/assets/icons/previous.png</file>
-        <file alias="refresh.png">qml/assets/icons/refresh.png</file>
-        <file alias="stop.png">qml/assets/icons/stop.png</file>
-        <file alias="touchpoint.png">qml/assets/icons/touchpoint.png</file>
-        <file alias="icon.png">qml/assets/icons/icon.png</file>
+        <file alias="home">qml/assets/icons/home.png</file>
+        <file alias="tabs">qml/assets/icons/tabs.png</file>
+        <file alias="next">qml/assets/icons/next.png</file>
+        <file alias="previous">qml/assets/icons/previous.png</file>
+        <file alias="refresh">qml/assets/icons/refresh.png</file>
+        <file alias="stop">qml/assets/icons/stop.png</file>
+        <file alias="touchpoint">qml/assets/icons/touchpoint.png</file>
+        <file alias="icon">qml/assets/icons/icon.png</file>
+        <file alias="close">qml/assets/icons/close.png</file>
+        <file alias="star">qml/assets/icons/star.png</file>
+        <file alias="settings">qml/assets/icons/settings.png</file>
+        <file alias="previous_inactive">qml/assets/icons/previous_incative.png</file>
+        <file alias="next_inactive">qml/assets/icons/next_inactive.png</file>
     </qresource>
 </RCC>
