@@ -52,7 +52,7 @@ Rectangle {
 
     property bool interactive: true
 
-    property string background: "#83bfe5"
+    property string background: "#62b0e0"
 
     property alias currentIndex: pathView.currentIndex
     property alias count: pathView.count
@@ -140,36 +140,30 @@ Rectangle {
                         print("Warning: Blocked a popup window.")
                     else if (request.destination == WebEngineView.NewViewInTab) {
                         tab = tabs.createEmptyTab()
-                        tabs.currentIndex = tabs.count - 1
+                        pathView.positionViewAtIndex(tabs.count - 1, PathView.SnapPosition)
                         request.openIn(tab.webView)
                     } else if (request.destination == WebEngineView.NewViewInBackgroundTab) {
                         tab = tabs.createEmptyTab()
                         request.openIn(tab.webView)
                     } else if (request.destination == WebEngineView.NewViewInDialog) {
-                        var dialog = engine.rootWindow.newDialog()
-                        request.openIn(dialog.currentWebView)
+                        var dialog = tabs.createEmptyTab()
+                        request.openIn(dialog.webView)
                     } else {
-                        var window = engine.rootWindow.newWindow()
-                        request.openIn(window.currentWebView)
+                        var window = tabs.createEmptyTab()
+                        request.openIn(window.webView)
                     }
-                }
-
-                onFullScreenRequested: {
-                    if (request.toggleOn) {
-                        webEngineView.state = "FullScreen"
-                        browserWindow.previousVisibility = browserWindow.visibility
-                        browserWindow.showFullScreen()
-                    } else {
-                        webEngineView.state = ""
-                        browserWindow.visibility = browserWindow.previousVisibility
-                    }
-                    request.accept()
                 }
 
                 onFeaturePermissionRequested: {
                     permBar.securityOrigin = securityOrigin;
                     permBar.requestedFeature = feature;
                     permBar.visible = true;
+                }
+
+                Component.onCompleted: {
+                    if (!engine.rootWindow.defaultProfile())
+                        return
+                    webEngineView.profile = engine.rootWindow.defaultProfile()
                 }
             }
 
@@ -257,8 +251,6 @@ Rectangle {
             console.log("PageView::add(): Error creating object");
             return
         }
-
-        element.item.webView.profile = engine.rootWindow.defaultProfile()
         element.item.webView.url = "about:blank"
         listModel.append(element)
 
@@ -368,22 +360,27 @@ Rectangle {
                 }
             }
 
-            Column {
-                anchors.fill: wrapper
-                Rectangle {
-                    color: background
+            Rectangle {
+                color: background
 
-                    Image {
-                        smooth: true
-                        source: item.image.imageUrl
-                        anchors.fill: parent
-                    }
+                DropShadow {
+                    anchors.fill: snapshot
+                    radius: 50
+                    verticalOffset: 5
+                    horizontalOffset: 0
+                    samples: radius * 2
+                    color: Qt.rgba(0, 0, 0, 0.5)
+                    source: snapshot
+                }
 
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    width: wrapper.width
-                    height: wrapper.height
+                Image {
+                    id: snapshot
+                    smooth: true
+                    source: item.image.imageUrl
+                    anchors.fill: parent
                     Rectangle {
-                        visible: wrapper.isCurrentItem && !pathView.moving
+                        opacity: wrapper.isCurrentItem && !pathView.moving ? 1.0 : 0.0
+                        visible: opacity != 0.0
                         width: 45
                         height: 45
                         radius: width / 2
@@ -407,14 +404,28 @@ Rectangle {
                                 }
                             }
                         }
+                        Behavior on opacity {
+                            NumberAnimation { duration: animationDuration }
+                        }
                     }
                 }
-                Text {
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    text: item.title
-                    font.pointSize: 12
-                    color: wrapper.isCurrentItem ? "black" : uiColor
+
+                anchors.fill: wrapper
+            }
+
+            Text {
+                anchors {
+                    top: parent.bottom
+                    horizontalCenter: parent.horizontalCenter
                 }
+                horizontalAlignment: Text.AlignHCenter
+                width: parent.width
+                elide: Text.ElideRight
+                text: item.title
+                font.pointSize: 10
+                font.family: "Monospace"
+                color: "#464749"
+                visible: wrapper.isCurrentItem
             }
             Behavior on scale {
                 NumberAnimation { duration: animationDuration }

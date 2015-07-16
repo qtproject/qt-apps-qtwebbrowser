@@ -56,11 +56,8 @@ Item {
         return tabs.get(tabs.currentIndex) ? tabs.get(tabs.currentIndex).item.webView : null
     }
 
-    property int visibility: Window.Windowed
-    property int previousVisibility: Window.Windowed
-
     property int toolBarHeight: 70
-    property string uiColor: "#46a1da"
+    property string uiColor: "#46a2da"
     property string uiBorderColor: "#7ebde5"
     property string buttonHighlightColor: "#e6e6e6"
     property string uiSelectionColor: "#fad84a"
