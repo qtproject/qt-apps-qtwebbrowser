@@ -18,7 +18,6 @@ OTHER_FILES = \
     qml/BrowserDialog.qml \
     qml/BrowserWindow.qml \
     qml/FeaturePermissionBar.qml \
-    qml/LoadIndicator.qml \
     qml/MockTouchPoint.qml \
     qml/PageView.qml \
     qml/NavigationBar.qml \

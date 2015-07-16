@@ -62,10 +62,6 @@ Item {
     property string buttonHighlightColor: "#e6e6e6"
     property string uiSelectionColor: "#fad84a"
 
-    property QtObject otrProfile: WebEngineProfile {
-        offTheRecord: true
-    }
-
     width: 1024
     height: 600
     visible: true

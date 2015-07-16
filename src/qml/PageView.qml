@@ -46,9 +46,10 @@ import QtGraphicalEffects 1.0
 Rectangle {
     id: root
     property int animationDuration: 200
-    property int tabDisplacement: 50
     property int itemWidth: root.width / 2
-    property int itemHeight: root.height / 2 - 50
+    property int itemHeight: root.height / 2 - toolBarHeight
+
+    property int viewWidth: root.width - (2 * 50)
 
     property bool interactive: true
 
@@ -59,6 +60,15 @@ Rectangle {
 
     property string viewState: "page"
 
+    property QtObject otrProfile: WebEngineProfile {
+        offTheRecord: true
+    }
+
+    property QtObject defaultProfile: WebEngineProfile {
+        storageName: "YABProfile"
+        offTheRecord: false
+    }
+
     Component {
         id: tabComponent
         Item {
@@ -67,7 +77,7 @@ Rectangle {
             property alias title: webEngineView.title
 
             property var image: QtObject {
-                property string imageUrl: "qrc:///icon"
+                property string imageUrl: "qrc:///about"
                 property string url: "about:blank"
             }
 
@@ -107,9 +117,11 @@ Rectangle {
                     top: permBar.bottom
                 }
 
+                profile: defaultProfile
+
                 function takeSnapshot() {
                     console.log("takeSnapshot")
-                    if (tabItem.image.url == webEngineView.url)
+                    if (tabItem.image.url == webEngineView.url || tabItem.opacity != 1.0)
                         return
 
                     tabItem.image.url = webEngineView.url
@@ -158,12 +170,6 @@ Rectangle {
                     permBar.securityOrigin = securityOrigin;
                     permBar.requestedFeature = feature;
                     permBar.visible = true;
-                }
-
-                Component.onCompleted: {
-                    if (!engine.rootWindow.defaultProfile())
-                        return
-                    webEngineView.profile = engine.rootWindow.defaultProfile()
                 }
             }
 
@@ -260,7 +266,10 @@ Rectangle {
     }
 
     function remove(index) {
+        pathView.interactive = false
+        pathView.currentItem.visibility = 0.0
         listModel.remove(index)
+        pathView.interactive = true
         if (listModel.count == 0)
             engine.rootWindow.close()
     }
@@ -275,7 +284,7 @@ Rectangle {
         Rectangle {
             id: wrapper
 
-            property real visibility: 1.0
+            property real visibility: 0.0
             property bool isCurrentItem: PathView.isCurrentItem
 
             visible: visibility != 0.0
@@ -285,13 +294,13 @@ Rectangle {
                 State {
                     name: "page"
                     PropertyChanges { target: wrapper; width: root.width; height: root.height; visibility: 0.0 }
-                    PropertyChanges { target: pathView; interactive: false; }
+                    PropertyChanges { target: pathView; interactive: false }
                     PropertyChanges { target: item; opacity: 1.0; visible: visibility < 0.1; z: 5 }
                 },
                 State {
                     name: "list"
                     PropertyChanges { target: wrapper; width: itemWidth; height: itemHeight; visibility: 1.0 }
-                    PropertyChanges { target: pathView; interactive: true; }
+                    PropertyChanges { target: pathView; interactive: !pathView.fewTabs }
                     PropertyChanges { target: item; opacity: 0.0; visible: opacity != 0.0 }
                 }
             ]
@@ -305,8 +314,8 @@ Rectangle {
             }
 
             width: itemWidth; height: itemHeight
-            scale: isCurrentItem ? 1 : 0.5
-            z: isCurrentItem ? 1 : 0
+            scale: pathView.moving ? 0.65 : PathView.itemScale
+            z: Math.round(PathView.itemZ)
 
             function indexForPosition(x, y) {
                 var pos = pathView.mapFromItem(wrapper, x, y)
@@ -321,6 +330,8 @@ Rectangle {
             MouseArea {
                 anchors.fill: wrapper
                 onClicked: {
+                    mouse.accepted = true
+                    console.log("z= " + z)
                     var index = indexForPosition(mouse.x, mouse.y)
                     var distance = Math.abs(pathView.currentIndex - index)
 
@@ -364,6 +375,7 @@ Rectangle {
                 color: background
 
                 DropShadow {
+                    visible: wrapper.visibility == 1.0
                     anchors.fill: snapshot
                     radius: 50
                     verticalOffset: 5
@@ -379,7 +391,7 @@ Rectangle {
                     source: item.image.imageUrl
                     anchors.fill: parent
                     Rectangle {
-                        opacity: wrapper.isCurrentItem && !pathView.moving ? 1.0 : 0.0
+                        opacity: wrapper.isCurrentItem && !pathView.moving && !pathView.flicking ? 1.0 : 0.0
                         visible: opacity != 0.0
                         width: 45
                         height: 45
@@ -439,10 +451,23 @@ Rectangle {
         anchors.fill: parent
         model: listModel
         delegate: delegate
+        highlightMoveDuration: animationDuration
+        flickDeceleration: animationDuration / 2
         preferredHighlightBegin: 0.5
         preferredHighlightEnd: 0.5
 
+        dragMargin: itemHeight
+
         snapMode: PathView.SnapToItem
+
+        property bool fewTabs: count < 3
+        property int margin: {
+            if (fewTabs)
+                return viewWidth / 4
+            if (count == 4)
+                return 2 * toolBarHeight
+            return toolBarHeight
+        }
 
         focus: interactive
 
@@ -453,13 +478,21 @@ Rectangle {
 
         path: Path {
             id: path
-            startX: -tabDisplacement; startY: root.height / 2 - tabDisplacement - 25
-            PathCurve { x: 0; y: root.height / 2 - tabDisplacement }
-            PathCurve { x: root.width / 4; y: root.height / 2 - tabDisplacement / 2 }
-            PathCurve { x: root.width / 2; y: root.height / 2 }
-            PathCurve { x: 3/4 * root.width; y: root.height / 2 - tabDisplacement / 2 }
-            PathCurve { x: root.width; y: root.height / 2 - tabDisplacement }
-            PathCurve { x: root.width + tabDisplacement; y: root.height / 2 - tabDisplacement - 25 }
+            startX: pathView.margin ; startY: root.height / 2
+            PathAttribute { name: "itemScale"; value: pathView.fewTabs ? 0.4 : 0.2 }
+            PathAttribute { name: "itemZ"; value: 0 }
+            PathLine { relativeX: viewWidth / 6 ; y: root.height / 2 }
+            PathAttribute { name: "itemScale"; value: 0.4 }
+            PathAttribute { name: "itemZ"; value: 3 }
+            PathLine { x: viewWidth / 2; y: root.height / 2 }
+            PathAttribute { name: "itemScale"; value: 1.0 }
+            PathAttribute { name: "itemZ"; value: 6 }
+            PathLine { x: root.width - pathView.margin - viewWidth / 6; y: root.height / 2 }
+            PathAttribute { name: "itemScale"; value: 0.5 }
+            PathAttribute { name: "itemZ"; value: 4 }
+            PathLine { x: root.width - pathView.margin; y: root.height / 2 }
+            PathAttribute { name: "itemScale"; value: pathView.fewTabs ? 0.5 : 0.1 }
+            PathAttribute { name: "itemZ"; value: 2 }
         }
 
         Keys.onLeftPressed: decrementCurrentIndex()

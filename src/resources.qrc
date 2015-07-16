@@ -20,5 +20,6 @@
         <file alias="settings">qml/assets/icons/settings.png</file>
         <file alias="previous_inactive">qml/assets/icons/previous_incative.png</file>
         <file alias="next_inactive">qml/assets/icons/next_inactive.png</file>
+        <file alias="about">qml/assets/icons/about_blank.png</file>
     </qresource>
 </RCC>
