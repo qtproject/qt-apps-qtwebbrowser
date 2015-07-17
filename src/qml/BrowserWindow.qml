@@ -62,6 +62,8 @@ Item {
     property string buttonHighlightColor: "#e6e6e6"
     property string uiSelectionColor: "#fad84a"
 
+    property int animationDuration: 200
+
     width: 1024
     height: 600
     visible: true
@@ -97,12 +99,13 @@ Item {
         }
     }
     Action {
+        id: newTabAction
         shortcut: "Ctrl+T"
         onTriggered: {
             tabs.createEmptyTab()
-            tabs.currentIndex = tabs.count - 1
             navigation.addressBar.forceActiveFocus();
             navigation.addressBar.selectAll();
+            tabs.makeCurrent(tabs.count - 1)
         }
     }
     Action {
@@ -110,6 +113,91 @@ Item {
         onTriggered: tabs.remove(tabs.currentIndex)
     }
 
+
+    ToolBar {
+        id: tabEditBar
+
+        height: toolBarHeight
+
+        style: ToolBarStyle {
+            background: Rectangle {
+                color: uiColor
+            }
+        }
+
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: parent.top
+        }
+
+        visible: opacity != 0.0
+        opacity: tabs.viewState == "list" ? 1.0 : 0.0
+
+        RowLayout {
+            anchors.fill: parent
+            UIButton {
+                id: newTabButton
+                source: "qrc:///newtab"
+                onClicked: newTabAction.trigger()
+            }
+            Rectangle {
+                width: 1
+                anchors {
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+                color: uiBorderColor
+            }
+            Rectangle {
+                width: 50
+                anchors {
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+                color: uiColor
+            }
+            Rectangle {
+                color: uiColor
+                Layout.fillWidth: true
+                anchors {
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+                Rectangle {
+                    color: "transparent"
+                    border.color: "white"
+                    border.width: 2
+                    width: 40
+                    height: 30
+                    anchors.centerIn: parent
+                    Text {
+                        anchors.centerIn: parent
+                        text: tabs.count
+                        color: "white"
+                        font.family: "Sans"
+                        font.pixelSize: 20
+                    }
+                }
+            }
+            Rectangle {
+                width: 1
+                anchors {
+                    top: parent.top
+                    bottom: parent.bottom
+                }
+                color: uiBorderColor
+            }
+            UIButton {
+                id:doneButton
+                source: "qrc:///done"
+                width: 120
+                onClicked: {
+                    tabs.viewState = "page"
+                }
+            }
+        }
+    }
     NavigationBar {
         id: navigation
         anchors {

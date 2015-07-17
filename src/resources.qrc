@@ -21,5 +21,7 @@
         <file alias="previous_inactive">qml/assets/icons/previous_incative.png</file>
         <file alias="next_inactive">qml/assets/icons/next_inactive.png</file>
         <file alias="about">qml/assets/icons/about_blank.png</file>
+        <file alias="newtab">qml/assets/icons/newtab.png</file>
+        <file alias="done">qml/assets/icons/done.png</file>
     </qresource>
 </RCC>

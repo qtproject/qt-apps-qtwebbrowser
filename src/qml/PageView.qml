@@ -45,7 +45,7 @@ import QtGraphicalEffects 1.0
 
 Rectangle {
     id: root
-    property int animationDuration: 200
+
     property int itemWidth: root.width * 0.6
     property int itemHeight: root.height * 0.6
 
@@ -84,7 +84,7 @@ Rectangle {
             visible: opacity != 0.0
 
             Behavior on opacity {
-                NumberAnimation { duration: animationDuration / 2; easing.type: Easing.OutBounce }
+                NumberAnimation { duration: animationDuration }
             }
 
             anchors.fill: parent
@@ -151,11 +151,13 @@ Rectangle {
                         print("Warning: Blocked a popup window.")
                     else if (request.destination == WebEngineView.NewViewInTab) {
                         tab = tabs.createEmptyTab()
-                        pathView.positionViewAtIndex(tabs.count - 1, PathView.SnapPosition)
+                        pathView.positionViewAtIndex(tabs.count - 1, PathView.Center)
                         request.openIn(tab.webView)
                     } else if (request.destination == WebEngineView.NewViewInBackgroundTab) {
+                        var index = pathView.currentIndex
                         tab = tabs.createEmptyTab()
                         request.openIn(tab.webView)
+                        pathView.positionViewAtIndex(index, PathView.Center)
                     } else if (request.destination == WebEngineView.NewViewInDialog) {
                         var dialog = tabs.createEmptyTab()
                         request.openIn(dialog.webView)
@@ -243,14 +245,20 @@ Rectangle {
         id: listModel
     }
 
+    function makeCurrent(index) {
+        pathView.positionViewAtIndex(index, PathView.Center)
+    }
+
     function createEmptyTab() {
+        if (listModel.count == 10)
+            return null
         var tab = add(tabComponent)
         return tab
     }
 
     function add(component) {
         var element = {"item": null }
-        element.item = component.createObject(root, { "width": root.width, "height": root.height })
+        element.item = component.createObject(root, { "width": root.width, "height": root.height, "opacity": 0.0 })
 
         if (element.item == null) {
             console.log("PageView::add(): Error creating object");
@@ -260,9 +268,6 @@ Rectangle {
         element.item.webView.url = "about:blank"
         element.index = listModel.count
         listModel.append(element)
-
-        pathView.positionViewAtIndex(listModel.count - 1, PathView.Center)
-
         return element.item
     }
 
@@ -303,21 +308,21 @@ Rectangle {
                     name: "page"
                     PropertyChanges { target: wrapper; width: root.width; height: root.height; visibility: 0.0 }
                     PropertyChanges { target: pathView; interactive: false }
-                    PropertyChanges { target: item; opacity: 1.0; visible: visibility < 0.1 }
+                    PropertyChanges { target: item; opacity: 1.0;  }
                 },
                 State {
                     name: "list"
                     PropertyChanges { target: wrapper; width: itemWidth; height: itemHeight; visibility: 1.0 }
                     PropertyChanges { target: pathView; interactive: true }
-                    PropertyChanges { target: item; opacity: 0.0; visible: opacity != 0.0 }
+                    PropertyChanges { target: item; }
                 }
             ]
 
             transitions: Transition {
                 ParallelAnimation {
-                    PropertyAnimation { property: "visibility"; duration: animationDuration }
-                    PropertyAnimation { properties: "x,y"; duration: animationDuration }
-                    PropertyAnimation { properties: "width,height"; duration: animationDuration}
+                    PropertyAnimation { property: "visibility"; duration: animationDuration; easing.type : Easing.InQuad }
+                    PropertyAnimation { properties: "x,y"; duration: animationDuration; easing.type : Easing.OutQuad }
+                    PropertyAnimation { properties: "width,height"; duration: animationDuration; easing.type : Easing.OutQuad }
                 }
             }
 
@@ -338,7 +343,7 @@ Rectangle {
                             root.viewState = "page"
                         return
                     }
-                    pathView.positionViewAtIndex(index, PathView.Center)
+                    pathView.currentIndex = index
                 }
             }
 
@@ -365,7 +370,7 @@ Rectangle {
                     }
                     anchors.fill: parent
                     Rectangle {
-                        opacity: wrapper.isCurrentItem && !pathView.moving && !pathView.flicking ? 1.0 : 0.0
+                        opacity: wrapper.isCurrentItem && !pathView.moving && !pathView.flicking && wrapper.visibility == 1.0 ? 1.0 : 0.0
                         visible: opacity != 0.0
                         width: 45
                         height: 45

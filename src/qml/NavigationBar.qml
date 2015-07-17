@@ -14,6 +14,9 @@ ToolBar {
 
     height: toolBarHeight
 
+    visible: opacity != 0.0
+    opacity: tabs.viewState == "page" ? 1.0 : 0.0
+
     style: ToolBarStyle {
         background: Rectangle {
             color: uiColor
