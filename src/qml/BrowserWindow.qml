@@ -121,9 +121,6 @@ Item {
     PageView {
         id: tabs
 
-        itemWidth: browserWindow.width / 2
-        itemHeight: browserWindow.height / 2
-
         anchors {
             top: navigation.bottom
             left: parent.left

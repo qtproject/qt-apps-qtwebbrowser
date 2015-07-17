@@ -46,25 +46,6 @@
 #include <QUrl>
 #include <QVariant>
 
-namespace {
-
-static QUrl startupUrl()
-{
-    QUrl ret;
-    QStringList args(qApp->arguments());
-    args.takeFirst();
-    Q_FOREACH (const QString& arg, args) {
-        if (arg.startsWith(QLatin1Char('-')))
-             continue;
-        ret = Utils::fromUserInput(arg);
-        if (ret.isValid())
-            return ret;
-    }
-    return QUrl(QStringLiteral("http://qt.io/"));
-}
-
-}
-
 void BrowserWindow::ensureProfileInstance()
 {
     if (m_lazyProfileInstance)

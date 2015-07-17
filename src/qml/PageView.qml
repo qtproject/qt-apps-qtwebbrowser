@@ -46,8 +46,8 @@ import QtGraphicalEffects 1.0
 Rectangle {
     id: root
     property int animationDuration: 200
-    property int itemWidth: root.width / 2
-    property int itemHeight: root.height / 2 - toolBarHeight
+    property int itemWidth: root.width * 0.6
+    property int itemHeight: root.height * 0.6
 
     property int viewWidth: root.width - (2 * 50)
 
@@ -77,14 +77,14 @@ Rectangle {
             property alias title: webEngineView.title
 
             property var image: QtObject {
-                property string imageUrl: "qrc:///about"
+                property var snapshot: null
                 property string url: "about:blank"
             }
 
             visible: opacity != 0.0
 
             Behavior on opacity {
-                NumberAnimation { duration: animationDuration / 4; easing.type: Easing.InQuad}
+                NumberAnimation { duration: animationDuration / 2; easing.type: Easing.OutBounce }
             }
 
             anchors.fill: parent
@@ -120,13 +120,12 @@ Rectangle {
                 profile: defaultProfile
 
                 function takeSnapshot() {
-                    console.log("takeSnapshot")
                     if (tabItem.image.url == webEngineView.url || tabItem.opacity != 1.0)
                         return
 
                     tabItem.image.url = webEngineView.url
                     blur.grabToImage(function(result) {
-                        tabItem.image.imageUrl = result.url;
+                        tabItem.image.snapshot = result;
                         console.log("takeSnapshot("+result.url+")")
                     });
                 }
@@ -257,10 +256,12 @@ Rectangle {
             console.log("PageView::add(): Error creating object");
             return
         }
+
         element.item.webView.url = "about:blank"
+        element.index = listModel.count
         listModel.append(element)
 
-        pathView.positionViewAtIndex(listModel.count - 1, PathView.SnapPosition)
+        pathView.positionViewAtIndex(listModel.count - 1, PathView.Center)
 
         return element.item
     }
@@ -268,6 +269,11 @@ Rectangle {
     function remove(index) {
         pathView.interactive = false
         pathView.currentItem.visibility = 0.0
+
+        // Update indices of remaining items
+        for (var idx = index + 1; idx < listModel.count; ++idx)
+            listModel.get(idx).index -= 1
+
         listModel.remove(index)
         pathView.interactive = true
         if (listModel.count == 0)
@@ -284,6 +290,8 @@ Rectangle {
         Rectangle {
             id: wrapper
 
+            parent: item
+
             property real visibility: 0.0
             property bool isCurrentItem: PathView.isCurrentItem
 
@@ -295,12 +303,12 @@ Rectangle {
                     name: "page"
                     PropertyChanges { target: wrapper; width: root.width; height: root.height; visibility: 0.0 }
                     PropertyChanges { target: pathView; interactive: false }
-                    PropertyChanges { target: item; opacity: 1.0; visible: visibility < 0.1; z: 5 }
+                    PropertyChanges { target: item; opacity: 1.0; visible: visibility < 0.1 }
                 },
                 State {
                     name: "list"
                     PropertyChanges { target: wrapper; width: itemWidth; height: itemHeight; visibility: 1.0 }
-                    PropertyChanges { target: pathView; interactive: !pathView.fewTabs }
+                    PropertyChanges { target: pathView; interactive: true }
                     PropertyChanges { target: item; opacity: 0.0; visible: opacity != 0.0 }
                 }
             ]
@@ -315,26 +323,13 @@ Rectangle {
 
             width: itemWidth; height: itemHeight
             scale: pathView.moving ? 0.65 : PathView.itemScale
-            z: Math.round(PathView.itemZ)
-
-            function indexForPosition(x, y) {
-                var pos = pathView.mapFromItem(wrapper, x, y)
-                return pathView.indexAt(pos.x, pos.y)
-            }
-
-            function itemForPosition(x, y) {
-                var pos = pathView.mapFromItem(wrapper, x, y)
-                return pathView.itemAt(pos.x, pos.y)
-            }
+            z: PathView.itemZ
 
             MouseArea {
+                enabled: pathView.interactive
                 anchors.fill: wrapper
                 onClicked: {
                     mouse.accepted = true
-                    console.log("z= " + z)
-                    var index = indexForPosition(mouse.x, mouse.y)
-                    var distance = Math.abs(pathView.currentIndex - index)
-
                     if (index < 0)
                         return
 
@@ -343,31 +338,7 @@ Rectangle {
                             root.viewState = "page"
                         return
                     }
-
-                    if (pathView.currentIndex == 0 && index === pathView.count - 1) {
-                        pathView.decrementCurrentIndex()
-                        return
-                    }
-
-                    if (pathView.currentIndex == pathView.count - 1 && index == 0) {
-                        pathView.incrementCurrentIndex()
-                        return
-                    }
-
-                    if (distance > 1) {
-                        pathView.positionViewAtIndex(index, PathView.SnapPosition)
-                        return
-                    }
-
-                    if (pathView.currentIndex > index) {
-                        pathView.decrementCurrentIndex()
-                        return
-                    }
-
-                    if (pathView.currentIndex < index) {
-                        pathView.incrementCurrentIndex()
-                        return
-                    }
+                    pathView.positionViewAtIndex(index, PathView.Center)
                 }
             }
 
@@ -387,8 +358,11 @@ Rectangle {
 
                 Image {
                     id: snapshot
-                    smooth: true
-                    source: item.image.imageUrl
+                    source: {
+                        if (!item.image.snapshot)
+                            return "qrc:///about"
+                        return item.image.snapshot.url
+                    }
                     anchors.fill: parent
                     Rectangle {
                         opacity: wrapper.isCurrentItem && !pathView.moving && !pathView.flicking ? 1.0 : 0.0
@@ -410,9 +384,8 @@ Rectangle {
                                 id: closeButton
                                 anchors.fill: parent
                                 onClicked: {
-                                    var index = indexForPosition(mouse.x, mouse.y)
-                                    itemForPosition(mouse.x, mouse.y).visible = false
-                                    remove(index)
+                                    mouse.accepted = true
+                                    remove(pathView.currentIndex)
                                 }
                             }
                         }
@@ -445,6 +418,11 @@ Rectangle {
         }
     }
 
+    Rectangle {
+        color: background
+        anchors.fill: parent
+    }
+
     PathView {
         id: pathView
         pathItemCount: 5
@@ -461,6 +439,7 @@ Rectangle {
         snapMode: PathView.SnapToItem
 
         property bool fewTabs: count < 3
+        property int offset: 10
         property int margin: {
             if (fewTabs)
                 return viewWidth / 4
@@ -471,27 +450,23 @@ Rectangle {
 
         focus: interactive
 
-        Rectangle {
-            color: background
-            anchors.fill: parent
-        }
-
         path: Path {
             id: path
             startX: pathView.margin ; startY: root.height / 2
-            PathAttribute { name: "itemScale"; value: pathView.fewTabs ? 0.4 : 0.2 }
+            PathAttribute { name: "itemScale"; value: pathView.fewTabs ? 0.5 : 0.25 }
             PathAttribute { name: "itemZ"; value: 0 }
             PathLine { relativeX: viewWidth / 6 ; y: root.height / 2 }
-            PathAttribute { name: "itemScale"; value: 0.4 }
+            PathAttribute { name: "itemScale"; value: 0.35 }
             PathAttribute { name: "itemZ"; value: 3 }
-            PathLine { x: viewWidth / 2; y: root.height / 2 }
+            PathLine { x: viewWidth / 2 - pathView.offset; y: root.height / 2 }
             PathAttribute { name: "itemScale"; value: 1.0 }
             PathAttribute { name: "itemZ"; value: 6 }
+            PathLine { x: viewWidth / 2 + pathView.offset; y: root.height / 2 }
             PathLine { x: root.width - pathView.margin - viewWidth / 6; y: root.height / 2 }
-            PathAttribute { name: "itemScale"; value: 0.5 }
+            PathAttribute { name: "itemScale"; value: 0.42 }
             PathAttribute { name: "itemZ"; value: 4 }
             PathLine { x: root.width - pathView.margin; y: root.height / 2 }
-            PathAttribute { name: "itemScale"; value: pathView.fewTabs ? 0.5 : 0.1 }
+            PathAttribute { name: "itemScale"; value: pathView.fewTabs ? 0.5 : 0.2 }
             PathAttribute { name: "itemZ"; value: 2 }
         }
 
