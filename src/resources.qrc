@@ -9,17 +9,15 @@
         <file>qml/assets/UIButton.qml</file>
         <file alias="home">qml/assets/icons/home.png</file>
         <file alias="tabs">qml/assets/icons/tabs.png</file>
-        <file alias="next">qml/assets/icons/next.png</file>
-        <file alias="previous">qml/assets/icons/previous.png</file>
+        <file alias="forward">qml/assets/icons/forward.png</file>
+        <file alias="back">qml/assets/icons/back.png</file>
         <file alias="refresh">qml/assets/icons/refresh.png</file>
         <file alias="stop">qml/assets/icons/stop.png</file>
         <file alias="touchpoint">qml/assets/icons/touchpoint.png</file>
         <file alias="icon">qml/assets/icons/icon.png</file>
-        <file alias="close">qml/assets/icons/close.png</file>
-        <file alias="star">qml/assets/icons/star.png</file>
+        <file alias="delete">qml/assets/icons/delete.png</file>
+        <file alias="star">qml/assets/icons/bookmark.png</file>
         <file alias="settings">qml/assets/icons/settings.png</file>
-        <file alias="previous_inactive">qml/assets/icons/previous_incative.png</file>
-        <file alias="next_inactive">qml/assets/icons/next_inactive.png</file>
         <file alias="about">qml/assets/icons/about_blank.png</file>
         <file alias="newtab">qml/assets/icons/newtab.png</file>
         <file alias="done">qml/assets/icons/done.png</file>

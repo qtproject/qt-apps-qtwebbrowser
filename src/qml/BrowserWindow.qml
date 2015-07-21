@@ -56,11 +56,11 @@ Item {
         return tabs.get(tabs.currentIndex) ? tabs.get(tabs.currentIndex).item.webView : null
     }
 
-    property int toolBarHeight: 70
+    property int toolBarSize: 80
     property string uiColor: "#46a2da"
     property string uiBorderColor: "#7ebde5"
-    property string buttonHighlightColor: "#e6e6e6"
-    property string uiSelectionColor: "#fad84a"
+    property string buttonHighlightColor: "#3f91c4"
+    property string uiSelectionColor: "#fddd5c"
 
     property int animationDuration: 200
     property int velocityThreshold: 500
@@ -122,11 +122,17 @@ Item {
     ToolBar {
         id: tabEditBar
 
-        height: toolBarHeight
+        height: toolBarSize
 
         style: ToolBarStyle {
             background: Rectangle {
                 color: uiColor
+            }
+            padding {
+                left: 0
+                right: 0
+                top: 0
+                bottom: 0
             }
         }
 
@@ -140,6 +146,7 @@ Item {
         opacity: tabs.viewState == "list" ? 1.0 : 0.0
 
         RowLayout {
+            spacing: 0
             anchors.fill: parent
             UIButton {
                 id: newTabButton
@@ -196,7 +203,7 @@ Item {
             UIButton {
                 id:doneButton
                 source: "qrc:///done"
-                width: 120
+                implicitWidth: 125
                 onClicked: {
                     tabs.viewState = "page"
                 }
@@ -215,24 +222,24 @@ Item {
 
             if (velocityY > velocityThreshold) {
                 if (diff > 0)
-                    return -toolBarHeight
+                    return -toolBarSize
                 else
                     return 0
             }
 
             if (!touchGesture || diff == 0) {
-                if (y < -toolBarHeight / 2)
-                    return -toolBarHeight
+                if (y < -toolBarSize / 2)
+                    return -toolBarSize
                 else
                     return 0
             }
 
-            if (diff > toolBarHeight)
-                return -toolBarHeight
+            if (diff > toolBarSize)
+                return -toolBarSize
 
             if (diff > 0) {
-                if (y == -toolBarHeight)
-                    return -toolBarHeight
+                if (y == -toolBarSize)
+                    return -toolBarSize
                 return -diff
             }
 
@@ -242,10 +249,10 @@ Item {
                 return 0
 
             diff = Math.abs(diff)
-            if (diff >= toolBarHeight)
+            if (diff >= toolBarSize)
                 return 0
 
-            return -toolBarHeight + diff
+            return -toolBarSize + diff
         }
 
         anchors {
@@ -256,11 +263,12 @@ Item {
     PageView {
         id: tabs
 
+        height: parent.height
+
         anchors {
             top: navigation.bottom
             left: parent.left
             right: parent.right
-            bottom: parent.bottom
         }
 
         Component.onCompleted: {

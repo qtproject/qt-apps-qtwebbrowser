@@ -6,20 +6,22 @@ import QtQuick.Layouts 1.3
 
 ToolButton {
     id: root
+    implicitHeight: toolBarSize
+    implicitWidth: toolBarSize
 
     property string source: ""
     property real radius: 0.0
     property string color: uiColor
-    property string highlightColor: uiBorderColor
+    property string highlightColor: buttonHighlightColor
     style: ButtonStyle {
         background: Rectangle {
-            implicitWidth: Math.max(60, parent.width)
-            implicitHeight: 60
+            opacity: root.enabled ? 1.0 : 0.3
             color: root.pressed ? root.highlightColor : root.color
             radius: root.radius
             Image {
                 source: root.source
-                height: Math.min(50, parent.width)
+                width: Math.min(sourceSize.width, root.width)
+                height: Math.min(sourceSize.height, root.height)
                 anchors.centerIn: parent
             }
         }

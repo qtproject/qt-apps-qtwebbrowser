@@ -12,23 +12,29 @@ ToolBar {
 
     property Item webView: null
 
-    height: toolBarHeight
-
     visible: opacity != 0.0
     opacity: tabs.viewState == "page" ? 1.0 : 0.0
 
     style: ToolBarStyle {
         background: Rectangle {
             color: uiColor
+            implicitHeight: toolBarSize
+        }
+        padding {
+            left: 0
+            right: 0
+            top: 0
+            bottom: 0
         }
     }
 
     RowLayout {
         anchors.fill: parent
+        spacing: 0
 
         UIButton {
             id: backButton
-            source: enabled ? "qrc:///previous" : "qrc:///previous_inactive"
+            source: "qrc:///back"
             onClicked: webView.goBack()
             enabled: webView && webView.canGoBack
         }
@@ -42,7 +48,7 @@ ToolBar {
         }
         UIButton {
             id: forwardButton
-            source: enabled ? "qrc:///next" : "qrc:///next_inactive"
+            source: "qrc:///forward"
             onClicked: webView.goForward()
             enabled: webView && webView.canGoForward
         }
@@ -54,19 +60,33 @@ ToolBar {
             }
             color: uiBorderColor
         }
-
+        Rectangle {
+             Layout.fillWidth: true
+            anchors {
+                top: parent.top
+                bottom: parent.bottom
+            }
+            color: uiColor
+        }
         TextField {
             id: urlBar
-            Layout.fillWidth: true
             text: webView.url
+            activeFocusOnPress: true
+            placeholderText: qsTr("Search or type a URL")
+            focus: !webView.focus
+
+            anchors {
+                leftMargin: 50
+            }
+
             UIButton {
                 id: reloadButton
                 source: webView && webView.loading ? "qrc:///stop" : "qrc:///refresh"
-                height: parent.height - 15
+                height: 34
                 width: height
                 color: "white"
                 radius: width / 2
-                highlightColor: buttonHighlightColor
+                highlightColor: "lightgrey"
                 anchors {
                     rightMargin: 10
                     right: parent.right
@@ -76,25 +96,43 @@ ToolBar {
             }
             style: TextFieldStyle {
                 textColor: "black"
-                font.family: "Helvetica"
-                font.pointSize: 16
+                font.family: "Open Sans"
+                font.pixelSize: 28
                 selectionColor: uiSelectionColor
                 selectedTextColor: "black"
+                placeholderTextColor: "#a0a1a2"
                 background: Rectangle {
-                    implicitWidth: 200
-                    implicitHeight: 50
+                    implicitWidth: 514
+                    implicitHeight: 56
                     border.color: "#3881ae"
                     border.width: 1
                 }
                 padding {
+                    left: 15
                     right: 20 + reloadButton.width
-                    left: 10
                 }
             }
             onAccepted: {
                 webView.url = engine.fromUserInput(text)
                 tabs.viewState = "page"
             }
+            onEditingFinished: selectAll()
+            onFocusChanged: {
+                if (focus)
+                    selectAll()
+                else {
+                    urlBar.cursorPosition = 0
+                    deselect()
+                }
+            }
+        }
+        Rectangle {
+             Layout.fillWidth: true
+            anchors {
+                top: parent.top
+                bottom: parent.bottom
+            }
+            color: uiColor
         }
         Rectangle {
             width: 1
@@ -169,8 +207,8 @@ ToolBar {
             left: parent.left
             top: parent.bottom
             right: parent.right
-            leftMargin: -parent.leftMargin
-            rightMargin: -parent.rightMargin
+            leftMargin: -10
+            rightMargin: -10
         }
         style: ProgressBarStyle {
             background: Rectangle {
@@ -180,7 +218,7 @@ ToolBar {
                 color: uiSelectionColor
             }
         }
-        z: -2
+        z: 5
         minimumValue: 0
         maximumValue: 100
         value: (webView && webView.loadProgress < 100) ? webView.loadProgress : 0

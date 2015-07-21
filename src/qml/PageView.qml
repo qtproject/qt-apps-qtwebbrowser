@@ -237,16 +237,22 @@ Rectangle {
                     }
                     ToolButton {
                         id: findBackwardButton
-                        iconSource: "qrc:///previous"
+                        width: 20
+                        height: 20
+                        iconSource: "qrc:///back"
                         onClicked: webEngineView.findText(findTextField.text, WebEngineView.FindBackward)
                     }
                     ToolButton {
                         id: findForwardButton
-                        iconSource: "qrc:///next"
+                        width: 20
+                        height: 20
+                        iconSource: "qrc:///forward"
                         onClicked: webEngineView.findText(findTextField.text)
                     }
                     ToolButton {
                         id: findCancelButton
+                        width: 20
+                        height: 20
                         iconSource: "qrc:///stop"
                         onClicked: findBar.visible = false
                     }
@@ -287,8 +293,6 @@ Rectangle {
 
     function remove(index) {
         pathView.interactive = false
-        pathView.currentItem.visibility = 0.0
-
         // Update indices of remaining items
         for (var idx = index + 1; idx < listModel.count; ++idx)
             listModel.get(idx).index -= 1
@@ -384,21 +388,29 @@ Rectangle {
                     }
                     anchors.fill: parent
                     Rectangle {
-                        opacity: wrapper.isCurrentItem && !pathView.moving && !pathView.flicking && wrapper.visibility == 1.0 ? 1.0 : 0.0
+                        enabled: wrapper.isCurrentItem && !pathView.moving && !pathView.flicking && wrapper.visibility == 1.0
+                        opacity: enabled ? 1.0 : 0.0
                         visible: opacity != 0.0
-                        width: 45
-                        height: 45
+                        width: image.sourceSize.width
+                        height: image.sourceSize.height - 2
                         radius: width / 2
-                        color: closeButton.pressed ? buttonHighlightColor : "white"
-                        border.width: 1
-                        border.color: "black"
+                        color: "darkgrey"
                         anchors {
                             horizontalCenter: parent.right
                             verticalCenter: parent.top
                         }
                         Image {
-                            anchors.fill: parent
-                            source: "qrc:///close"
+                            id: image
+                            opacity: {
+                                if (closeButton.pressed)
+                                    return 0.70
+                                return 1.0
+                            }
+                            anchors {
+                                top: parent.top
+                                left: parent.left
+                            }
+                            source: "qrc:///delete"
                             MouseArea {
                                 id: closeButton
                                 anchors.fill: parent
@@ -463,8 +475,8 @@ Rectangle {
             if (fewTabs)
                 return viewWidth / 4
             if (count == 4)
-                return 2 * toolBarHeight
-            return toolBarHeight
+                return 2 * toolBarSize
+            return toolBarSize
         }
 
         focus: interactive
@@ -472,20 +484,19 @@ Rectangle {
         path: Path {
             id: path
             startX: pathView.margin ; startY: root.height / 2
-            PathAttribute { name: "itemScale"; value: pathView.fewTabs ? 0.5 : 0.25 }
+            PathAttribute { name: "itemScale"; value: pathView.fewTabs ? 0.5 : 0.2 }
             PathAttribute { name: "itemZ"; value: 0 }
-            PathLine { relativeX: viewWidth / 6 ; y: root.height / 2 }
-            PathAttribute { name: "itemScale"; value: 0.35 }
+            PathLine { relativeX: viewWidth / 6 - 10; y: root.height / 2 }
+            PathAttribute { name: "itemScale"; value: 0.30 }
             PathAttribute { name: "itemZ"; value: 3 }
-            PathLine { x: viewWidth / 2 - pathView.offset; y: root.height / 2 }
+            PathLine { x: viewWidth / 2; y: root.height / 2 }
             PathAttribute { name: "itemScale"; value: 1.0 }
             PathAttribute { name: "itemZ"; value: 6 }
-            PathLine { x: viewWidth / 2 + pathView.offset; y: root.height / 2 }
-            PathLine { x: root.width - pathView.margin - viewWidth / 6; y: root.height / 2 }
-            PathAttribute { name: "itemScale"; value: 0.42 }
+            PathLine { x: root.width - pathView.margin - viewWidth / 6 + 10; y: root.height / 2 }
+            PathAttribute { name: "itemScale"; value: 0.40 }
             PathAttribute { name: "itemZ"; value: 4 }
             PathLine { x: root.width - pathView.margin; y: root.height / 2 }
-            PathAttribute { name: "itemScale"; value: pathView.fewTabs ? 0.5 : 0.2 }
+            PathAttribute { name: "itemScale"; value: pathView.fewTabs ? 0.3 : 0.15 }
             PathAttribute { name: "itemZ"; value: 2 }
         }
 
