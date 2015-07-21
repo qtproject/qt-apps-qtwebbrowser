@@ -44,36 +44,15 @@
 #include <QMouseEvent>
 #include <QTouchEvent>
 
+#include "utils.h"
+
+using namespace utils;
+
 static inline QRectF touchRectForPosition(QPointF centerPoint)
 {
     QRectF touchRect(0, 0, 40, 40);
     touchRect.moveCenter(centerPoint);
     return touchRect;
-}
-
-static inline bool isTouchEvent(const QEvent* event)
-{
-    switch (event->type()) {
-    case QEvent::TouchBegin:
-    case QEvent::TouchUpdate:
-    case QEvent::TouchEnd:
-        return true;
-    default:
-        return false;
-    }
-}
-
-static inline bool isMouseEvent(const QEvent* event)
-{
-    switch (event->type()) {
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-        return true;
-    default:
-        return false;
-    }
 }
 
 TouchMockingApplication::TouchMockingApplication(int& argc, char** argv)

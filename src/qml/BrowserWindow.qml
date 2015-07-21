@@ -63,6 +63,11 @@ Item {
     property string uiSelectionColor: "#fad84a"
 
     property int animationDuration: 200
+    property int velocityThreshold: 500
+    property int velocityY: 0
+    property real touchY: 0
+    property real touchReference: 0
+    property bool touchGesture: false
 
     width: 1024
     height: 600
@@ -128,7 +133,7 @@ Item {
         anchors {
             left: parent.left
             right: parent.right
-            top: parent.top
+            top: navigation.top
         }
 
         visible: opacity != 0.0
@@ -200,8 +205,50 @@ Item {
     }
     NavigationBar {
         id: navigation
+
+        Behavior on y {
+            NumberAnimation { duration: animationDuration }
+        }
+
+        y: {
+            var diff = touchReference - touchY
+
+            if (velocityY > velocityThreshold) {
+                if (diff > 0)
+                    return -toolBarHeight
+                else
+                    return 0
+            }
+
+            if (!touchGesture || diff == 0) {
+                if (y < -toolBarHeight / 2)
+                    return -toolBarHeight
+                else
+                    return 0
+            }
+
+            if (diff > toolBarHeight)
+                return -toolBarHeight
+
+            if (diff > 0) {
+                if (y == -toolBarHeight)
+                    return -toolBarHeight
+                return -diff
+            }
+
+            // diff < 0
+
+            if (y == 0)
+                return 0
+
+            diff = Math.abs(diff)
+            if (diff >= toolBarHeight)
+                return 0
+
+            return -toolBarHeight + diff
+        }
+
         anchors {
-            top: parent.top
             left: parent.left
             right: parent.right
         }

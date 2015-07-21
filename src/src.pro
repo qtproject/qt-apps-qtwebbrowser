@@ -6,11 +6,13 @@ CONFIG -= app_bundle
 
 SOURCES = main.cpp \
     touchmockingapplication.cpp \
-    browserwindow.cpp
+    browserwindow.cpp \
+    touchtracker.cpp
 
 HEADERS = utils.h \
     touchmockingapplication.h \
-    browserwindow.h
+    browserwindow.h \
+    touchtracker.h
 
 OTHER_FILES = \
     qml/assets/UIButton.qml \

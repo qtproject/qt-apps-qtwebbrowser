@@ -38,8 +38,37 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <QtCore/QEvent>
 #include <QtCore/QFileInfo>
 #include <QtCore/QUrl>
+
+namespace utils {
+inline bool isTouchEvent(const QEvent* event)
+{
+    switch (event->type()) {
+    case QEvent::TouchBegin:
+    case QEvent::TouchUpdate:
+    case QEvent::TouchEnd:
+        return true;
+    default:
+        return false;
+    }
+}
+
+inline bool isMouseEvent(const QEvent* event)
+{
+    switch (event->type()) {
+    case QEvent::MouseButtonPress:
+    case QEvent::MouseMove:
+    case QEvent::MouseButtonRelease:
+    case QEvent::MouseButtonDblClick:
+        return true;
+    default:
+        return false;
+    }
+}
+
+}
 
 class Utils : public QObject {
     Q_OBJECT

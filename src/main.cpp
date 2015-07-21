@@ -43,6 +43,7 @@
 
 #include "touchmockingapplication.h"
 #include "utils.h"
+#include "touchtracker.h"
 
 int main(int argc, char **argv)
 {
@@ -66,6 +67,8 @@ int main(int argc, char **argv)
     QGuiApplication app(argc, argv);
 #endif
     QtWebEngine::initialize();
+
+    qmlRegisterType<TouchTracker>("io.qt.browser", 1, 0, "TouchTracker");
 
     BrowserWindow window;
     QObject::connect(window.rootContext()->engine(), SIGNAL(quit()), &app, SLOT(quit()));

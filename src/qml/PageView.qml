@@ -35,13 +35,15 @@
 **
 ****************************************************************************/
 
-import QtQuick 2.0
+import QtQuick 2.5
 import QtWebEngine 1.3
 import QtWebEngine.experimental 1.0
 import QtQuick.Controls 1.5
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.3
 import QtGraphicalEffects 1.0
+
+import io.qt.browser 1.0
 
 Rectangle {
     id: root
@@ -124,7 +126,7 @@ Rectangle {
                         return
 
                     tabItem.image.url = webEngineView.url
-                    blur.grabToImage(function(result) {
+                    webEngineView.grabToImage(function(result) {
                         tabItem.image.snapshot = result;
                         console.log("takeSnapshot("+result.url+")")
                     });
@@ -194,11 +196,23 @@ Rectangle {
                 radius: desaturate.desaturation * 25
             }
 
-            MouseArea {
-                anchors.fill: parent
-                enabled: !root.interactive
+            TouchTracker {
+                id: tracker
 
-                onWheel: wheel.accepted = true
+                target: webEngineView
+                anchors.fill: parent
+                onTouchYChanged: browserWindow.touchY = tracker.touchY
+                onYVelocityChanged: browserWindow.velocityY = yVelocity
+                onTouchBegin: {
+                    browserWindow.touchY = tracker.touchY
+                    browserWindow.velocityY = yVelocity
+                    browserWindow.touchReference = tracker.touchY
+                    browserWindow.touchGesture = true
+                }
+                onTouchEnd: {
+                    browserWindow.velocityY = yVelocity
+                    browserWindow.touchGesture = false
+                }
             }
 
             Rectangle {
