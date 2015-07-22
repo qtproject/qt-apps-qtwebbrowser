@@ -48,14 +48,10 @@ import io.qt.browser 1.0
 Rectangle {
     id: root
 
-    property int itemWidth: root.width * 0.6
-    property int itemHeight: root.height * 0.6
-
-    property int viewWidth: root.width - toolBarSize
+    property int itemWidth: browserWindow.width / 2
+    property int itemHeight: browserWindow.height / 2
 
     property bool interactive: true
-
-    property string background: "#62b0e0"
 
     property alias currentIndex: pathView.currentIndex
     property alias count: pathView.count
@@ -299,6 +295,7 @@ Rectangle {
             listModel.get(idx).index -= 1
 
         listModel.remove(index)
+        pathView.decrementCurrentIndex()
         pathView.interactive = true
         if (listModel.count == 0)
             engine.rootWindow.close()
@@ -322,31 +319,66 @@ Rectangle {
             visible: visibility != 0.0
             state: isCurrentItem ? root.viewState : "list"
 
+            Behavior on scale {
+                NumberAnimation { duration: animationDuration }
+            }
+
             states: [
                 State {
                     name: "page"
                     PropertyChanges { target: wrapper; width: root.width; height: root.height; visibility: 0.0 }
                     PropertyChanges { target: pathView; interactive: false }
-                    PropertyChanges { target: item; opacity: 1.0;  }
+                    PropertyChanges { target: item; opacity: 1.0 }
                 },
                 State {
                     name: "list"
                     PropertyChanges { target: wrapper; width: itemWidth; height: itemHeight; visibility: 1.0 }
                     PropertyChanges { target: pathView; interactive: true }
-                    PropertyChanges { target: item; }
+                    PropertyChanges { target: item; opacity: 0.0 }
                 }
             ]
 
             transitions: Transition {
                 ParallelAnimation {
-                    PropertyAnimation { property: "visibility"; duration: animationDuration; easing.type : Easing.InQuad }
-                    PropertyAnimation { properties: "x,y"; duration: animationDuration; easing.type : Easing.OutQuad }
-                    PropertyAnimation { properties: "width,height"; duration: animationDuration; easing.type : Easing.OutQuad }
+                    PropertyAnimation { property: "visibility"; duration: animationDuration; easing.type : Easing.InSine }
+                    PropertyAnimation { properties: "x,y"; duration: animationDuration; easing.type: Easing.InSine }
+                    PropertyAnimation { properties: "width,height"; duration: animationDuration; easing.type: Easing.InSine }
                 }
             }
 
             width: itemWidth; height: itemHeight
-            scale: pathView.moving ? 0.65 : PathView.itemScale
+            scale: {
+                if (pathView.count == 1)
+                    return 1.0
+                if (pathView.count < 4)
+                    return isCurrentItem ? 1.0 : 0.5
+
+                if (isCurrentItem)
+                    return 1.0
+
+                var index1 = pathView.currentIndex - 2
+                var index2 = pathView.currentIndex - 1
+                var index4 = (pathView.currentIndex + 1) % pathView.count
+                var index5 = (pathView.currentIndex + 2) % pathView.count
+
+                if (index1 < 0)
+                    index1 = pathView.count + index1
+                if (index2 < 0)
+                    index2 = pathView.count + index2
+
+                switch (index) {
+                case index1 :
+                    return 0.25
+                case index2:
+                    return 0.5
+                case index4:
+                    return 0.5
+                case index5:
+                    return 0.25
+                }
+
+                return 0.0001
+            }
             z: PathView.itemZ
 
             MouseArea {
@@ -367,16 +399,17 @@ Rectangle {
             }
 
             Rectangle {
-                color: background
+                color: uiColor
 
                 DropShadow {
-                    visible: wrapper.visibility == 1.0
-                    anchors.fill: snapshot
-                    radius: 50
-                    verticalOffset: 5
+                    id: shadow
+                    visible: !pathView.moving && !pathView.flicking && wrapper.visibility == 1.0
+                    anchors.fill: parent
+                    radius: (30 - (1 / wrapper.scale * 6)) * 2
+                    verticalOffset: 12
                     horizontalOffset: 0
                     samples: radius * 2
-                    color: Qt.rgba(0, 0, 0, 0.5)
+                    color: Qt.rgba(0, 0, 0, 0.3)
                     source: snapshot
                 }
 
@@ -389,9 +422,9 @@ Rectangle {
                     }
                     anchors.fill: parent
                     Rectangle {
-                        enabled: wrapper.isCurrentItem && !pathView.moving && !pathView.flicking && wrapper.visibility == 1.0
+                        enabled: index == pathView.currentIndex && shadow.visible
                         opacity: enabled ? 1.0 : 0.0
-                        visible: opacity != 0.0
+                        visible: wrapper.visibility == 1.0
                         width: image.sourceSize.width
                         height: image.sourceSize.height - 2
                         radius: width / 2
@@ -422,36 +455,33 @@ Rectangle {
                             }
                         }
                         Behavior on opacity {
-                            NumberAnimation { duration: animationDuration }
+                            NumberAnimation { duration: animationDuration / 2 }
                         }
                     }
                 }
-
                 anchors.fill: wrapper
             }
 
             Text {
                 anchors {
-                    top: parent.bottom
+                    topMargin: -25
+                    top: parent.top
                     horizontalCenter: parent.horizontalCenter
                 }
                 horizontalAlignment: Text.AlignHCenter
-                width: parent.width
+                width: parent.width - image.width
                 elide: Text.ElideRight
                 text: item.title
-                font.pointSize: 10
-                font.family: "Monospace"
-                color: "#464749"
-                visible: wrapper.isCurrentItem
-            }
-            Behavior on scale {
-                NumberAnimation { duration: animationDuration }
+                font.pointSize: 16
+                font.family: defaultFontFamily
+                color: "#0B508C"
+                visible: wrapper.isCurrentItem && wrapper.visibility == 1.0
             }
         }
     }
 
     Rectangle {
-        color: background
+        color: uiColor
         anchors.fill: parent
     }
 
@@ -462,7 +492,7 @@ Rectangle {
         model: listModel
         delegate: delegate
         highlightMoveDuration: animationDuration
-        flickDeceleration: animationDuration / 2
+        flickDeceleration: animationDuration
         preferredHighlightBegin: 0.5
         preferredHighlightEnd: 0.5
 
@@ -470,34 +500,56 @@ Rectangle {
 
         snapMode: PathView.SnapToItem
 
-        property bool fewTabs: count < 3
-        property int offset: 10
-        property int margin: {
-            if (fewTabs)
-                return viewWidth / 4
-            if (count == 4)
-                return toolBarSize
-            return toolBarSize / 2
-        }
-
         focus: interactive
 
+        property real offset: 30
+
+        property real margin: {
+            if (count == 2)
+                return root.width / 4 - offset
+            if (count == 3)
+                return root.width / 8 + offset
+            if (count == 4)
+                return root.width / 8 - offset
+
+            return offset
+        }
+
+        property real middle: {
+            if (currentItem)
+                return (pathView.height / 2) - (currentItem.visibility * 50)
+            return (pathView.height / 2 - 50)
+        }
+
         path: Path {
-            id: path
-            startX: pathView.margin ; startY: pathView.height / 2 - 50
-            PathAttribute { name: "itemScale"; value: pathView.fewTabs ? 0.5 : 0.2 }
+            startX: pathView.margin
+            startY: pathView.middle
+
+            PathPercent { value: 0.0 }
             PathAttribute { name: "itemZ"; value: 0 }
-            PathLine { relativeX: viewWidth / 6 - 15; y: pathView.height / 2 - 50 }
-            PathAttribute { name: "itemScale"; value: 0.30 }
-            PathAttribute { name: "itemZ"; value: 3 }
-            PathLine { x: viewWidth / 2; y: pathView.height / 2 - 50}
-            PathAttribute { name: "itemScale"; value: 1.0 }
+            PathLine {
+                x: (pathView.width - itemWidth) / 2 + 106
+                y: pathView.middle
+            }
+            PathPercent { value: 0.49 }
             PathAttribute { name: "itemZ"; value: 6 }
-            PathLine { x: root.width - pathView.margin - viewWidth / 6 + 15; y: pathView.height / 2 - 50 }
-            PathAttribute { name: "itemScale"; value: 0.40 }
+
+            PathLine { relativeX: 0; relativeY: 0 }
+
+            PathLine {
+                x: (pathView.width - itemWidth) / 2 + itemWidth - 106
+                y: pathView.middle
+            }
+            PathPercent { value: 0.51 }
+
+            PathLine { relativeX: 0; relativeY: 0 }
+
             PathAttribute { name: "itemZ"; value: 4 }
-            PathLine { x: root.width - pathView.margin; y: pathView.height / 2 - 50 }
-            PathAttribute { name: "itemScale"; value: pathView.fewTabs ? 0.3 : 0.15 }
+            PathLine {
+                x: pathView.width - pathView.margin
+                y: pathView.middle
+            }
+            PathPercent { value: 1 }
             PathAttribute { name: "itemZ"; value: 2 }
         }
 

@@ -29,7 +29,12 @@ ToolBar {
     }
 
     RowLayout {
-        anchors.fill: parent
+        height: toolBarSize - 2
+        anchors {
+            top: parent.top
+            right: parent.right
+            left: parent.left
+        }
         spacing: 0
 
         UIButton {
@@ -44,7 +49,7 @@ ToolBar {
                 top: parent.top
                 bottom: parent.bottom
             }
-            color: uiBorderColor
+            color: uiSeparatorColor
         }
         UIButton {
             id: forwardButton
@@ -58,7 +63,7 @@ ToolBar {
                 top: parent.top
                 bottom: parent.bottom
             }
-            color: uiBorderColor
+            color: uiSeparatorColor
         }
         Rectangle {
             Layout.fillWidth: true
@@ -77,20 +82,16 @@ ToolBar {
             placeholderText: qsTr("Search or type a URL")
             focus: !webView.focus
 
-            anchors {
-                leftMargin: 50
-            }
-
             UIButton {
                 id: reloadButton
                 source: webView && webView.loading ? "qrc:///stop" : "qrc:///refresh"
-                height: 34
+                height: 54
                 width: height
-                color: "white"
+                color: "transparent"
+                highlightColor: "#eeeeee"
                 radius: width / 2
-                highlightColor: "lightgrey"
                 anchors {
-                    rightMargin: 10
+                    rightMargin: 1
                     right: parent.right
                     verticalCenter: addressBar.verticalCenter;
                 }
@@ -98,8 +99,8 @@ ToolBar {
             }
             style: TextFieldStyle {
                 textColor: "black"
-                font.family: "Open Sans"
-                font.pixelSize: 28
+                font.family: defaultFontFamily
+                font.pointSize: 28
                 selectionColor: uiSelectionColor
                 selectedTextColor: "black"
                 placeholderTextColor: "#a0a1a2"
@@ -120,9 +121,10 @@ ToolBar {
             }
             onEditingFinished: selectAll()
             onFocusChanged: {
-                if (focus)
+                if (focus) {
+                    forceActiveFocus()
                     selectAll()
-                else {
+                } else {
                     urlBar.cursorPosition = 0
                     deselect()
                 }
@@ -143,7 +145,7 @@ ToolBar {
                 top: parent.top
                 bottom: parent.bottom
             }
-            color: uiBorderColor
+            color: uiSeparatorColor
         }
         UIButton {
             id: homeButton
@@ -158,7 +160,7 @@ ToolBar {
                 top: parent.top
                 bottom: parent.bottom
             }
-            color: uiBorderColor
+            color: uiSeparatorColor
         }
         UIButton {
             id: pageViewButton
@@ -171,6 +173,18 @@ ToolBar {
                     tabs.viewState = "list"
                 }
             }
+            Text {
+                anchors {
+                    centerIn: parent
+                    verticalCenterOffset: 4
+                }
+
+                text: tabs.count
+                font.family: defaultFontFamily
+                font.pointSize: 16
+                font.weight: Font.DemiBold
+                color: "white"
+            }
         }
         Rectangle {
             width: 1
@@ -178,7 +192,7 @@ ToolBar {
                 top: parent.top
                 bottom: parent.bottom
             }
-            color: uiBorderColor
+            color: uiSeparatorColor
         }
         UIButton {
             id: bookmarksButton
@@ -193,7 +207,7 @@ ToolBar {
                 top: parent.top
                 bottom: parent.bottom
             }
-            color: uiBorderColor
+            color: uiSeparatorColor
         }
         UIButton {
             id: settingsButton
@@ -208,20 +222,20 @@ ToolBar {
         height: 2
         anchors {
             left: parent.left
-            top: parent.bottom
+            bottom: parent.bottom
             right: parent.right
             leftMargin: -10
             rightMargin: -10
         }
         style: ProgressBarStyle {
             background: Rectangle {
-                color: uiBorderColor
+                height: 1
+                color: uiSeparatorColor
             }
             progress: Rectangle {
                 color: uiSelectionColor
             }
         }
-        z: 5
         minimumValue: 0
         maximumValue: 100
         value: (webView && webView.loadProgress < 100) ? webView.loadProgress : 0

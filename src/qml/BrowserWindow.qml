@@ -58,9 +58,11 @@ Item {
 
     property int toolBarSize: 80
     property string uiColor: "#46a2da"
-    property string uiBorderColor: "#7ebde5"
+    property string uiSeparatorColor: "#7ebee5"
+    property string uiSeparatorColor2: "#a3d1ed"
     property string buttonHighlightColor: "#3f91c4"
     property string uiSelectionColor: "#fddd5c"
+    property string defaultFontFamily: "Open Sans"
 
     property int animationDuration: 200
     property int velocityThreshold: 500
@@ -110,7 +112,7 @@ Item {
             tabs.createEmptyTab()
             navigation.addressBar.forceActiveFocus();
             navigation.addressBar.selectAll();
-            tabs.makeCurrent(tabs.count - 1)
+            tabs.currentIndex = tabs.count - 1
         }
     }
     Action {
@@ -126,7 +128,7 @@ Item {
 
         style: ToolBarStyle {
             background: Rectangle {
-                color: uiColor
+                color: uiSeparatorColor
             }
             padding {
                 left: 0
@@ -147,8 +149,10 @@ Item {
 
         RowLayout {
             spacing: 0
+            height: toolBarSize - 2
             anchors.fill: parent
             UIButton {
+                color: uiSeparatorColor
                 id: newTabButton
                 source: "qrc:///newtab"
                 onClicked: newTabAction.trigger()
@@ -159,18 +163,18 @@ Item {
                     top: parent.top
                     bottom: parent.bottom
                 }
-                color: uiBorderColor
+                color: uiSeparatorColor2
             }
             Rectangle {
-                width: 50
+                width: 40
                 anchors {
                     top: parent.top
                     bottom: parent.bottom
                 }
-                color: uiColor
+                color: uiSeparatorColor
             }
             Rectangle {
-                color: uiColor
+                color: uiSeparatorColor
                 Layout.fillWidth: true
                 anchors {
                     top: parent.top
@@ -181,14 +185,14 @@ Item {
                     border.color: "white"
                     border.width: 2
                     width: 40
-                    height: 30
+                    height: 32
                     anchors.centerIn: parent
                     Text {
                         anchors.centerIn: parent
                         text: tabs.count
                         color: "white"
                         font.family: "Sans"
-                        font.pixelSize: 20
+                        font.pointSize: 20
                     }
                 }
             }
@@ -198,12 +202,13 @@ Item {
                     top: parent.top
                     bottom: parent.bottom
                 }
-                color: uiBorderColor
+                color: uiSeparatorColor2
             }
             UIButton {
                 id:doneButton
+                color: uiSeparatorColor
                 source: "qrc:///done"
-                implicitWidth: 125
+                implicitWidth: 120
                 onClicked: {
                     tabs.viewState = "page"
                 }
@@ -262,6 +267,7 @@ Item {
     }
     PageView {
         id: tabs
+        interactive: !sslDialog.visible
 
         height: parent.height
 

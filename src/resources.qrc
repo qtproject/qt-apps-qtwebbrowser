@@ -7,19 +7,22 @@
         <file>qml/PageView.qml</file>
         <file>qml/NavigationBar.qml</file>
         <file>qml/assets/UIButton.qml</file>
-        <file alias="home">qml/assets/icons/home.png</file>
-        <file alias="tabs">qml/assets/icons/tabs.png</file>
-        <file alias="forward">qml/assets/icons/forward.png</file>
-        <file alias="back">qml/assets/icons/back.png</file>
-        <file alias="refresh">qml/assets/icons/refresh.png</file>
-        <file alias="stop">qml/assets/icons/stop.png</file>
+        <file alias="home">qml/assets/icons/Btn_Home.png</file>
+        <file alias="tabs">qml/assets/icons/Btn_Tabs.png</file>
+        <file alias="forward">qml/assets/icons/Btn_Forward.png</file>
+        <file alias="back">qml/assets/icons/Btn_Back.png</file>
+        <file alias="refresh">qml/assets/icons/Btn_Reload.png</file>
+        <file alias="stop">qml/assets/icons/Btn_Clear.png</file>
         <file alias="touchpoint">qml/assets/icons/touchpoint.png</file>
         <file alias="icon">qml/assets/icons/icon.png</file>
-        <file alias="delete">qml/assets/icons/delete.png</file>
-        <file alias="star">qml/assets/icons/bookmark.png</file>
-        <file alias="settings">qml/assets/icons/settings.png</file>
+        <file alias="delete">qml/assets/icons/Btn_Delete.png</file>
+        <file alias="star">qml/assets/icons/Btn_Bookmarks.png</file>
+        <file alias="settings">qml/assets/icons/Btn_Settings.png</file>
         <file alias="about">qml/assets/icons/about_blank.png</file>
-        <file alias="newtab">qml/assets/icons/newtab.png</file>
+        <file alias="newtab">qml/assets/icons/Btn_Add.png</file>
+        <file alias="up">qml/assets/icons/Btn_Up.png</file>
+        <file alias="search">qml/assets/icons/Btn_Search.png</file>
+        <file alias="error">qml/assets/icons/Error_Icon.png</file>
         <file alias="done">qml/assets/icons/done.png</file>
     </qresource>
 </RCC>
