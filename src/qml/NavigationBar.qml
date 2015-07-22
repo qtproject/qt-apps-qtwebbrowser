@@ -61,7 +61,8 @@ ToolBar {
             color: uiBorderColor
         }
         Rectangle {
-             Layout.fillWidth: true
+            Layout.fillWidth: true
+            implicitWidth: 10
             anchors {
                 top: parent.top
                 bottom: parent.bottom
@@ -70,6 +71,7 @@ ToolBar {
         }
         TextField {
             id: urlBar
+            Layout.fillWidth: true
             text: webView.url
             activeFocusOnPress: true
             placeholderText: qsTr("Search or type a URL")
@@ -127,7 +129,8 @@ ToolBar {
             }
         }
         Rectangle {
-             Layout.fillWidth: true
+            Layout.fillWidth: true
+            implicitWidth: 10
             anchors {
                 top: parent.top
                 bottom: parent.bottom

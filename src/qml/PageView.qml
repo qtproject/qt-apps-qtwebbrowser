@@ -51,7 +51,7 @@ Rectangle {
     property int itemWidth: root.width * 0.6
     property int itemHeight: root.height * 0.6
 
-    property int viewWidth: root.width - (2 * 50)
+    property int viewWidth: root.width - toolBarSize
 
     property bool interactive: true
 
@@ -293,6 +293,7 @@ Rectangle {
 
     function remove(index) {
         pathView.interactive = false
+        pathView.currentItem.state = ""
         // Update indices of remaining items
         for (var idx = index + 1; idx < listModel.count; ++idx)
             listModel.get(idx).index -= 1
@@ -475,27 +476,27 @@ Rectangle {
             if (fewTabs)
                 return viewWidth / 4
             if (count == 4)
-                return 2 * toolBarSize
-            return toolBarSize
+                return toolBarSize
+            return toolBarSize / 2
         }
 
         focus: interactive
 
         path: Path {
             id: path
-            startX: pathView.margin ; startY: root.height / 2
+            startX: pathView.margin ; startY: pathView.height / 2 - 50
             PathAttribute { name: "itemScale"; value: pathView.fewTabs ? 0.5 : 0.2 }
             PathAttribute { name: "itemZ"; value: 0 }
-            PathLine { relativeX: viewWidth / 6 - 10; y: root.height / 2 }
+            PathLine { relativeX: viewWidth / 6 - 15; y: pathView.height / 2 - 50 }
             PathAttribute { name: "itemScale"; value: 0.30 }
             PathAttribute { name: "itemZ"; value: 3 }
-            PathLine { x: viewWidth / 2; y: root.height / 2 }
+            PathLine { x: viewWidth / 2; y: pathView.height / 2 - 50}
             PathAttribute { name: "itemScale"; value: 1.0 }
             PathAttribute { name: "itemZ"; value: 6 }
-            PathLine { x: root.width - pathView.margin - viewWidth / 6 + 10; y: root.height / 2 }
+            PathLine { x: root.width - pathView.margin - viewWidth / 6 + 15; y: pathView.height / 2 - 50 }
             PathAttribute { name: "itemScale"; value: 0.40 }
             PathAttribute { name: "itemZ"; value: 4 }
-            PathLine { x: root.width - pathView.margin; y: root.height / 2 }
+            PathLine { x: root.width - pathView.margin; y: pathView.height / 2 - 50 }
             PathAttribute { name: "itemScale"; value: pathView.fewTabs ? 0.3 : 0.15 }
             PathAttribute { name: "itemZ"; value: 2 }
         }
