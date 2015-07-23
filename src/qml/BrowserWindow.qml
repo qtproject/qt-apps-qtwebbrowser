@@ -304,6 +304,7 @@ Item {
         id: sslDialog
 
         property var certErrors: []
+        property var currentError: null
         icon: StandardIcon.Warning
         standardButtons: StandardButton.No | StandardButton.Yes
         title: "Server's certificate not trusted"
@@ -327,10 +328,12 @@ Item {
             presentError()
         }
         function enqueue(error){
+            currentError = error
             certErrors.push(error)
             presentError()
         }
         function presentError(){
+            informativeText = "SSL error from URL\n\n" + currentError.url + "\n\n" + currentError.description + "\n"
             visible = certErrors.length > 0
         }
     }

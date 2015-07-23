@@ -69,7 +69,7 @@ Rectangle {
 
     Component {
         id: tabComponent
-        Item {
+        Rectangle {
             id: tabItem
             property alias webView: webEngineView
             property alias title: webEngineView.title
@@ -290,6 +290,7 @@ Rectangle {
     function remove(index) {
         pathView.interactive = false
         pathView.currentItem.state = ""
+        pathView.currentItem.visible = false
         // Update indices of remaining items
         for (var idx = index + 1; idx < listModel.count; ++idx)
             listModel.get(idx).index -= 1
@@ -397,24 +398,35 @@ Rectangle {
                     pathView.currentIndex = index
                 }
             }
+            Rectangle {
+                id: shadow
+                visible: false
+                property real size: 24
+                anchors {
+                    top: parent.top
+                    topMargin: 9
+                    horizontalCenter: parent.horizontalCenter
+                }
+                color: "#0e202c"
+                radius: size / 2
+                width: snapshot.width
+                height: snapshot.height
+            }
+            GaussianBlur {
+                anchors.fill: shadow
+                source: shadow
+                radius: shadow.size
+                samples: shadow.size * 2
+                opacity: 0.3
+                transparentBorder: true
+                visible: wrapper.visibility == 1.0
+            }
 
             Rectangle {
+                id: snapshot
                 color: uiColor
 
-                DropShadow {
-                    id: shadow
-                    visible: !pathView.moving && !pathView.flicking && wrapper.visibility == 1.0
-                    anchors.fill: parent
-                    radius: (30 - (1 / wrapper.scale * 6)) * 2
-                    verticalOffset: 12
-                    horizontalOffset: 0
-                    samples: radius * 2
-                    color: Qt.rgba(0, 0, 0, 0.3)
-                    source: snapshot
-                }
-
                 Image {
-                    id: snapshot
                     source: {
                         if (!item.image.snapshot)
                             return "qrc:///about"
@@ -422,7 +434,7 @@ Rectangle {
                     }
                     anchors.fill: parent
                     Rectangle {
-                        enabled: index == pathView.currentIndex && shadow.visible
+                        enabled: index == pathView.currentIndex && !pathView.moving && !pathView.flicking && wrapper.visibility == 1.0
                         opacity: enabled ? 1.0 : 0.0
                         visible: wrapper.visibility == 1.0
                         width: image.sourceSize.width
@@ -492,13 +504,11 @@ Rectangle {
         model: listModel
         delegate: delegate
         highlightMoveDuration: animationDuration
-        flickDeceleration: animationDuration
+        flickDeceleration: animationDuration / 2
         preferredHighlightBegin: 0.5
         preferredHighlightEnd: 0.5
 
         dragMargin: itemHeight
-
-        snapMode: PathView.SnapToItem
 
         focus: interactive
 
