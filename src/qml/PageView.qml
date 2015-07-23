@@ -38,9 +38,9 @@
 import QtQuick 2.5
 import QtWebEngine 1.3
 import QtWebEngine.experimental 1.0
-import QtQuick.Controls 1.5
+import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
-import QtQuick.Layouts 1.3
+import QtQuick.Layouts 1.2
 import QtGraphicalEffects 1.0
 
 import io.qt.browser 1.0
@@ -317,7 +317,7 @@ Rectangle {
             property real visibility: 0.0
             property bool isCurrentItem: PathView.isCurrentItem
 
-            visible: visibility != 0.0
+            visible: PathView.onPath && visibility != 0.0
             state: isCurrentItem ? root.viewState : "list"
 
             Behavior on scale {
@@ -378,7 +378,7 @@ Rectangle {
                     return 0.25
                 }
 
-                return 0.0001
+                return 0.25
             }
             z: PathView.itemZ
 

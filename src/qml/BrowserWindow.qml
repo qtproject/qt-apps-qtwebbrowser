@@ -191,7 +191,7 @@ Item {
                         anchors.centerIn: parent
                         text: tabs.count
                         color: "white"
-                        font.family: "Sans"
+                        font.family: defaultFontFamily
                         font.pointSize: 20
                     }
                 }
@@ -207,7 +207,13 @@ Item {
             UIButton {
                 id:doneButton
                 color: uiSeparatorColor
-                source: "qrc:///done"
+                Text {
+                    color: "white"
+                    anchors.centerIn: parent
+                    text: "Done"
+                    font.family: defaultFontFamily
+                    font.pointSize: 28
+                }
                 implicitWidth: 120
                 onClicked: {
                     tabs.viewState = "page"
@@ -305,6 +311,7 @@ Item {
 
         property var certErrors: []
         property var currentError: null
+        visible: certErrors.length > 0
         icon: StandardIcon.Warning
         standardButtons: StandardButton.No | StandardButton.Yes
         title: "Server's certificate not trusted"
@@ -334,7 +341,6 @@ Item {
         }
         function presentError(){
             informativeText = "SSL error from URL\n\n" + currentError.url + "\n\n" + currentError.description + "\n"
-            visible = certErrors.length > 0
         }
     }
 }

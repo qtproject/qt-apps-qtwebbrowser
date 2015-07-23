@@ -28,5 +28,6 @@ QT += qml quick webengine
 QT_PRIVATE += quick-private gui-private core-private
 
 RESOURCES += resources.qrc
+CONFIG += qtquickcompiler
 
 !cross_compile: DEFINES += HOST_BUILD

@@ -23,6 +23,5 @@
         <file alias="up">qml/assets/icons/Btn_Up.png</file>
         <file alias="search">qml/assets/icons/Btn_Search.png</file>
         <file alias="error">qml/assets/icons/Error_Icon.png</file>
-        <file alias="done">qml/assets/icons/done.png</file>
     </qresource>
 </RCC>
