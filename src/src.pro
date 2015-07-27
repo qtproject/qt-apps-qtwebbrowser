@@ -17,12 +17,12 @@ HEADERS = utils.h \
 OTHER_FILES = \
     qml/assets/UIButton.qml \
     qml/ApplicationRoot.qml \
-    qml/BrowserDialog.qml \
     qml/BrowserWindow.qml \
     qml/FeaturePermissionBar.qml \
     qml/MockTouchPoint.qml \
     qml/PageView.qml \
     qml/NavigationBar.qml \
+    qml/HomeScreen.qml \
 
 QT += qml quick webengine
 QT_PRIVATE += quick-private gui-private core-private

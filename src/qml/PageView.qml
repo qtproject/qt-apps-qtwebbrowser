@@ -58,6 +58,11 @@ Rectangle {
 
     property string viewState: "page"
 
+    onViewStateChanged: {
+        if (viewState == "page")
+            homeScreen.state = "disabled"
+    }
+
     property QtObject otrProfile: WebEngineProfile {
         offTheRecord: true
     }
@@ -116,6 +121,7 @@ Rectangle {
                 }
 
                 profile: defaultProfile
+                enabled: root.interactive
 
                 function takeSnapshot() {
                     if (tabItem.image.url == webEngineView.url || tabItem.opacity != 1.0)
@@ -148,19 +154,19 @@ Rectangle {
                     if (!request.userInitiated)
                         print("Warning: Blocked a popup window.")
                     else if (request.destination == WebEngineView.NewViewInTab) {
-                        tab = tabs.createEmptyTab()
-                        pathView.positionViewAtIndex(tabs.count - 1, PathView.Center)
+                        tab = tabView.createEmptyTab()
+                        pathView.positionViewAtIndex(tabView.count - 1, PathView.Center)
                         request.openIn(tab.webView)
                     } else if (request.destination == WebEngineView.NewViewInBackgroundTab) {
                         var index = pathView.currentIndex
-                        tab = tabs.createEmptyTab()
+                        tab = tabView.createEmptyTab()
                         request.openIn(tab.webView)
                         pathView.positionViewAtIndex(index, PathView.Center)
                     } else if (request.destination == WebEngineView.NewViewInDialog) {
-                        var dialog = tabs.createEmptyTab()
+                        var dialog = tabView.createEmptyTab()
                         request.openIn(dialog.webView)
                     } else {
-                        var window = tabs.createEmptyTab()
+                        var window = tabView.createEmptyTab()
                         request.openIn(window.webView)
                     }
                 }
@@ -194,7 +200,7 @@ Rectangle {
 
             TouchTracker {
                 id: tracker
-
+                enabled: root.interactive
                 target: webEngineView
                 anchors.fill: parent
                 onTouchYChanged: browserWindow.touchY = tracker.touchY
@@ -282,7 +288,6 @@ Rectangle {
         }
 
         element.item.webView.url = "about:blank"
-        element.index = listModel.count
         listModel.append(element)
         return element.item
     }
@@ -291,10 +296,6 @@ Rectangle {
         pathView.interactive = false
         pathView.currentItem.state = ""
         pathView.currentItem.visible = false
-        // Update indices of remaining items
-        for (var idx = index + 1; idx < listModel.count; ++idx)
-            listModel.get(idx).index -= 1
-
         listModel.remove(index)
         pathView.decrementCurrentIndex()
         pathView.interactive = true
@@ -407,7 +408,7 @@ Rectangle {
                     topMargin: 9
                     horizontalCenter: parent.horizontalCenter
                 }
-                color: "#0e202c"
+                color: iconStrokeColor
                 radius: size / 2
                 width: snapshot.width
                 height: snapshot.height
@@ -440,7 +441,7 @@ Rectangle {
                         width: image.sourceSize.width
                         height: image.sourceSize.height - 2
                         radius: width / 2
-                        color: "darkgrey"
+                        color: iconStrokeColor
                         anchors {
                             horizontalCenter: parent.right
                             verticalCenter: parent.top
@@ -484,7 +485,7 @@ Rectangle {
                 width: parent.width - image.width
                 elide: Text.ElideRight
                 text: item.title
-                font.pointSize: 16
+                font.pixelSize: 16
                 font.family: defaultFontFamily
                 color: "#0B508C"
                 visible: wrapper.isCurrentItem && wrapper.visibility == 1.0

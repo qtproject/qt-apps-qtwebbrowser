@@ -41,6 +41,8 @@
 #include <QtCore/QEvent>
 #include <QtCore/QFileInfo>
 #include <QtCore/QUrl>
+#include <QtGui/QColor>
+#include <QtQuick/QQuickItemGrabResult>
 
 namespace utils {
 inline bool isTouchEvent(const QEvent* event)
@@ -68,16 +70,23 @@ inline bool isMouseEvent(const QEvent* event)
     }
 }
 
+inline int randomColor()
+{
+    return qrand() % 255;
+}
+
 }
 
 class Utils : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(QObject * rootWindow READ rootWindow FINAL CONSTANT)
+
 public:
     Utils(QObject *parent)
         : QObject(parent)
     {
+        qsrand(255);
     }
     QObject *rootWindow()
     {
@@ -86,6 +95,9 @@ public:
 
     Q_INVOKABLE static QUrl fromUserInput(const QString& userInput);
     Q_INVOKABLE static QString domainFromString(const QString& urlString);
+    Q_INVOKABLE static QString randomColor();
+    Q_INVOKABLE static QString colorForIcon(QQuickItemGrabResult *result);
+    Q_INVOKABLE static QString oppositeColor(const QString & color);
 };
 
 inline QUrl Utils::fromUserInput(const QString& userInput)
@@ -99,6 +111,48 @@ inline QUrl Utils::fromUserInput(const QString& userInput)
 inline QString Utils::domainFromString(const QString& urlString)
 {
     return QUrl::fromUserInput(urlString).host();
+}
+
+inline QString Utils::randomColor()
+{
+    QColor color(utils::randomColor(), utils::randomColor(), utils::randomColor());
+    return color.name();
+}
+
+inline QString Utils::colorForIcon(QQuickItemGrabResult *result)
+{
+    QImage image = result->image();
+    int hue = 0;
+    int saturation = 0;
+    int value = 0;
+    for (int i = 0, width = image.width(); i < width; ++i) {
+        int skip = 0;
+        int h = 0;
+        int s = 0;
+        int v = 0;
+        for (int j = 0, height = image.height(); j < height; ++j) {
+            const QColor color(QColor(image.pixel(i, j)).toHsv());
+            if (color.alpha() < 127) {
+                ++skip;
+                continue;
+            }
+
+            h += color.hsvHue();
+            s += color.hsvSaturation();
+            v += color.value();
+        }
+        int count = image.height() - skip + 1;
+        hue = h / count;
+        saturation = s / count;
+        value = v / count;
+    }
+    return QColor::fromHsv(hue, saturation, value).name();
+}
+
+inline QString Utils::oppositeColor(const QString &color)
+{
+    const QColor c(QColor(color).toHsv());
+    return QColor::fromHsv(c.hue(), c.saturation(), c.value() < 127 ? 255 : c.value() - 100).name();
 }
 
 #endif // UTILS_H

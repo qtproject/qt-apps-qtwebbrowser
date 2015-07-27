@@ -1,11 +1,11 @@
 <RCC>
     <qresource prefix="/">
-        <file>qml/BrowserDialog.qml</file>
         <file>qml/BrowserWindow.qml</file>
         <file>qml/FeaturePermissionBar.qml</file>
         <file>qml/MockTouchPoint.qml</file>
         <file>qml/PageView.qml</file>
         <file>qml/NavigationBar.qml</file>
+        <file>qml/HomeScreen.qml</file>
         <file>qml/assets/UIButton.qml</file>
         <file alias="home">qml/assets/icons/Btn_Home.png</file>
         <file alias="tabs">qml/assets/icons/Btn_Tabs.png</file>

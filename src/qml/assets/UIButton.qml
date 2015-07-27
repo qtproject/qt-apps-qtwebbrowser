@@ -12,11 +12,11 @@ ToolButton {
     property string source: ""
     property real radius: 0.0
     property string color: uiColor
-    property string highlightColor: buttonHighlightColor
+    property string highlightColor: buttonPressedColor
     style: ButtonStyle {
         background: Rectangle {
             opacity: root.enabled ? 1.0 : 0.3
-            color: root.pressed ? root.highlightColor : root.color
+            color: root.pressed || root.checked ? root.highlightColor : root.color
             radius: root.radius
             Image {
                 source: root.source

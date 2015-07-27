@@ -35,7 +35,7 @@
 **
 ****************************************************************************/
 
-import QtQuick 2.1
+import QtQuick 2.5
 import QtWebEngine 1.1
 import QtWebEngine.experimental 1.0
 
@@ -53,15 +53,19 @@ Item {
     id: browserWindow
 
     property Item currentWebView: {
-        return tabs.get(tabs.currentIndex) ? tabs.get(tabs.currentIndex).item.webView : null
+        return tabView.get(tabView.currentIndex) ? tabView.get(tabView.currentIndex).item.webView : null
     }
 
     property int toolBarSize: 80
     property string uiColor: "#46a2da"
     property string uiSeparatorColor: "#7ebee5"
-    property string uiSeparatorColor2: "#a3d1ed"
-    property string buttonHighlightColor: "#3f91c4"
-    property string uiSelectionColor: "#fddd5c"
+    property string tabEditSeparatorColor: "#a3d1ed"
+    property string buttonPressedColor: "#3f91c4"
+    property string uiHighlightColor: "#fddd5c"
+    property string inactivePagerColor: "#bcbdbe"
+    property string textFieldStrokeColor: "#3882ae"
+    property string placeholderColor: "#a0a1a2"
+    property string iconStrokeColor: "#0e202c"
     property string defaultFontFamily: "Open Sans"
 
     property int animationDuration: 200
@@ -109,15 +113,15 @@ Item {
         id: newTabAction
         shortcut: "Ctrl+T"
         onTriggered: {
-            tabs.createEmptyTab()
+            tabView.createEmptyTab()
             navigation.addressBar.forceActiveFocus();
             navigation.addressBar.selectAll();
-            tabs.currentIndex = tabs.count - 1
+            tabView.currentIndex = tabView.count - 1
         }
     }
     Action {
         shortcut: "Ctrl+W"
-        onTriggered: tabs.remove(tabs.currentIndex)
+        onTriggered: tabView.remove(tabView.currentIndex)
     }
 
 
@@ -145,7 +149,7 @@ Item {
         }
 
         visible: opacity != 0.0
-        opacity: tabs.viewState == "list" ? 1.0 : 0.0
+        opacity: tabView.viewState == "list" ? 1.0 : 0.0
 
         RowLayout {
             spacing: 0
@@ -163,7 +167,7 @@ Item {
                     top: parent.top
                     bottom: parent.bottom
                 }
-                color: uiSeparatorColor2
+                color: tabEditSeparatorColor
             }
             Rectangle {
                 width: 40
@@ -189,10 +193,10 @@ Item {
                     anchors.centerIn: parent
                     Text {
                         anchors.centerIn: parent
-                        text: tabs.count
+                        text: tabView.count
                         color: "white"
                         font.family: defaultFontFamily
-                        font.pointSize: 20
+                        font.pixelSize: 20
                     }
                 }
             }
@@ -202,7 +206,7 @@ Item {
                     top: parent.top
                     bottom: parent.bottom
                 }
-                color: uiSeparatorColor2
+                color: tabEditSeparatorColor
             }
             UIButton {
                 id:doneButton
@@ -212,11 +216,11 @@ Item {
                     anchors.centerIn: parent
                     text: "Done"
                     font.family: defaultFontFamily
-                    font.pointSize: 28
+                    font.pixelSize: 28
                 }
                 implicitWidth: 120
                 onClicked: {
-                    tabs.viewState = "page"
+                    tabView.viewState = "page"
                 }
             }
         }
@@ -272,8 +276,8 @@ Item {
         }
     }
     PageView {
-        id: tabs
-        interactive: !sslDialog.visible
+        id: tabView
+        interactive: !sslDialog.visible && homeScreen.state == "disabled"
 
         height: parent.height
 
@@ -289,9 +293,9 @@ Item {
             tab.webView.url = engine.fromUserInput("qt.io")
         }
         onCurrentIndexChanged: {
-            if (!tabs.get(tabs.currentIndex))
+            if (!tabView.get(tabView.currentIndex))
                 return
-            navigation.webView = tabs.get(tabs.currentIndex).item.webView
+            navigation.webView = tabView.get(tabView.currentIndex).item.webView
         }
     }
 
@@ -341,6 +345,17 @@ Item {
         }
         function presentError(){
             informativeText = "SSL error from URL\n\n" + currentError.url + "\n\n" + currentError.description + "\n"
+        }
+    }
+
+    HomeScreen {
+        id: homeScreen
+        z: 5
+        height: parent.height - toolBarSize
+        anchors {
+            top: navigation.bottom
+            left: parent.left
+            right: parent.right
         }
     }
 }

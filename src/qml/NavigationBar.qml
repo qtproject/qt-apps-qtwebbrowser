@@ -13,7 +13,7 @@ ToolBar {
     property Item webView: null
 
     visible: opacity != 0.0
-    opacity: tabs.viewState == "page" ? 1.0 : 0.0
+    opacity: tabView.viewState == "page" ? 1.0 : 0.0
 
     style: ToolBarStyle {
         background: Rectangle {
@@ -100,14 +100,14 @@ ToolBar {
             style: TextFieldStyle {
                 textColor: "black"
                 font.family: defaultFontFamily
-                font.pointSize: 28
-                selectionColor: uiSelectionColor
+                font.pixelSize: 28
+                selectionColor: uiHighlightColor
                 selectedTextColor: "black"
-                placeholderTextColor: "#a0a1a2"
+                placeholderTextColor: placeholderColor
                 background: Rectangle {
                     implicitWidth: 514
                     implicitHeight: 56
-                    border.color: "#3881ae"
+                    border.color: textFieldStrokeColor
                     border.width: 1
                 }
                 padding {
@@ -117,7 +117,8 @@ ToolBar {
             }
             onAccepted: {
                 webView.url = engine.fromUserInput(text)
-                tabs.viewState = "page"
+                homeScreen.state = "disabled"
+                tabView.viewState = "page"
             }
             onEditingFinished: selectAll()
             onFocusChanged: {
@@ -151,7 +152,10 @@ ToolBar {
             id: homeButton
             source: "qrc:///home"
             onClicked: {
-                console.log("Home clicked")
+                if (homeScreen.state == "disabled" || homeScreen.state == "edit")
+                    homeScreen.state = "enabled"
+                else if (homeScreen.state != "disabled")
+                    homeScreen.state = "disabled"
             }
         }
         Rectangle {
@@ -166,11 +170,12 @@ ToolBar {
             id: pageViewButton
             source: "qrc:///tabs"
             onClicked: {
-                if (tabs.viewState == "list") {
-                    tabs.viewState = "page"
+                if (tabView.viewState == "list") {
+                    tabView.viewState = "page"
                 } else {
-                    tabs.get(tabs.currentIndex).item.webView.takeSnapshot()
-                    tabs.viewState = "list"
+                    tabView.get(tabView.currentIndex).item.webView.takeSnapshot()
+                    homeScreen.state = "disabled"
+                    tabView.viewState = "list"
                 }
             }
             Text {
@@ -179,9 +184,9 @@ ToolBar {
                     verticalCenterOffset: 4
                 }
 
-                text: tabs.count
+                text: tabView.count
                 font.family: defaultFontFamily
-                font.pointSize: 16
+                font.pixelSize: 16
                 font.weight: Font.DemiBold
                 color: "white"
             }
@@ -198,7 +203,16 @@ ToolBar {
             id: bookmarksButton
             source: "qrc:///star"
             onClicked: {
-                console.log("Bookmarks clicked")
+                if (!webView)
+                    return
+
+                var idx = homeScreen.contains(webView.url.toString())
+                if (idx != -1) {
+                    homeScreen.state = "enabled"
+                    homeScreen.select(idx)
+                    return
+                }
+                homeScreen.add(webView.title, webView.url, webView.icon, engine.randomColor())
             }
         }
         Rectangle {
@@ -214,7 +228,7 @@ ToolBar {
             source: "qrc:///settings"
             checkable: true
             checked: false
-            onClicked: tabs.interactive = !checked
+            onClicked: tabView.interactive = !checked
         }
     }
     ProgressBar {
@@ -233,7 +247,7 @@ ToolBar {
                 color: uiSeparatorColor
             }
             progress: Rectangle {
-                color: uiSelectionColor
+                color: uiHighlightColor
             }
         }
         minimumValue: 0
