@@ -35,55 +35,59 @@
 **
 ****************************************************************************/
 
-#include <QGuiApplication>
-#include <QQmlContext>
-#include <QQmlEngine>
-#include <QQuickView>
-#include <QtWebEngine/qtwebengineglobal.h>
-
-#include "touchmockingapplication.h"
 #include "engine.h"
-#include "touchtracker.h"
 
-int main(int argc, char **argv)
+QUrl Engine::fromUserInput(const QString& userInput)
 {
-    qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
-#if defined(HOST_BUILD)
-    // We use touch mocking on desktop and apply all the mobile switches.
-    QByteArrayList args = QByteArrayList()
-            << QByteArrayLiteral("--enable-embedded-switches");
-    const int count = args.size() + argc;
-    QVector<char*> qargv(count);
+    QFileInfo fileInfo(userInput);
+    if (fileInfo.exists())
+        return QUrl::fromLocalFile(fileInfo.absoluteFilePath());
+    return QUrl::fromUserInput(userInput);
+}
 
-    qargv[0] = argv[0];
-    for (int i = 0; i < args.size(); ++i)
-        qargv[i + 1] = args[i].data();
-    for (int i = args.size() + 1; i < count; ++i)
-        qargv[i] = argv[i - args.size()];
+QString Engine::domainFromString(const QString& urlString)
+{
+    return QUrl::fromUserInput(urlString).host();
+}
 
-    int qAppArgCount = qargv.size();
-    TouchMockingApplication app(qAppArgCount, qargv.data());
-#else
-    QGuiApplication app(argc, argv);
-#endif
-    QtWebEngine::initialize();
+QString Engine::randomColor()
+{
+    QColor color(utils::randomColor(), utils::randomColor(), utils::randomColor());
+    return color.name();
+}
 
-    app.setOrganizationName("The Qt Company");
-    app.setOrganizationDomain("qt.io");
-    app.setApplicationName("qtbrowser");
+QString Engine::colorForIcon(QQuickItemGrabResult *result)
+{
+    QImage image = result->image();
+    int hue = 0;
+    int saturation = 0;
+    int value = 0;
+    for (int i = 0, width = image.width(); i < width; ++i) {
+        int skip = 0;
+        int h = 0;
+        int s = 0;
+        int v = 0;
+        for (int j = 0, height = image.height(); j < height; ++j) {
+            const QColor color(QColor(image.pixel(i, j)).toHsv());
+            if (color.alpha() < 127) {
+                ++skip;
+                continue;
+            }
 
-    qmlRegisterType<TouchTracker>("io.qt.browser", 1, 0, "TouchTracker");
+            h += color.hsvHue();
+            s += color.hsvSaturation();
+            v += color.value();
+        }
+        int count = image.height() - skip + 1;
+        hue = h / count;
+        saturation = s / count;
+        value = v / count;
+    }
+    return QColor::fromHsv(hue, saturation, value).name();
+}
 
-    BrowserWindow window;
-    QObject::connect(window.rootContext()->engine(), SIGNAL(quit()), &app, SLOT(quit()));
-
-#if defined(HOST_BUILD)
-    window.show();
-    if (window.size().isEmpty())
-        window.setGeometry(0, 0, 800, 600);
-#else
-    window.showFullScreen();
-#endif
-
-    app.exec();
+QString Engine::oppositeColor(const QString &color)
+{
+    const QColor c(QColor(color).toHsv());
+    return QColor::fromHsv(c.hue(), c.saturation(), c.value() < 127 ? 255 : c.value() - 100).name();
 }

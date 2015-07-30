@@ -36,7 +36,7 @@
 ****************************************************************************/
 
 #include "browserwindow.h"
-#include "utils.h"
+#include "engine.h"
 
 #include <QList>
 #include <QQmlContext>
@@ -78,7 +78,7 @@ BrowserWindow::BrowserWindow(QWindow *)
     setResizeMode(QQuickView::SizeRootObjectToView);
     setColor(Qt::black);
 
-    engine()->rootContext()->setContextProperty("engine", new Utils(this));
+    engine()->rootContext()->setContextProperty("engine", new Engine(this));
     setSource(QUrl("qrc:///qml/BrowserWindow.qml"));
 }
 
