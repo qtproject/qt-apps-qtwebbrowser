@@ -9,6 +9,8 @@ using namespace utils;
 TouchTracker::TouchTracker(QQuickItem *parent)
     : QQuickItem(parent)
     , m_blockEvents(false)
+    , m_diff(0)
+    , m_previousY(0)
     , m_target(0)
     , m_delegate(0)
 {
@@ -78,8 +80,15 @@ bool TouchTracker::eventFilter(QObject *obj, QEvent *event)
 
     const QTouchEvent *touch = static_cast<QTouchEvent*>(event);
     const QList<QTouchEvent::TouchPoint> &points = touch->touchPoints();
+    m_previousY = m_currentPoint.y();
     m_currentPoint.pos = m_target->mapToScene(points.at(0).pos());
     m_currentPoint.ts = QDateTime::currentMSecsSinceEpoch();
+    int currentDiff = m_previousY - m_currentPoint.y();
+
+    if ((currentDiff > 0 && m_diff < 0) || (currentDiff < 0 && m_diff > 0))
+        emit scrollDirectionChanged();
+
+    m_diff = currentDiff;
 
     emit touchChanged();
     emit velocityChanged();

@@ -43,6 +43,13 @@ Rectangle {
 
     property int padding: 60
     property int cellSize: width / 5 - padding
+    property alias count: gridView.count
+    property alias currentIndex: gridView.currentIndex
+
+    function set(index) {
+        currentIndex = index
+        gridView.snapToPage()
+    }
 
     state: "disabled"
 
@@ -58,11 +65,6 @@ Rectangle {
                 return idx;
         }
         return -1;
-    }
-
-    function select(index) {
-        gridView.positionViewAtIndex(index, GridView.Contain)
-        gridView.draggingChanged()
     }
 
     states: [
@@ -107,18 +109,13 @@ Rectangle {
         boundsBehavior: Flickable.StopAtBounds
         maximumFlickVelocity: 0
         contentHeight: parent.height
-        displayMarginEnd: 3 * page
         rightMargin: (parent.width - 4 * gridView.cellWidth - homeScreen.padding) / 2
 
         Behavior on contentX {
             NumberAnimation { duration: 1.5 * animationDuration; easing.type : Easing.InSine}
         }
 
-        anchors {
-            topMargin: toolBarSize
-            leftMargin: (parent.width - 4 * gridView.cellWidth + homeScreen.padding) / 2
-        }
-        onDraggingChanged: {
+        function snapToPage() {
             if (dragging) {
                 dragStart = contentX
                 return
@@ -142,6 +139,13 @@ Rectangle {
                 return
             }
             contentX = 0
+        }
+
+        onDraggingChanged: snapToPage()
+
+        anchors {
+            topMargin: toolBarSize
+            leftMargin: (parent.width - 4 * gridView.cellWidth + homeScreen.padding) / 2
         }
 
         delegate: Rectangle {
@@ -282,9 +286,9 @@ Rectangle {
                     }
                     homeScreen.state = "edit"
                 }
-                onPressed: {
+                onClicked: {
                     console.log("index="+ index +" | title=" + title + " | url=" + url + " | iconUrl=" + iconUrl + " | fallbackColor=" + fallbackColor)
-                    // TODO: open bookmark
+                    navigation.load(url)
                 }
             }
             Rectangle {
@@ -411,6 +415,22 @@ Rectangle {
                 anchors.fill: parent
                 onClicked: gridView.contentX = 2 * gridView.page
             }
+        }
+    }
+    Rectangle {
+        visible: gridView.count == 0
+        color: "transparent"
+        anchors.centerIn: parent
+        width: 500
+        height: 100
+        Text {
+            anchors.centerIn: parent
+            color: placeholderColor
+            font.family: defaultFontFamily
+            font.pixelSize: 28
+            text: "No bookmarks have been saved so far."
+            verticalAlignment: Text.AlignVCenter
+            horizontalAlignment: Text.AlignHCenter
         }
     }
 }

@@ -68,6 +68,10 @@ int main(int argc, char **argv)
 #endif
     QtWebEngine::initialize();
 
+    app.setOrganizationName("The Qt Company");
+    app.setOrganizationDomain("qt.io");
+    app.setApplicationName("qtbrowser");
+
     qmlRegisterType<TouchTracker>("io.qt.browser", 1, 0, "TouchTracker");
 
     BrowserWindow window;

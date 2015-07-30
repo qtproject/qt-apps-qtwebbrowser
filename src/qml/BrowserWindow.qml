@@ -69,7 +69,7 @@ Item {
     property string defaultFontFamily: "Open Sans"
 
     property int animationDuration: 200
-    property int velocityThreshold: 500
+    property int velocityThreshold: 400
     property int velocityY: 0
     property real touchY: 0
     property real touchReference: 0
@@ -116,7 +116,7 @@ Item {
             tabView.createEmptyTab()
             navigation.addressBar.forceActiveFocus();
             navigation.addressBar.selectAll();
-            tabView.currentIndex = tabView.count - 1
+            tabView.makeCurrent(tabView.count - 1)
         }
     }
     Action {
@@ -227,48 +227,6 @@ Item {
     }
     NavigationBar {
         id: navigation
-
-        Behavior on y {
-            NumberAnimation { duration: animationDuration }
-        }
-
-        y: {
-            var diff = touchReference - touchY
-
-            if (velocityY > velocityThreshold) {
-                if (diff > 0)
-                    return -toolBarSize
-                else
-                    return 0
-            }
-
-            if (!touchGesture || diff == 0) {
-                if (y < -toolBarSize / 2)
-                    return -toolBarSize
-                else
-                    return 0
-            }
-
-            if (diff > toolBarSize)
-                return -toolBarSize
-
-            if (diff > 0) {
-                if (y == -toolBarSize)
-                    return -toolBarSize
-                return -diff
-            }
-
-            // diff < 0
-
-            if (y == 0)
-                return 0
-
-            diff = Math.abs(diff)
-            if (diff >= toolBarSize)
-                return 0
-
-            return -toolBarSize + diff
-        }
 
         anchors {
             left: parent.left

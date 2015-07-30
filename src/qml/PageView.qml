@@ -36,7 +36,7 @@
 ****************************************************************************/
 
 import QtQuick 2.5
-import QtWebEngine 1.3
+import QtWebEngine 1.2
 import QtWebEngine.experimental 1.0
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
@@ -140,6 +140,11 @@ Rectangle {
                 settings.errorPageEnabled: appSettings.errorPageEnabled
                 settings.pluginsEnabled: appSettings.pluginsEnabled
 */
+                onLoadingChanged: {
+                    if (loading)
+                        navigation.state = "enabled"
+                }
+
                 onCertificateError: {
                     if (!acceptedCertificates.shouldAutoAccept(error)){
                         error.defer()
@@ -210,11 +215,14 @@ Rectangle {
                     browserWindow.velocityY = yVelocity
                     browserWindow.touchReference = tracker.touchY
                     browserWindow.touchGesture = true
+                    navigation.state = "tracking"
                 }
                 onTouchEnd: {
                     browserWindow.velocityY = yVelocity
                     browserWindow.touchGesture = false
+                    navigation.state = "tracking"
                 }
+                onScrollDirectionChanged: browserWindow.touchReference = tracker.touchY
             }
 
             Rectangle {
@@ -268,7 +276,9 @@ Rectangle {
     }
 
     function makeCurrent(index) {
+        viewState = "list"
         pathView.positionViewAtIndex(index, PathView.Center)
+        viewState = "page"
     }
 
     function createEmptyTab() {

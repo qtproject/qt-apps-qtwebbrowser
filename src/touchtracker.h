@@ -41,6 +41,7 @@ signals:
     void touchBegin();
     void touchEnd();
     void velocityChanged();
+    void scrollDirectionChanged();
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event);
@@ -48,6 +49,8 @@ protected:
 
 private:
     bool m_blockEvents;
+    int m_diff;
+    int m_previousY;
     PositionInfo m_startPoint;
     PositionInfo m_currentPoint;
     QQuickItem *m_target;

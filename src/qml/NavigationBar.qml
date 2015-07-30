@@ -15,6 +15,13 @@ ToolBar {
     visible: opacity != 0.0
     opacity: tabView.viewState == "page" ? 1.0 : 0.0
 
+    function load(url) {
+        webView.url = url
+        homeScreen.state = "disabled"
+    }
+
+    state: "enabled"
+
     style: ToolBarStyle {
         background: Rectangle {
             color: uiColor
@@ -27,6 +34,70 @@ ToolBar {
             bottom: 0
         }
     }
+
+    Behavior on y {
+        NumberAnimation { duration: animationDuration }
+    }
+
+    states: [
+        State {
+            name: "enabled"
+            PropertyChanges {
+                target: root
+                y: 0
+            }
+        },
+        State {
+            name: "tracking"
+            PropertyChanges {
+                target: root
+                y: {
+                    var diff = touchReference - touchY
+
+                    if (velocityY > velocityThreshold) {
+                        if (diff > 0)
+                            return -toolBarSize
+                        else
+                            return 0
+                    }
+
+                    if (!touchGesture || diff == 0) {
+                        if (y < -toolBarSize / 2)
+                            return -toolBarSize
+                        else
+                            return 0
+                    }
+
+                    if (diff > toolBarSize)
+                        return -toolBarSize
+
+                    if (diff > 0) {
+                        if (y == -toolBarSize)
+                            return -toolBarSize
+                        return -diff
+                    }
+
+                    // diff < 0
+
+                    if (y == 0)
+                        return 0
+
+                    diff = Math.abs(diff)
+                    if (diff >= toolBarSize)
+                        return 0
+
+                    return -toolBarSize + diff
+                }
+            }
+        },
+        State {
+            name: "disabled"
+            PropertyChanges {
+                target: root
+                y: -toolBarSize
+            }
+        }
+    ]
 
     RowLayout {
         height: toolBarSize - 2
@@ -209,10 +280,11 @@ ToolBar {
                 var idx = homeScreen.contains(webView.url.toString())
                 if (idx != -1) {
                     homeScreen.state = "enabled"
-                    homeScreen.select(idx)
+                    homeScreen.currentIndex = idx
                     return
                 }
-                homeScreen.add(webView.title, webView.url, webView.icon, engine.randomColor())
+                var icon = webView.loading ? "" : webView.icon
+                homeScreen.add(webView.title, webView.url, icon, engine.randomColor())
             }
         }
         Rectangle {
