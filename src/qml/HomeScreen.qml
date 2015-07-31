@@ -100,6 +100,8 @@ Rectangle {
         Component.onCompleted: {
             listModel.clear()
             var string = engine.restoreBookmarks()
+            if (!string)
+                return
             var list = JSON.parse(string)
             for (var i = 0; i < list.length; ++i) {
                 listModel.append(list[i])
@@ -110,6 +112,8 @@ Rectangle {
             for (var i = 0; i < listModel.count; ++i) {
                 list[i] = listModel.get(i)
             }
+            if (!list.length)
+                return
             engine.saveBookmarks(JSON.stringify(list))
         }
     }
@@ -128,7 +132,21 @@ Rectangle {
         boundsBehavior: Flickable.StopAtBounds
         maximumFlickVelocity: 0
         contentHeight: parent.height
-        rightMargin: (parent.width - 4 * gridView.cellWidth - homeScreen.padding) / 2
+
+        rightMargin: {
+            var margin = (parent.width - 4 * gridView.cellWidth - homeScreen.padding) / 2
+            var padding = gridView.page - Math.round(gridView.count % 8 / 2) * gridView.cellWidth
+
+            if (padding == gridView.page)
+                return margin
+
+            return margin + padding
+        }
+
+        anchors {
+            topMargin: toolBarSize
+            leftMargin: (parent.width - 4 * gridView.cellWidth + homeScreen.padding) / 2
+        }
 
         Behavior on contentX {
             NumberAnimation { duration: 1.5 * animationDuration; easing.type : Easing.InSine}
@@ -161,12 +179,6 @@ Rectangle {
         }
 
         onDraggingChanged: snapToPage()
-
-        anchors {
-            topMargin: toolBarSize
-            leftMargin: (parent.width - 4 * gridView.cellWidth + homeScreen.padding) / 2
-        }
-
         delegate: Rectangle {
             id: square
             property string iconColor: "white"
