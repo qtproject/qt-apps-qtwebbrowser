@@ -37,6 +37,17 @@
 
 #include "engine.h"
 
+#include <QtCore/QDir>
+#include <QtCore/QStandardPaths>
+#include <QStringBuilder>
+
+Engine::Engine(QObject *parent)
+    : QObject(parent)
+    , m_bookmarks(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) % QDir::separator() % "bookmarks.ini", QSettings::IniFormat, this)
+{
+    qsrand(255);
+}
+
 QUrl Engine::fromUserInput(const QString& userInput)
 {
     QFileInfo fileInfo(userInput);
@@ -90,4 +101,14 @@ QString Engine::oppositeColor(const QString &color)
 {
     const QColor c(QColor(color).toHsv());
     return QColor::fromHsv(c.hue(), c.saturation(), c.value() < 127 ? 255 : c.value() - 100).name();
+}
+
+QString Engine::restoreBookmarks()
+{
+    return m_bookmarks.value("bookmarks").toString();
+}
+
+void Engine::saveBookmarks(const QString & list)
+{
+    m_bookmarks.setValue("bookmarks", list);
 }

@@ -277,13 +277,15 @@ ToolBar {
                 if (!webView)
                     return
 
+                console.log(webView.loading)
+                var icon = webView.loading ? "" : webView.icon
                 var idx = homeScreen.contains(webView.url.toString())
                 if (idx != -1) {
+                    homeScreen.get(idx).iconUrl = icon.toString()
                     homeScreen.state = "enabled"
-                    homeScreen.currentIndex = idx
+                    homeScreen.set(idx)
                     return
                 }
-                var icon = webView.loading ? "" : webView.icon
                 homeScreen.add(webView.title, webView.url, icon, engine.randomColor())
             }
         }

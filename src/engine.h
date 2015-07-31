@@ -40,6 +40,7 @@
 
 #include <QtCore/QEvent>
 #include <QtCore/QFileInfo>
+#include <QtCore/QSettings>
 #include <QtCore/QUrl>
 #include <QtGui/QColor>
 #include <QtQuick/QQuickItemGrabResult>
@@ -82,22 +83,22 @@ class Engine : public QObject {
 
     Q_PROPERTY(QObject * rootWindow READ rootWindow FINAL CONSTANT)
 
+    QSettings m_bookmarks;
+
 public:
-    Engine(QObject *parent)
-        : QObject(parent)
-    {
-        qsrand(255);
-    }
+    Engine(QObject *parent);
     QObject *rootWindow()
     {
         return parent();
     }
 
-    Q_INVOKABLE static QUrl fromUserInput(const QString& userInput);
-    Q_INVOKABLE static QString domainFromString(const QString& urlString);
-    Q_INVOKABLE static QString randomColor();
-    Q_INVOKABLE static QString colorForIcon(QQuickItemGrabResult *result);
-    Q_INVOKABLE static QString oppositeColor(const QString & color);
+    Q_INVOKABLE QUrl fromUserInput(const QString& userInput);
+    Q_INVOKABLE QString domainFromString(const QString& urlString);
+    Q_INVOKABLE QString randomColor();
+    Q_INVOKABLE QString colorForIcon(QQuickItemGrabResult *result);
+    Q_INVOKABLE QString oppositeColor(const QString & color);
+    Q_INVOKABLE QString restoreBookmarks();
+    Q_INVOKABLE void saveBookmarks(const QString & list);
 };
 
 #endif // ENGINE_H

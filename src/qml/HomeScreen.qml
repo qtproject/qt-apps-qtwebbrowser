@@ -59,6 +59,10 @@ Rectangle {
         listModel.append(element)
     }
 
+    function get(index) {
+        return listModel.get(index)
+    }
+
     function contains(url) {
         for (var idx = 0; idx < listModel.count; ++idx) {
             if (listModel.get(idx).url === url)
@@ -93,6 +97,21 @@ Rectangle {
 
     ListModel {
         id: listModel
+        Component.onCompleted: {
+            listModel.clear()
+            var string = engine.restoreBookmarks()
+            var list = JSON.parse(string)
+            for (var i = 0; i < list.length; ++i) {
+                listModel.append(list[i])
+            }
+        }
+        Component.onDestruction: {
+            var list = []
+            for (var i = 0; i < listModel.count; ++i) {
+                list[i] = listModel.get(i)
+            }
+            engine.saveBookmarks(JSON.stringify(list))
+        }
     }
 
     GridView {
@@ -422,7 +441,7 @@ Rectangle {
         color: "transparent"
         anchors.centerIn: parent
         width: 500
-        height: 100
+        height: 300
         Text {
             anchors.centerIn: parent
             color: placeholderColor
