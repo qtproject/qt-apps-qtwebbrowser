@@ -312,7 +312,6 @@ Rectangle {
             return
         }
 
-        element.item.webView.url = "about:blank"
         listModel.append(element)
         return element.item
     }

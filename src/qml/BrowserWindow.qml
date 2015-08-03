@@ -263,7 +263,6 @@ Item {
                 return
 
             navigation.webView = tab.webView
-            tab.webView.url = engine.fromUserInput("qt.io")
         }
         onCurrentIndexChanged: {
             if (!tabView.get(tabView.currentIndex))

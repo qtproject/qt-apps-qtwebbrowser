@@ -52,7 +52,7 @@ Rectangle {
         gridView.contentX = p * gridView.page
     }
 
-    state: "disabled"
+    state: "enabled"
 
     signal add(string title, string url, string iconUrl, string fallbackColor)
     onAdd: {

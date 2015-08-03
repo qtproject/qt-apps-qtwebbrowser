@@ -151,10 +151,10 @@ ToolBar {
         TextField {
             id: urlBar
             Layout.fillWidth: true
-            text: webView.url
+            text: webView ? webView.url : ""
             activeFocusOnPress: true
             placeholderText: qsTr("Search or type a URL")
-            focus: !webView.focus
+            focus: false
 
             onActiveFocusChanged: {
                 if (activeFocus)
