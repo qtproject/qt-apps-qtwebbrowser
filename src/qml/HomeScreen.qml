@@ -43,20 +43,28 @@ Rectangle {
 
     property int padding: 60
     property int cellSize: width / 5 - padding
+    property alias messageBox: messageBox
     property alias count: gridView.count
     property alias currentIndex: gridView.currentIndex
 
-    function set(index) {
-        currentIndex = index
-        gridView.snapToPage()
+    function set(i) {
+        var p = (i - i % gridViewPageItemCount) / gridViewPageItemCount
+        gridView.contentX = p * gridView.page
     }
 
     state: "disabled"
 
     signal add(string title, string url, string iconUrl, string fallbackColor)
     onAdd: {
+        if (listModel.count === gridViewMaxBookmarks) {
+            navigation.refresh()
+            messageBox.state = "full"
+            state = "enabled"
+            return
+        }
         var element = { "title": title, "url": url, "iconUrl": iconUrl, "fallbackColor": fallbackColor }
         listModel.append(element)
+        set(listModel.count - 1)
     }
 
     signal remove(string url, int idx)
@@ -133,6 +141,13 @@ Rectangle {
     GridView {
         id: gridView
 
+        onCountChanged: {
+            if (!count)
+                messageBox.state = "empty"
+            else
+                messageBox.state = "disabled"
+        }
+
         property real dragStart: 0
         property real page: 4 * cellWidth
 
@@ -154,7 +169,7 @@ Rectangle {
 
         rightMargin: {
             var margin = (parent.width - 4 * gridView.cellWidth - homeScreen.padding) / 2
-            var padding = gridView.page - Math.round(gridView.count % 8 / 2) * gridView.cellWidth
+            var padding = gridView.page - Math.round(gridView.count % gridViewPageItemCount / 2) * gridView.cellWidth
 
             if (padding == gridView.page)
                 return margin
@@ -449,19 +464,133 @@ Rectangle {
     }
 
     Rectangle {
-        visible: gridView.count == 0
-        color: "transparent"
-        anchors.centerIn: parent
-        width: 500
-        height: 300
+        id: messageBox
+        color: "white"
+        anchors.fill: parent
+
+        Rectangle {
+            id: error
+            visible: messageBox.state != "empty"
+            anchors {
+                top: parent.top
+                left: parent.left
+                right: parent.right
+            }
+            height: homeScreen.height / 2
+            Image {
+                id: errorIcon
+                source: "qrc:///error"
+                anchors.centerIn: parent
+            }
+            Text {
+                anchors {
+                    topMargin: 10
+                    top: errorIcon.bottom
+                    horizontalCenter: parent.horizontalCenter
+                }
+                font.family: defaultFontFamily
+                font.pixelSize: message.font.pixelSize
+                text: "Oops!..."
+            }
+        }
+
         Text {
-            anchors.centerIn: parent
-            color: placeholderColor
+            id: message
+            anchors {
+                top: error.bottom
+                horizontalCenter: parent.horizontalCenter
+            }
+            color: iconOverlayColor
             font.family: defaultFontFamily
             font.pixelSize: 28
-            text: "No bookmarks have been saved so far."
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignHCenter
         }
+
+        Rectangle {
+            height: 2 * toolBarSize
+            anchors {
+                bottom: parent.bottom
+                top: message.bottom
+                left: parent.left
+                right: parent.right
+                bottomMargin: toolBarSize
+            }
+            UIButton {
+                color: uiColor
+                implicitWidth: 160
+                implicitHeight: 65
+                visible: messageBox.state != "empty"
+                anchors {
+                    horizontalCenter: parent.horizontalCenter
+                    bottom: parent.bottom
+                }
+                Text {
+                    color: "white"
+                    anchors.centerIn: parent
+                    text: "OK"
+                    font.family: defaultFontFamily
+                    font.pixelSize: 28
+                }
+                onClicked: {
+                    if (messageBox.state == "tabsfull") {
+                        homeScreen.state = "disabled"
+                        tabView.viewState = "list"
+                        return
+                    }
+                    if (messageBox.state == "full") {
+                        messageBox.state = "disabled"
+                        homeScreen.state = "edit"
+                        return
+                    }
+                }
+            }
+        }
+
+        state: "disabled"
+
+        states: [
+            State {
+                name: "disabled"
+                PropertyChanges {
+                    target: messageBox
+                    visible: false
+                }
+            },
+            State {
+                name: "empty"
+                PropertyChanges {
+                    target: message
+                    text: qsTr("No bookmarks have been saved so far.")
+                }
+                PropertyChanges {
+                    target: messageBox
+                    color: "transparent"
+                    visible: true
+                }
+            },
+            State {
+                name: "full"
+                PropertyChanges {
+                    target: message
+                    text: qsTr("24 bookmarks is the maximum limit.\nTo bookmark a new page you must delete a bookmark first.")
+                }
+                PropertyChanges {
+                    target: messageBox
+                    visible: true
+                }
+            },
+            State {
+                name: "tabsfull"
+                PropertyChanges {
+                    target: message
+                    text: qsTr("10 open tabs is the maximum limit.\nTo open a new tab you must close another one first.")
+                }
+                PropertyChanges {
+                    target: messageBox
+                    visible: true
+                }
+            }
+        ]
     }
 }

@@ -69,6 +69,9 @@ Item {
     property string iconStrokeColor: "#d6d6d6"
     property string defaultFontFamily: "Open Sans"
 
+    property int gridViewPageItemCount: 8
+    property int gridViewMaxBookmarks: 3 * gridViewPageItemCount
+    property int tabViewMaxTabs: 10
     property int animationDuration: 200
     property int velocityThreshold: 400
     property int velocityY: 0
@@ -116,7 +119,11 @@ Item {
         shortcut: "Ctrl+T"
         onTriggered: {
             tabView.get(tabView.currentIndex).item.webView.takeSnapshot()
-            tabView.createEmptyTab()
+            var tab = tabView.createEmptyTab()
+
+            if (!tab)
+                return
+
             navigation.addressBar.forceActiveFocus();
             navigation.addressBar.selectAll();
             tabView.makeCurrent(tabView.count - 1)
@@ -251,6 +258,10 @@ Item {
 
         Component.onCompleted: {
             var tab = createEmptyTab()
+
+            if (!tab)
+                return
+
             navigation.webView = tab.webView
             tab.webView.url = engine.fromUserInput("qt.io")
         }

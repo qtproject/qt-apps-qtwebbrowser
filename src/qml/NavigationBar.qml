@@ -235,9 +235,10 @@ ToolBar {
             id: homeButton
             source: "qrc:///home"
             onClicked: {
-                if (homeScreen.state == "disabled" || homeScreen.state == "edit")
+                if (homeScreen.state == "disabled" || homeScreen.state == "edit") {
+                    homeScreen.messageBox.state = "disabled"
                     homeScreen.state = "enabled"
-                else if (homeScreen.state != "disabled")
+                } else if (homeScreen.state != "disabled")
                     homeScreen.state = "disabled"
             }
         }
@@ -289,7 +290,7 @@ ToolBar {
                 if (!webView)
                     return
                 var icon = webView.loading ? "" : webView.icon
-                homeScreen.add(webView.title, webView.url, icon, engine.randomColor())
+                homeScreen.add(webView.title, webView.url, icon, engine.fallbackColor())
                 enabled = false
             }
             Component.onCompleted: refresh()

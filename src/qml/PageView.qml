@@ -160,23 +160,27 @@ Rectangle {
                 onNewViewRequested: {
                     webEngineView.takeSnapshot()
                     var tab
-                    if (!request.userInitiated)
+                    if (!request.userInitiated) {
                         print("Warning: Blocked a popup window.")
-                    else if (request.destination == WebEngineView.NewViewInTab) {
-                        tab = tabView.createEmptyTab()
+                        return
+                    }
+
+                    tab = tabView.createEmptyTab()
+
+                    if (!tab)
+                        return
+
+                    if (request.destination == WebEngineView.NewViewInTab) {
                         pathView.positionViewAtIndex(tabView.count - 1, PathView.Center)
                         request.openIn(tab.webView)
                     } else if (request.destination == WebEngineView.NewViewInBackgroundTab) {
                         var index = pathView.currentIndex
-                        tab = tabView.createEmptyTab()
                         request.openIn(tab.webView)
                         pathView.positionViewAtIndex(index, PathView.Center)
                     } else if (request.destination == WebEngineView.NewViewInDialog) {
-                        var dialog = tabView.createEmptyTab()
-                        request.openIn(dialog.webView)
+                        request.openIn(tab.webView)
                     } else {
-                        var window = tabView.createEmptyTab()
-                        request.openIn(window.webView)
+                        request.openIn(tab.webView)
                     }
                 }
 
@@ -289,13 +293,17 @@ Rectangle {
     }
 
     function createEmptyTab() {
-        if (listModel.count == 10)
-            return null
         var tab = add(tabComponent)
         return tab
     }
 
     function add(component) {
+        if (listModel.count === tabViewMaxTabs) {
+            homeScreen.messageBox.state = "tabsfull"
+            homeScreen.state = "enabled"
+            return null
+        }
+
         var element = {"item": null }
         element.item = component.createObject(root, { "width": root.width, "height": root.height, "opacity": 0.0 })
 
