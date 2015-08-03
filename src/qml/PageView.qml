@@ -134,6 +134,9 @@ Rectangle {
                     });
                 }
 
+                // Trigger a refresh to check if the new url is bookmarked.
+                onUrlChanged: navigation.refresh()
+
 /*
                 settings.autoLoadImages: appSettings.autoLoadImages
                 settings.javascriptEnabled: appSettings.javaScriptEnabled
@@ -155,6 +158,7 @@ Rectangle {
                 }
 
                 onNewViewRequested: {
+                    webEngineView.takeSnapshot()
                     var tab
                     if (!request.userInitiated)
                         print("Warning: Blocked a popup window.")
@@ -222,7 +226,10 @@ Rectangle {
                     browserWindow.touchGesture = false
                     navigation.state = "tracking"
                 }
-                onScrollDirectionChanged: browserWindow.touchReference = tracker.touchY
+                onScrollDirectionChanged: {
+                    browserWindow.velocityY = 0
+                    browserWindow.touchReference = tracker.touchY
+                }
             }
 
             Rectangle {
@@ -418,7 +425,7 @@ Rectangle {
                     topMargin: 9
                     horizontalCenter: parent.horizontalCenter
                 }
-                color: iconStrokeColor
+                color: iconOverlayColor
                 radius: size / 2
                 width: snapshot.width
                 height: snapshot.height
@@ -451,7 +458,7 @@ Rectangle {
                         width: image.sourceSize.width
                         height: image.sourceSize.height - 2
                         radius: width / 2
-                        color: iconStrokeColor
+                        color: iconOverlayColor
                         anchors {
                             horizontalCenter: parent.right
                             verticalCenter: parent.top

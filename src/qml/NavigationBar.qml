@@ -9,7 +9,6 @@ ToolBar {
     id: root
 
     property alias addressBar: urlBar
-
     property Item webView: null
 
     visible: opacity != 0.0
@@ -18,6 +17,10 @@ ToolBar {
     function load(url) {
         webView.url = url
         homeScreen.state = "disabled"
+    }
+
+    function refresh() {
+        bookmarksButton.enabled = homeScreen.contains(urlBar.text) === -1
     }
 
     state: "enabled"
@@ -153,6 +156,13 @@ ToolBar {
             placeholderText: qsTr("Search or type a URL")
             focus: !webView.focus
 
+            onActiveFocusChanged: {
+                if (activeFocus)
+                    root.state = "enabled"
+                else
+                    root.state = "tracking"
+            }
+
             UIButton {
                 id: reloadButton
                 source: webView && webView.loading ? "qrc:///stop" : "qrc:///refresh"
@@ -191,6 +201,8 @@ ToolBar {
                 homeScreen.state = "disabled"
                 tabView.viewState = "page"
             }
+
+            onTextChanged: refresh()
             onEditingFinished: selectAll()
             onFocusChanged: {
                 if (focus) {
@@ -276,18 +288,11 @@ ToolBar {
             onClicked: {
                 if (!webView)
                     return
-
-                console.log(webView.loading)
                 var icon = webView.loading ? "" : webView.icon
-                var idx = homeScreen.contains(webView.url.toString())
-                if (idx != -1) {
-                    homeScreen.get(idx).iconUrl = icon.toString()
-                    homeScreen.state = "enabled"
-                    homeScreen.set(idx)
-                    return
-                }
                 homeScreen.add(webView.title, webView.url, icon, engine.randomColor())
+                enabled = false
             }
+            Component.onCompleted: refresh()
         }
         Rectangle {
             width: 1

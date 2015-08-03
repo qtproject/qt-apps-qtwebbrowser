@@ -59,6 +59,17 @@ Rectangle {
         listModel.append(element)
     }
 
+    signal remove(string url, int idx)
+    onRemove: {
+        var index = idx < 0 ? contains(url) : idx
+        if (index < 0)
+            return
+
+        listModel.remove(index)
+        gridView.forceLayout()
+        navigation.refresh()
+    }
+
     function get(index) {
         return listModel.get(index)
     }
@@ -106,6 +117,7 @@ Rectangle {
             for (var i = 0; i < list.length; ++i) {
                 listModel.append(list[i])
             }
+            navigation.refresh()
         }
         Component.onDestruction: {
             var list = []
@@ -132,6 +144,12 @@ Rectangle {
         boundsBehavior: Flickable.StopAtBounds
         maximumFlickVelocity: 0
         contentHeight: parent.height
+
+        MouseArea {
+            enabled: homeScreen.state == "edit"
+            anchors.fill: parent
+            onClicked: homeScreen.state = "enabled"
+        }
 
         rightMargin: {
             var margin = (parent.width - 4 * gridView.cellWidth - homeScreen.padding) / 2
@@ -295,7 +313,7 @@ Rectangle {
                 id: overlay
                 visible: opacity != 0.0
                 anchors.fill: parent
-                color: iconStrokeColor
+                color: iconOverlayColor
                 opacity: {
                     if (iconMouse.pressed) {
                         if (homeScreen.state != "edit")
@@ -312,13 +330,16 @@ Rectangle {
                 anchors.fill: parent
                 onPressAndHold: {
                     if (homeScreen.state == "edit") {
-                        homeScreen.state = "visible"
+                        homeScreen.state = "enabled"
                         return
                     }
                     homeScreen.state = "edit"
                 }
                 onClicked: {
-                    console.log("index="+ index +" | title=" + title + " | url=" + url + " | iconUrl=" + iconUrl + " | fallbackColor=" + fallbackColor)
+                    if (homeScreen.state == "edit") {
+                        homeScreen.state = "enabled"
+                        return
+                    }
                     navigation.load(url)
                 }
             }
@@ -328,7 +349,7 @@ Rectangle {
                 width: image.sourceSize.width
                 height: image.sourceSize.height - 2
                 radius: width / 2
-                color: iconStrokeColor
+                color: iconOverlayColor
                 anchors {
                     horizontalCenter: parent.right
                     verticalCenter: parent.top
@@ -350,8 +371,7 @@ Rectangle {
                         anchors.fill: parent
                         onClicked: {
                             mouse.accepted = true
-                            listModel.remove(index)
-                            gridView.forceLayout()
+                            remove(url, index)
                         }
                     }
                 }
@@ -371,7 +391,7 @@ Rectangle {
         MouseArea {
             enabled: homeScreen.state == "edit"
             anchors.fill: parent
-            onPressed: homeScreen.state = "visible"
+            onClicked: homeScreen.state = "enabled"
         }
     }
     Rectangle {
@@ -384,7 +404,7 @@ Rectangle {
         MouseArea {
             enabled: homeScreen.state == "edit"
             anchors.fill: parent
-            onPressed: homeScreen.state = "visible"
+            onClicked: homeScreen.state = "enabled"
         }
     }
     Rectangle {
@@ -401,7 +421,7 @@ Rectangle {
             width: enabled && active ? 10 : 8
             height: width
             radius: width / 2
-            color: active ? iconStrokeColor : uiColor
+            color: active ? iconOverlayColor : uiColor
             anchors.verticalCenter: parent.verticalCenter
             x: parent.width / 4 - width / 2
             MouseArea {
@@ -419,7 +439,7 @@ Rectangle {
                 if (!enabled)
                     return inactivePagerColor
 
-                return active ? iconStrokeColor : uiColor
+                return active ? iconOverlayColor : uiColor
             }
             anchors.verticalCenter: parent.verticalCenter
             x: parent.width / 2 - width / 2
@@ -438,7 +458,7 @@ Rectangle {
                 if (!enabled)
                     return inactivePagerColor
 
-                return active ? iconStrokeColor : uiColor
+                return active ? iconOverlayColor : uiColor
             }
             anchors.verticalCenter: parent.verticalCenter
             x: 3 * parent.width / 4 - width / 2

@@ -65,7 +65,8 @@ Item {
     property string inactivePagerColor: "#bcbdbe"
     property string textFieldStrokeColor: "#3882ae"
     property string placeholderColor: "#a0a1a2"
-    property string iconStrokeColor: "#0e202c"
+    property string iconOverlayColor: "#0e202c"
+    property string iconStrokeColor: "#d6d6d6"
     property string defaultFontFamily: "Open Sans"
 
     property int animationDuration: 200
@@ -107,16 +108,19 @@ Item {
         onTriggered: {
             if (currentWebView)
                 currentWebView.reload()
+            navigation.addressBar.forceActiveFocus()
         }
     }
     Action {
         id: newTabAction
         shortcut: "Ctrl+T"
         onTriggered: {
+            tabView.get(tabView.currentIndex).item.webView.takeSnapshot()
             tabView.createEmptyTab()
             navigation.addressBar.forceActiveFocus();
             navigation.addressBar.selectAll();
             tabView.makeCurrent(tabView.count - 1)
+            navigation.addressBar.forceActiveFocus()
         }
     }
     Action {
