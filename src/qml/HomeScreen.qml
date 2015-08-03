@@ -146,6 +146,7 @@ Rectangle {
         contentHeight: parent.height
 
         MouseArea {
+            z: -1
             enabled: homeScreen.state == "edit"
             anchors.fill: parent
             onClicked: homeScreen.state = "enabled"
@@ -199,47 +200,21 @@ Rectangle {
         onDraggingChanged: snapToPage()
         delegate: Rectangle {
             id: square
-            property string iconColor: "white"
+            property string iconColor: "#f6f6f6"
             width: homeScreen.cellSize
             height: width
             border.color: iconStrokeColor
             border.width: 1
 
-            Text {
-                function cleanup(string) {
-                    var t = string.replace("-", " ")
-                    .replace("|", " ").replace(",", " ")
-                    return t
-                }
-
-                visible: bg.color != "white"
-                text: cleanup(title)
-                font.family: defaultFontFamily
-                font.pixelSize: 18
-                color: engine.oppositeColor(square.color)
-                anchors.centerIn: parent
-                width: parent.width - 10
-                height: parent.height
-                maximumLineCount: 3
-                elide: Text.ElideRight
-                wrapMode: Text.Wrap
-                verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
-            }
-
             Rectangle {
                 id: bg
                 anchors {
-                    left: parent.left
+                    horizontalCenter: parent.horizontalCenter
                     top: parent.top
                     margins: 1
                 }
                 state: "fallback"
-                width: {
-                    if (icon.sourceSize.width < 100)
-                        return 32
-                    return square.width - 2
-                }
+                width: square.width - 2
                 height: width
                 states: [
                     State {
@@ -254,13 +229,6 @@ Rectangle {
                         }
                     },
                     State {
-                        name: "snapshot"
-                        PropertyChanges {
-                            target: bg
-                            color: "white"
-                        }
-                    },
-                    State {
                         name: "normal"
                         PropertyChanges {
                             target: square
@@ -272,43 +240,68 @@ Rectangle {
                         }
                     }
                 ]
-                Timer {
-                    id: timer
-                    onTriggered: {
-                        if (!bg.width || !bg.height)
-                            return
-
-                        bg.state = "snapshot"
-                        bg.grabToImage(function(result) {
-                            square.iconColor = engine.colorForIcon(result)
-                            bg.state = "normal"
-                        });
-                    }
-                }
 
                 Image {
                     id: icon
-                    anchors.centerIn: parent
-                    width: bg.width
-                    height: bg.height
+                    smooth: true
+                    anchors {
+                        top: parent.top
+                        horizontalCenter: parent.horizontalCenter
+                        topMargin: width < bg.width ? 15 : 0
+                    }
+                    width: {
+                        if (!icon.sourceSize.width)
+                            return 0
+                        if (icon.sourceSize.width < 100)
+                            return 32
+
+                        return bg.width
+                    }
+                    height: width
                     source: iconUrl
-                    onSourceChanged: bg.state = "snapshot"
                     onStatusChanged: {
                         switch (status) {
                         case Image.Null:
                         case Image.Loading:
                         case Image.Error:
-                            square.iconColor = "white"
                             bg.state = "fallback"
                             break
                         case Image.Ready:
                             bg.state = "normal"
-                            timer.restart()
                             break
                         }
                     }
                 }
+                Text {
+                    function cleanup(string) {
+                        var t = string.replace("-", " ")
+                        .replace("|", " ").replace(",", " ")
+                        .replace(/\s\s+/g, "\n")
+                        return t
+                    }
+
+                    visible: icon.width != bg.width
+                    text: cleanup(title)
+                    font.family: defaultFontFamily
+                    font.pixelSize: 18
+                    color: bg.state == "fallback" ? "white" : "black"
+                    anchors {
+                        top: icon.bottom
+                        bottom: parent.bottom
+                        left: parent.left
+                        right: parent.right
+                        leftMargin: 15
+                        rightMargin: 15
+                        bottomMargin: 15
+                    }
+                    maximumLineCount: 3
+                    elide: Text.ElideRight
+                    wrapMode: Text.Wrap
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                }
             }
+
             Rectangle {
                 id: overlay
                 visible: opacity != 0.0
@@ -407,23 +400,21 @@ Rectangle {
             onClicked: homeScreen.state = "enabled"
         }
     }
-    Rectangle {
+    Row {
         id: pageIndicator
-        color: "transparent"
+        spacing: 20
         anchors {
+            bottomMargin: 40
             bottom: parent.bottom
             horizontalCenter: parent.horizontalCenter
         }
-        height: 80
-        width: 150
         Rectangle {
             property bool active: gridView.contentX < gridView.page
-            width: enabled && active ? 10 : 8
+            width: 10
             height: width
             radius: width / 2
-            color: active ? iconOverlayColor : uiColor
+            color: !active ? inactivePagerColor : uiColor
             anchors.verticalCenter: parent.verticalCenter
-            x: parent.width / 4 - width / 2
             MouseArea {
                 anchors.fill: parent
                 onClicked: gridView.contentX = 0
@@ -431,18 +422,12 @@ Rectangle {
         }
         Rectangle {
             property bool active: gridView.page <= gridView.contentX && gridView.contentX < 2 * gridView.page
-            width: enabled && active ? 10 : 8
-            enabled: gridView.count > 8
+            width: 10
+            visible: gridView.count > 8
             height: width
             radius: width / 2
-            color: {
-                if (!enabled)
-                    return inactivePagerColor
-
-                return active ? iconOverlayColor : uiColor
-            }
+            color: !active ? inactivePagerColor : uiColor
             anchors.verticalCenter: parent.verticalCenter
-            x: parent.width / 2 - width / 2
             MouseArea {
                 anchors.fill: parent
                 onClicked: gridView.contentX = gridView.page
@@ -450,24 +435,19 @@ Rectangle {
         }
         Rectangle {
             property bool active: 2 * gridView.page <= gridView.contentX
-            width: enabled && active ? 10 : 8
-            enabled: gridView.count > 16
+            width: 10
+            visible: gridView.count > 16
             height: width
             radius: width / 2
-            color: {
-                if (!enabled)
-                    return inactivePagerColor
-
-                return active ? iconOverlayColor : uiColor
-            }
+            color: !active ? inactivePagerColor : uiColor
             anchors.verticalCenter: parent.verticalCenter
-            x: 3 * parent.width / 4 - width / 2
             MouseArea {
                 anchors.fill: parent
                 onClicked: gridView.contentX = 2 * gridView.page
             }
         }
     }
+
     Rectangle {
         visible: gridView.count == 0
         color: "transparent"

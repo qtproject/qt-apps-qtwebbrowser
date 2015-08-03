@@ -71,11 +71,6 @@ inline bool isMouseEvent(const QEvent* event)
     }
 }
 
-inline int randomColor()
-{
-    return qrand() % 255;
-}
-
 }
 
 class Engine : public QObject {
@@ -94,9 +89,7 @@ public:
 
     Q_INVOKABLE QUrl fromUserInput(const QString& userInput);
     Q_INVOKABLE QString domainFromString(const QString& urlString);
-    Q_INVOKABLE QString randomColor();
-    Q_INVOKABLE QString colorForIcon(QQuickItemGrabResult *result);
-    Q_INVOKABLE QString oppositeColor(const QString & color);
+    Q_INVOKABLE QString fallbackColor();
     Q_INVOKABLE QString restoreBookmarks();
     Q_INVOKABLE void saveBookmarks(const QString & list);
 };

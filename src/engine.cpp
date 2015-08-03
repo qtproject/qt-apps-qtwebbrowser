@@ -45,7 +45,6 @@ Engine::Engine(QObject *parent)
     : QObject(parent)
     , m_bookmarks(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) % QDir::separator() % "bookmarks.ini", QSettings::IniFormat, this)
 {
-    qsrand(255);
 }
 
 QUrl Engine::fromUserInput(const QString& userInput)
@@ -61,46 +60,16 @@ QString Engine::domainFromString(const QString& urlString)
     return QUrl::fromUserInput(urlString).host();
 }
 
-QString Engine::randomColor()
+QString Engine::fallbackColor()
 {
-    QColor color(utils::randomColor(), utils::randomColor(), utils::randomColor());
-    return color.name();
-}
-
-QString Engine::colorForIcon(QQuickItemGrabResult *result)
-{
-    QImage image = result->image();
-    int hue = 0;
-    int saturation = 0;
-    int value = 0;
-    for (int i = 0, width = image.width(); i < width; ++i) {
-        int skip = 0;
-        int h = 0;
-        int s = 0;
-        int v = 0;
-        for (int j = 0, height = image.height(); j < height; ++j) {
-            const QColor color(QColor(image.pixel(i, j)).toHsv());
-            if (color.alpha() < 127) {
-                ++skip;
-                continue;
-            }
-
-            h += color.hsvHue();
-            s += color.hsvSaturation();
-            v += color.value();
-        }
-        int count = image.height() - skip + 1;
-        hue = h / count;
-        saturation = s / count;
-        value = v / count;
-    }
-    return QColor::fromHsv(hue, saturation, value).name();
-}
-
-QString Engine::oppositeColor(const QString &color)
-{
-    const QColor c(QColor(color).toHsv());
-    return QColor::fromHsv(c.hue(), c.saturation(), c.value() < 127 ? 255 : c.value() - 100).name();
+    static QList<QString> colors = QList<QString>() << QStringLiteral("#46a2da")
+                                                    << QStringLiteral("#18394c")
+                                                    << QStringLiteral("#ff8c0a")
+                                                    << QStringLiteral("#5caa15");
+    static int index = -1;
+    if (++index == colors.count())
+        index = 0;
+    return colors[index];
 }
 
 QString Engine::restoreBookmarks()
