@@ -138,12 +138,11 @@ Rectangle {
                 // Trigger a refresh to check if the new url is bookmarked.
                 onUrlChanged: navigation.refresh()
 
-/*
-                settings.autoLoadImages: appSettings.autoLoadImages
-                settings.javascriptEnabled: appSettings.javaScriptEnabled
-                settings.errorPageEnabled: appSettings.errorPageEnabled
-                settings.pluginsEnabled: appSettings.pluginsEnabled
-*/
+
+                settings.autoLoadImages: settingsView.autoLoadImages
+                settings.javascriptEnabled: !settingsView.javaScriptDisabled
+                settings.pluginsEnabled: settingsView.pluginsEnabled
+
                 onLoadingChanged: {
                     if (loading)
                         navigation.state = "enabled"

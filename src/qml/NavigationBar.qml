@@ -20,7 +20,10 @@ ToolBar {
     }
 
     function refresh() {
-        bookmarksButton.bookmarked = homeScreen.contains(urlBar.text) !== -1
+        if (urlBar.text == "")
+            bookmarksButton.bookmarked = false
+        else
+            bookmarksButton.bookmarked = homeScreen.contains(urlBar.text) !== -1
     }
 
     state: "enabled"
@@ -285,6 +288,7 @@ ToolBar {
         }
         UIButton {
             id: bookmarksButton
+            enabled: urlBar.text != ""
             property bool bookmarked: false
             source: bookmarked ? "qrc:///star_checked" : "qrc:///star"
             onClicked: {
@@ -314,9 +318,10 @@ ToolBar {
         UIButton {
             id: settingsButton
             source: "qrc:///settings"
-            checkable: true
-            checked: false
-            onClicked: tabView.interactive = !checked
+            onClicked: {
+                tabView.interactive = false
+                settingsView.state = "enabled"
+            }
         }
     }
     ProgressBar {

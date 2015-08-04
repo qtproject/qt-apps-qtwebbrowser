@@ -44,7 +44,6 @@ import QtQuick.Controls.Styles 1.0
 import QtQuick.Layouts 1.0
 import QtQuick.Window 2.1
 import QtQuick.Controls.Private 1.0
-import Qt.labs.settings 1.0
 import QtQuick.Dialogs 1.2
 
 import "assets"
@@ -82,15 +81,7 @@ Item {
     width: 1024
     height: 600
     visible: true
-/*
-    Settings {
-        id : appSettings
-        property alias autoLoadImages: loadImages.checked;
-        property alias javaScriptEnabled: javaScriptEnabled.checked;
-        property alias errorPageEnabled: errorPageEnabled.checked;
-        property alias pluginsEnabled: pluginsEnabled.checked;
-    }
-*/
+
     Action {
         shortcut: "Ctrl+D"
         onTriggered: {
@@ -153,8 +144,24 @@ Item {
         onOptionClicked: newTabAction.trigger()
     }
 
+    UIToolBar {
+        id: settingsToolBar
+        z: 5
+        title: qsTr("Settings")
+        visible: opacity != 0.0
+
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: navigation.top
+        }
+
+        onDoneClicked: {
+            settingsView.state = "disabled"
+            tabView.interactive = true
         }
     }
+
     NavigationBar {
         id: navigation
 
@@ -163,6 +170,7 @@ Item {
             right: parent.right
         }
     }
+
     PageView {
         id: tabView
         interactive: !sslDialog.visible && homeScreen.state == "disabled"
@@ -247,6 +255,10 @@ Item {
             left: parent.left
             right: parent.right
         }
+    }
+
+    SettingsView {
+        id: settingsView
         height: parent.height - toolBarSize
         anchors {
             top: navigation.bottom

@@ -118,7 +118,7 @@ Rectangle {
         id: listModel
         Component.onCompleted: {
             listModel.clear()
-            var string = engine.restoreBookmarks()
+            var string = engine.restoreSetting("bookmarks")
             if (!string)
                 return
             var list = JSON.parse(string)
@@ -134,7 +134,7 @@ Rectangle {
             }
             if (!list.length)
                 return
-            engine.saveBookmarks(JSON.stringify(list))
+            engine.saveSetting("bookmarks", JSON.stringify(list))
         }
     }
 
@@ -473,6 +473,7 @@ Rectangle {
                 font.family: defaultFontFamily
                 font.pixelSize: message.font.pixelSize
                 text: "Oops!..."
+                color: iconOverlayColor
             }
         }
 
@@ -496,12 +497,12 @@ Rectangle {
                 top: message.bottom
                 left: parent.left
                 right: parent.right
-                bottomMargin: toolBarSize
+                bottomMargin: 70
             }
             UIButton {
                 color: uiColor
-                implicitWidth: 160
-                implicitHeight: 65
+                implicitWidth: 180
+                implicitHeight: 70
                 visible: messageBox.state != "empty"
                 anchors {
                     horizontalCenter: parent.horizontalCenter

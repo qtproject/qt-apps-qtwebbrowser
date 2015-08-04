@@ -26,6 +26,7 @@ OTHER_FILES = \
     qml/PageView.qml \
     qml/NavigationBar.qml \
     qml/HomeScreen.qml \
+    qml/SettingsView.qml \
 
 QT += qml quick webengine
 QT_PRIVATE += quick-private gui-private core-private

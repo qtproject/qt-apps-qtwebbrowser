@@ -43,7 +43,7 @@
 
 Engine::Engine(QObject *parent)
     : QObject(parent)
-    , m_bookmarks(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) % QDir::separator() % "bookmarks.ini", QSettings::IniFormat, this)
+    , m_settings(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) % QDir::separator() % "settings.ini", QSettings::IniFormat, this)
 {
 }
 
@@ -72,12 +72,12 @@ QString Engine::fallbackColor()
     return colors[index];
 }
 
-QString Engine::restoreBookmarks()
+QString Engine::restoreSetting(const QString &name, const QString &defaultValue)
 {
-    return m_bookmarks.value("bookmarks").toString();
+    return m_settings.value(name, defaultValue).toString();
 }
 
-void Engine::saveBookmarks(const QString & list)
+void Engine::saveSetting(const QString &name, const QString &value)
 {
-    m_bookmarks.setValue("bookmarks", list);
+    m_settings.setValue(name, value);
 }

@@ -6,6 +6,7 @@
         <file>qml/PageView.qml</file>
         <file>qml/NavigationBar.qml</file>
         <file>qml/HomeScreen.qml</file>
+        <file>qml/SettingsView.qml</file>
         <file>qml/assets/UIButton.qml</file>
         <file>qml/assets/UIToolBar.qml</file>
         <file alias="home">qml/assets/icons/Btn_Home.png</file>

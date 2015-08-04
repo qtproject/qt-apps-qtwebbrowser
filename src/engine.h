@@ -78,7 +78,7 @@ class Engine : public QObject {
 
     Q_PROPERTY(QObject * rootWindow READ rootWindow FINAL CONSTANT)
 
-    QSettings m_bookmarks;
+    QSettings m_settings;
 
 public:
     Engine(QObject *parent);
@@ -90,8 +90,8 @@ public:
     Q_INVOKABLE QUrl fromUserInput(const QString& userInput);
     Q_INVOKABLE QString domainFromString(const QString& urlString);
     Q_INVOKABLE QString fallbackColor();
-    Q_INVOKABLE QString restoreBookmarks();
-    Q_INVOKABLE void saveBookmarks(const QString & list);
+    Q_INVOKABLE QString restoreSetting(const QString &name, const QString &defaultValue = QString());
+    Q_INVOKABLE void saveSetting(const QString &name, const QString &value);
 };
 
 #endif // ENGINE_H
