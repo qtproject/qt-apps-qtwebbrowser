@@ -423,42 +423,24 @@ Rectangle {
             bottom: parent.bottom
             horizontalCenter: parent.horizontalCenter
         }
-        Rectangle {
-            property bool active: gridView.contentX < gridView.page
-            width: 10
-            height: width
-            radius: width / 2
-            color: !active ? inactivePagerColor : uiColor
-            anchors.verticalCenter: parent.verticalCenter
-            MouseArea {
-                anchors.fill: parent
-                onClicked: gridView.contentX = 0
+        Repeater {
+            model: {
+                var c = gridView.count % gridViewPageItemCount
+                if (c > 0)
+                    c = 1
+                return Math.floor(gridView.count / gridViewPageItemCount) + c
             }
-        }
-        Rectangle {
-            property bool active: gridView.page <= gridView.contentX && gridView.contentX < 2 * gridView.page
-            width: 10
-            visible: gridView.count > 8
-            height: width
-            radius: width / 2
-            color: !active ? inactivePagerColor : uiColor
-            anchors.verticalCenter: parent.verticalCenter
-            MouseArea {
-                anchors.fill: parent
-                onClicked: gridView.contentX = gridView.page
-            }
-        }
-        Rectangle {
-            property bool active: 2 * gridView.page <= gridView.contentX
-            width: 10
-            visible: gridView.count > 16
-            height: width
-            radius: width / 2
-            color: !active ? inactivePagerColor : uiColor
-            anchors.verticalCenter: parent.verticalCenter
-            MouseArea {
-                anchors.fill: parent
-                onClicked: gridView.contentX = 2 * gridView.page
+            delegate: Rectangle {
+                property bool active: index * gridView.page <= gridView.contentX && gridView.contentX < (index + 1) * gridView.page
+                width: 10
+                height: width
+                radius: width / 2
+                color: !active ? inactivePagerColor : uiColor
+                anchors.verticalCenter: parent.verticalCenter
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: gridView.contentX = index * gridView.page
+                }
             }
         }
     }
