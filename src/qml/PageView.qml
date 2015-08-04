@@ -44,6 +44,7 @@ import QtQuick.Layouts 1.2
 import QtGraphicalEffects 1.0
 
 import io.qt.browser 1.0
+import "assets"
 
 Rectangle {
     id: root
@@ -238,43 +239,95 @@ Rectangle {
 
             Rectangle {
                 id: findBar
-                anchors.top: webEngineView.top
-                anchors.right: webEngineView.right
-                width: 240
-                height: 35
-                border.color: "lightgray"
-                border.width: 1
-                radius: 5
+                anchors {
+                    right: webEngineView.right
+                    left: webEngineView.left
+                    top: webEngineView.top
+                }
+                height: toolBarSize / 2 + 10
                 visible: false
-                color: "gray"
+                color: uiColor
 
                 RowLayout {
-                    anchors.centerIn: findBar
+                    spacing: 0
+                    anchors.fill: parent
+                    Rectangle {
+                        width: 5
+                        anchors {
+                            top: parent.top
+                            bottom: parent.bottom
+                        }
+                        color: uiColor
+                    }
                     TextField {
                         id: findTextField
+                        Layout.fillWidth: true
                         onAccepted: {
                             webEngineView.findText(text)
                         }
+                        style: TextFieldStyle {
+                            textColor: "black"
+                            font.family: defaultFontFamily
+                            font.pixelSize: 28
+                            selectionColor: uiHighlightColor
+                            selectedTextColor: "black"
+                            placeholderTextColor: placeholderColor
+                            background: Rectangle {
+                                implicitWidth: 514
+                                implicitHeight: toolBarSize / 2
+                                border.color: textFieldStrokeColor
+                                border.width: 1
+                            }
+                        }
                     }
-                    ToolButton {
+                    Rectangle {
+                        width: 5
+                        anchors {
+                            top: parent.top
+                            bottom: parent.bottom
+                        }
+                        color: uiColor
+                    }
+                    Rectangle {
+                        width: 1
+                        anchors {
+                            top: parent.top
+                            bottom: parent.bottom
+                        }
+                        color: uiSeparatorColor
+                    }
+                    UIButton {
                         id: findBackwardButton
-                        width: 20
-                        height: 20
                         iconSource: "qrc:///back"
+                        implicitHeight: parent.height
                         onClicked: webEngineView.findText(findTextField.text, WebEngineView.FindBackward)
                     }
-                    ToolButton {
+                    Rectangle {
+                        width: 1
+                        anchors {
+                            top: parent.top
+                            bottom: parent.bottom
+                        }
+                        color: uiSeparatorColor
+                    }
+                    UIButton {
                         id: findForwardButton
-                        width: 20
-                        height: 20
                         iconSource: "qrc:///forward"
+                        implicitHeight: parent.height
                         onClicked: webEngineView.findText(findTextField.text)
                     }
-                    ToolButton {
+                    Rectangle {
+                        width: 1
+                        anchors {
+                            top: parent.top
+                            bottom: parent.bottom
+                        }
+                        color: uiSeparatorColor
+                    }
+                    UIButton {
                         id: findCancelButton
-                        width: 20
-                        height: 20
                         iconSource: "qrc:///stop"
+                        implicitHeight: parent.height
                         onClicked: findBar.visible = false
                     }
                 }
