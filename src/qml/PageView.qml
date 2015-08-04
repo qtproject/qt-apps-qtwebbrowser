@@ -408,6 +408,7 @@ Rectangle {
                     PropertyChanges { target: wrapper; width: root.width; height: root.height; visibility: 0.0 }
                     PropertyChanges { target: pathView; interactive: false }
                     PropertyChanges { target: item; opacity: 1.0 }
+                    PropertyChanges { target: navigation; state: "enabled" }
                 },
                 State {
                     name: "list"

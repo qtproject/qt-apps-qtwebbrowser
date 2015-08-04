@@ -296,8 +296,10 @@ ToolBar {
                     homeScreen.remove("", idx)
                     return
                 }
+                var count = homeScreen.count
                 homeScreen.add(webView.title, webView.url, icon, engine.fallbackColor())
-                bookmarked = true
+                if (count < homeScreen.count)
+                    bookmarked = true
             }
             Component.onCompleted: refresh()
         }

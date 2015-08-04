@@ -550,6 +550,10 @@ Rectangle {
                     color: "transparent"
                     visible: true
                 }
+                PropertyChanges {
+                    target: navigation
+                    state: "enabled"
+                }
             },
             State {
                 name: "full"
@@ -561,6 +565,10 @@ Rectangle {
                     target: messageBox
                     visible: true
                 }
+                PropertyChanges {
+                    target: navigation
+                    state: "enabled"
+                }
             },
             State {
                 name: "tabsfull"
@@ -571,6 +579,10 @@ Rectangle {
                 PropertyChanges {
                     target: messageBox
                     visible: true
+                }
+                PropertyChanges {
+                    target: navigation
+                    state: "enabled"
                 }
             }
         ]
