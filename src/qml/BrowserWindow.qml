@@ -59,7 +59,7 @@ Item {
     property int toolBarSize: 80
     property string uiColor: "#46a2da"
     property string uiSeparatorColor: "#7ebee5"
-    property string tabEditSeparatorColor: "#a3d1ed"
+    property string toolBarSeparatorColor: "#a3d1ed"
     property string buttonPressedColor: "#3f91c4"
     property string uiHighlightColor: "#fddd5c"
     property string inactivePagerColor: "#bcbdbe"
@@ -135,23 +135,11 @@ Item {
         onTriggered: tabView.remove(tabView.currentIndex)
     }
 
+    UIToolBar {
+        id: tabEditToolBar
 
-    ToolBar {
-        id: tabEditBar
-
-        height: toolBarSize
-
-        style: ToolBarStyle {
-            background: Rectangle {
-                color: uiSeparatorColor
-            }
-            padding {
-                left: 0
-                right: 0
-                top: 0
-                bottom: 0
-            }
-        }
+        source: "qrc:///newtab"
+        indicator: tabView.count
 
         anchors {
             left: parent.left
@@ -161,79 +149,10 @@ Item {
 
         visible: opacity != 0.0
         opacity: tabView.viewState == "list" ? 1.0 : 0.0
+        onDoneClicked: tabView.viewState = "page"
+        onOptionClicked: newTabAction.trigger()
+    }
 
-        RowLayout {
-            spacing: 0
-            height: toolBarSize - 2
-            anchors.fill: parent
-            UIButton {
-                color: uiSeparatorColor
-                id: newTabButton
-                source: "qrc:///newtab"
-                onClicked: newTabAction.trigger()
-            }
-            Rectangle {
-                width: 1
-                anchors {
-                    top: parent.top
-                    bottom: parent.bottom
-                }
-                color: tabEditSeparatorColor
-            }
-            Rectangle {
-                width: 40
-                anchors {
-                    top: parent.top
-                    bottom: parent.bottom
-                }
-                color: uiSeparatorColor
-            }
-            Rectangle {
-                color: uiSeparatorColor
-                Layout.fillWidth: true
-                anchors {
-                    top: parent.top
-                    bottom: parent.bottom
-                }
-                Rectangle {
-                    color: "transparent"
-                    border.color: "white"
-                    border.width: 2
-                    width: 40
-                    height: 32
-                    anchors.centerIn: parent
-                    Text {
-                        anchors.centerIn: parent
-                        text: tabView.count
-                        color: "white"
-                        font.family: defaultFontFamily
-                        font.pixelSize: 20
-                    }
-                }
-            }
-            Rectangle {
-                width: 1
-                anchors {
-                    top: parent.top
-                    bottom: parent.bottom
-                }
-                color: tabEditSeparatorColor
-            }
-            UIButton {
-                id:doneButton
-                color: uiSeparatorColor
-                Text {
-                    color: "white"
-                    anchors.centerIn: parent
-                    text: "Done"
-                    font.family: defaultFontFamily
-                    font.pixelSize: 28
-                }
-                implicitWidth: 120
-                onClicked: {
-                    tabView.viewState = "page"
-                }
-            }
         }
     }
     NavigationBar {
@@ -322,7 +241,12 @@ Item {
 
     HomeScreen {
         id: homeScreen
-        z: 5
+        height: parent.height - toolBarSize
+        anchors {
+            top: navigation.bottom
+            left: parent.left
+            right: parent.right
+        }
         height: parent.height - toolBarSize
         anchors {
             top: navigation.bottom

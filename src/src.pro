@@ -18,6 +18,7 @@ HEADERS = \
 
 OTHER_FILES = \
     qml/assets/UIButton.qml \
+    qml/assets/UIToolBar.qml \
     qml/ApplicationRoot.qml \
     qml/BrowserWindow.qml \
     qml/FeaturePermissionBar.qml \
