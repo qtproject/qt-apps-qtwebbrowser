@@ -20,7 +20,7 @@ ToolBar {
     }
 
     function refresh() {
-        bookmarksButton.enabled = homeScreen.contains(urlBar.text) === -1
+        bookmarksButton.bookmarked = homeScreen.contains(urlBar.text) !== -1
     }
 
     state: "enabled"
@@ -285,13 +285,19 @@ ToolBar {
         }
         UIButton {
             id: bookmarksButton
-            source: "qrc:///star"
+            property bool bookmarked: false
+            source: bookmarked ? "qrc:///star_checked" : "qrc:///star"
             onClicked: {
                 if (!webView)
                     return
                 var icon = webView.loading ? "" : webView.icon
+                var idx = homeScreen.contains(webView.url.toString())
+                if (idx !== -1) {
+                    homeScreen.remove("", idx)
+                    return
+                }
                 homeScreen.add(webView.title, webView.url, icon, engine.fallbackColor())
-                enabled = false
+                bookmarked = true
             }
             Component.onCompleted: refresh()
         }

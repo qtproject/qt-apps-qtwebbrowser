@@ -17,6 +17,8 @@
         <file alias="icon">qml/assets/icons/icon.png</file>
         <file alias="delete">qml/assets/icons/Btn_Delete.png</file>
         <file alias="star">qml/assets/icons/Btn_Bookmarks.png</file>
+        <file alias="star_checked">qml/assets/icons/Btn_Bookmark_Checked.png</file>
+        <file alias="star_indicator">qml/assets/icons/Btn_Bookmark_Indicator.png</file>
         <file alias="settings">qml/assets/icons/Btn_Settings.png</file>
         <file alias="about">qml/assets/icons/about_blank.png</file>
         <file alias="newtab">qml/assets/icons/Btn_Add.png</file>
