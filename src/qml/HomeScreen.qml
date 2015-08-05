@@ -93,6 +93,10 @@ Rectangle {
     states: [
         State {
             name: "enabled"
+            PropertyChanges {
+                target: tabView
+                interactive: false
+            }
             AnchorChanges {
                 target: homeScreen
                 anchors.top: navigation.bottom
@@ -107,6 +111,10 @@ Rectangle {
         },
         State {
             name: "edit"
+            PropertyChanges {
+                target: tabView
+                interactive: false
+            }
         }
     ]
 
@@ -453,20 +461,24 @@ Rectangle {
         Rectangle {
             id: error
             visible: messageBox.state != "empty"
+            height: childrenRect.height
             anchors {
                 top: parent.top
                 left: parent.left
                 right: parent.right
+                topMargin: 50
             }
-            height: homeScreen.height / 2
             Image {
                 id: errorIcon
                 source: "qrc:///error"
-                anchors.centerIn: parent
+                anchors {
+                    horizontalCenter: parent.horizontalCenter
+                    top: parent.top
+                }
             }
             Text {
                 anchors {
-                    topMargin: 10
+                    topMargin: 30
                     top: errorIcon.bottom
                     horizontalCenter: parent.horizontalCenter
                 }
@@ -486,15 +498,14 @@ Rectangle {
             color: iconOverlayColor
             font.family: defaultFontFamily
             font.pixelSize: 28
-            verticalAlignment: Text.AlignVCenter
+            verticalAlignment: Text.AlignTop
             horizontalAlignment: Text.AlignHCenter
         }
 
         Rectangle {
-            height: 2 * toolBarSize
             anchors {
-                bottom: parent.bottom
                 top: message.bottom
+                bottom: parent.bottom
                 left: parent.left
                 right: parent.right
                 bottomMargin: 70
