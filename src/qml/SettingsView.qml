@@ -44,26 +44,21 @@ import Qt.labs.settings 1.0
 Rectangle {
     id: root
 
-    property bool autoLoadImages: get(0)
-    property bool javaScriptDisabled: get(1)
-    property bool httpDiskCacheEnabled: get(2)
-    property bool pluginsEnabled: get(3)
-    property bool privateBrowsingEnabled: get(4)
+    property bool privateBrowsingEnabled: appSettings[0].active
+    property bool httpDiskCacheEnabled: appSettings[1].active
+    property bool autoLoadImages: appSettings[2].active
+    property bool javaScriptDisabled: appSettings[3].active
+    property bool pluginsEnabled: appSettings[4].active
 
-    property var defaultValues: [{ "name": "Auto Load Images", "active": true },
-        { "name": "Disable JavaScript", "active": false },
-        { "name": "Enable HTTP Disk Cache", "active": true },
-        { "name": "Enable Plugins", "active": false },
-        { "name": "Private Browsing", "active": false }]
+    property var appSettings: [
+        { "name": "Private Browsing",       "active": false, "notify": function(v) { privateBrowsingEnabled = v; } },
+        { "name": "Enable HTTP Disk Cache", "active": true,  "notify": function(v) { httpDiskCacheEnabled = v; } },
+        { "name": "Auto Load Images",       "active": true,  "notify": function(v) { autoLoadImages = v; } },
+        { "name": "Disable JavaScript",     "active": false, "notify": function(v) { javaScriptDisabled = v; } },
+        { "name": "Enable Plugins",         "active": false, "notify": function(v) { pluginsEnabled = v; } }
+    ]
 
-    function get(index) {
-        var elem = listModel.get(index)
-        if (!elem)
-            return defaultValues[index].active
-        return elem.active
-    }
-
-    state: "enabled"
+    state: "disabled"
 
     states: [
         State {
@@ -112,7 +107,7 @@ Rectangle {
                 font.family: defaultFontFamily
                 font.pixelSize: 28
                 text: name
-                color: tch.checked ? "black" : "#929495"
+                color: sw.enabled ? "black" : "#929495"
             }
             Rectangle {
                 anchors {
@@ -120,11 +115,22 @@ Rectangle {
                     verticalCenter: parent.verticalCenter
                 }
                 Switch {
-                    id: tch
+                    id: sw
+                    enabled: {
+                        var ok = appSettings[index].name.indexOf("Disk Cache") < 0
+                        return ok || !privateBrowsingEnabled
+                    }
                     anchors.centerIn: parent
-                    checked: active
+                    checked: {
+                        if (enabled)
+                            return active
+                        return false
+                    }
                     onClicked: {
+                        var setting = appSettings[index]
+                        setting.active = checked
                         listModel.get(index).active = checked
+                        setting.notify(checked)
                         listView.save()
                     }
                     style: SwitchStyle {
@@ -149,25 +155,29 @@ Rectangle {
                 }
             }
         }
+
         function save() {
-            var list = []
-            for (var i = 0; i < listModel.count; ++i) {
-                var elem = listModel.get(i)
-                list[i] = { "name": elem.name, "active": elem.active }
-            }
-
-            if (!list.length)
-                return
-
-            engine.saveSetting("settings", JSON.stringify(list))
+            // Do not persist private browsing mode
+            appSettings[0].active = false
+            engine.saveSetting("settings", JSON.stringify(appSettings))
         }
 
         Component.onCompleted: {
-            var string = engine.restoreSetting("settings", JSON.stringify(defaultValues))
+            var string = engine.restoreSetting("settings", JSON.stringify(appSettings))
             var list = JSON.parse(string)
             for (var i = 0; i < list.length; ++i) {
-                var elem = list[i]
-                listModel.append({ "name": elem.name, "active": elem.active })
+                var persistentSetting = list[i]
+                var localSetting = appSettings[i]
+
+                if (localSetting.name !== persistentSetting.name) {
+                    console.error("Conflicting configuration layout detected, using default setting!\nIf the problem persists please remove " + engine.settingsPath +" and restart the application.")
+                    listModel.append(localSetting)
+                    continue
+                }
+
+                listModel.append({ "name": persistentSetting.name, "active": persistentSetting.active })
+                localSetting.active = persistentSetting.active
+                localSetting.notify(persistentSetting.active)
             }
             listView.forceLayout()
         }

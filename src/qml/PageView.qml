@@ -121,7 +121,7 @@ Rectangle {
                     top: permBar.bottom
                 }
 
-                profile: defaultProfile
+                profile: settingsView.privateBrowsingEnabled ? otrProfile : defaultProfile
                 enabled: root.interactive
 
                 function takeSnapshot() {

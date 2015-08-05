@@ -47,6 +47,11 @@ Engine::Engine(QObject *parent)
 {
 }
 
+QString Engine::settingsPath()
+{
+    return m_settings.fileName();
+}
+
 QUrl Engine::fromUserInput(const QString& userInput)
 {
     QFileInfo fileInfo(userInput);
