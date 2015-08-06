@@ -9,9 +9,9 @@ ToolBar {
     id: root
 
     property alias addressBar: urlBar
-    property string color: settingsView.privateBrowsingEnabled ? "#777f8c" : uiColor
-    property string separatorColor: settingsView.privateBrowsingEnabled ? placeholderColor : uiSeparatorColor
-    property string highlightColor: settingsView.privateBrowsingEnabled ? iconOverlayColor : buttonPressedColor
+    property string color: settingsView.privateBrowsingEnabled ? "#26282a" : uiColor
+    property string separatorColor: settingsView.privateBrowsingEnabled ? "#68696a" : uiSeparatorColor
+    property string highlightColor: settingsView.privateBrowsingEnabled ? "#3c3e40" : buttonPressedColor
     property Item webView: null
 
     onWebViewChanged: {
@@ -38,7 +38,7 @@ ToolBar {
     style: ToolBarStyle {
         background: Rectangle {
             color: root.color
-            implicitHeight: toolBarSize
+            implicitHeight: toolBarSize + 3
         }
         padding {
             left: 0
@@ -69,24 +69,24 @@ ToolBar {
 
                     if (velocityY > velocityThreshold) {
                         if (diff > 0)
-                            return -toolBarSize
+                            return -root.height
                         else
                             return 0
                     }
 
                     if (!touchGesture || diff == 0) {
-                        if (y < -toolBarSize / 2)
-                            return -toolBarSize
+                        if (y < -root.height / 2)
+                            return -root.height
                         else
                             return 0
                     }
 
-                    if (diff > toolBarSize)
-                        return -toolBarSize
+                    if (diff > root.height)
+                        return -root.height
 
                     if (diff > 0) {
-                        if (y == -toolBarSize)
-                            return -toolBarSize
+                        if (y == -root.height)
+                            return -root.height
                         return -diff
                     }
 
@@ -96,10 +96,10 @@ ToolBar {
                         return 0
 
                     diff = Math.abs(diff)
-                    if (diff >= toolBarSize)
+                    if (diff >= root.height)
                         return 0
 
-                    return -toolBarSize + diff
+                    return -root.height + diff
                 }
             }
         },
@@ -107,13 +107,13 @@ ToolBar {
             name: "disabled"
             PropertyChanges {
                 target: root
-                y: -toolBarSize
+                y: -root.height
             }
         }
     ]
 
     RowLayout {
-        height: toolBarSize - 2
+        height: toolBarSize
         anchors {
             top: parent.top
             right: parent.right
@@ -202,7 +202,7 @@ ToolBar {
                 background: Rectangle {
                     implicitWidth: 514
                     implicitHeight: 56
-                    border.color: settingsView.privateBrowsingEnabled ? iconOverlayColor : textFieldStrokeColor
+                    border.color: settingsView.privateBrowsingEnabled ? "black" : textFieldStrokeColor
                     border.width: 1
                 }
                 padding {
@@ -345,7 +345,7 @@ ToolBar {
     }
     ProgressBar {
         id: progressBar
-        height: 2
+        height: 3
         anchors {
             left: parent.left
             bottom: parent.bottom
@@ -355,11 +355,11 @@ ToolBar {
         }
         style: ProgressBarStyle {
             background: Rectangle {
-                height: 1
-                color: root.separatorColor
+                height: 3
+                color: "#e4e4e4"
             }
             progress: Rectangle {
-                color: uiHighlightColor
+                color: settingsView.privateBrowsingEnabled ? uiColor : "#317198"
             }
         }
         minimumValue: 0

@@ -53,7 +53,7 @@ ToolBar {
     signal optionClicked()
     signal doneClicked()
 
-    height: toolBarSize
+    height: navigation.height
 
     style: ToolBarStyle {
         background: Rectangle {
@@ -69,7 +69,7 @@ ToolBar {
 
     RowLayout {
         spacing: 0
-        height: toolBarSize - 2
+        height: toolBarSize
         anchors.fill: parent
         Rectangle {
             width: childrenRect.width
