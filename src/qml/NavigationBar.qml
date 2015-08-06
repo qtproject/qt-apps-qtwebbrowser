@@ -9,9 +9,6 @@ ToolBar {
     id: root
 
     property alias addressBar: urlBar
-    property string color: settingsView.privateBrowsingEnabled ? "#26282a" : uiColor
-    property string separatorColor: settingsView.privateBrowsingEnabled ? "#68696a" : uiSeparatorColor
-    property string highlightColor: settingsView.privateBrowsingEnabled ? "#3c3e40" : buttonPressedColor
     property Item webView: null
 
     onWebViewChanged: {
@@ -37,7 +34,7 @@ ToolBar {
 
     style: ToolBarStyle {
         background: Rectangle {
-            color: root.color
+            color: uiColor
             implicitHeight: toolBarSize + 3
         }
         padding {
@@ -124,8 +121,8 @@ ToolBar {
         UIButton {
             id: backButton
             source: "qrc:///back"
-            color: root.color
-            highlightColor: root.highlightColor
+            color: uiColor
+            highlightColor: buttonPressedColor
             onClicked: webView.goBack()
             enabled: webView && webView.canGoBack
         }
@@ -135,13 +132,13 @@ ToolBar {
                 top: parent.top
                 bottom: parent.bottom
             }
-            color: root.separatorColor
+            color: uiSeparatorColor
         }
         UIButton {
             id: forwardButton
             source: "qrc:///forward"
-            color: root.color
-            highlightColor: root.highlightColor
+            color: uiColor
+            highlightColor: buttonPressedColor
             onClicked: webView.goForward()
             enabled: webView && webView.canGoForward
         }
@@ -151,7 +148,7 @@ ToolBar {
                 top: parent.top
                 bottom: parent.bottom
             }
-            color: root.separatorColor
+            color: uiSeparatorColor
         }
         Rectangle {
             Layout.fillWidth: true
@@ -160,7 +157,7 @@ ToolBar {
                 top: parent.top
                 bottom: parent.bottom
             }
-            color: root.color
+            color: uiColor
         }
         TextField {
             id: urlBar
@@ -168,7 +165,6 @@ ToolBar {
             text: webView ? webView.url : ""
             activeFocusOnPress: true
             placeholderText: qsTr("Search or type a URL")
-            focus: false
 
             onActiveFocusChanged: {
                 if (activeFocus)
@@ -235,7 +231,7 @@ ToolBar {
                 top: parent.top
                 bottom: parent.bottom
             }
-            color: root.color
+            color: uiColor
         }
         Rectangle {
             width: 1
@@ -243,13 +239,13 @@ ToolBar {
                 top: parent.top
                 bottom: parent.bottom
             }
-            color: root.separatorColor
+            color: uiSeparatorColor
         }
         UIButton {
             id: homeButton
             source: "qrc:///home"
-            color: root.color
-            highlightColor: root.highlightColor
+            color: uiColor
+            highlightColor: buttonPressedColor
             onClicked: {
                 if (homeScreen.state == "disabled" || homeScreen.state == "edit") {
                     homeScreen.messageBox.state = "disabled"
@@ -264,13 +260,13 @@ ToolBar {
                 top: parent.top
                 bottom: parent.bottom
             }
-            color: root.separatorColor
+            color: uiSeparatorColor
         }
         UIButton {
             id: pageViewButton
             source: "qrc:///tabs"
-            color: root.color
-            highlightColor: root.highlightColor
+            color: uiColor
+            highlightColor: buttonPressedColor
             onClicked: {
                 if (tabView.viewState == "list") {
                     tabView.viewState = "page"
@@ -299,12 +295,12 @@ ToolBar {
                 top: parent.top
                 bottom: parent.bottom
             }
-            color: root.separatorColor
+            color: uiSeparatorColor
         }
         UIButton {
             id: bookmarksButton
-            color: root.color
-            highlightColor: root.highlightColor
+            color: uiColor
+            highlightColor: buttonPressedColor
             enabled: urlBar.text != "" && !settingsView.privateBrowsingEnabled
             property bool bookmarked: false
             source: bookmarked ? "qrc:///star_checked" : "qrc:///star"
@@ -330,13 +326,13 @@ ToolBar {
                 top: parent.top
                 bottom: parent.bottom
             }
-            color: root.separatorColor
+            color: uiSeparatorColor
         }
         UIButton {
             id: settingsButton
             source: "qrc:///settings"
-            color: root.color
-            highlightColor: root.highlightColor
+            color: uiColor
+            highlightColor: buttonPressedColor
             onClicked: {
                 tabView.interactive = false
                 settingsView.state = "enabled"
@@ -359,7 +355,7 @@ ToolBar {
                 color: "#e4e4e4"
             }
             progress: Rectangle {
-                color: settingsView.privateBrowsingEnabled ? uiColor : "#317198"
+                color: settingsView.privateBrowsingEnabled ? "#46a2da" : "#317198"
             }
         }
         minimumValue: 0

@@ -57,7 +57,7 @@ ToolBar {
 
     style: ToolBarStyle {
         background: Rectangle {
-            color: uiSeparatorColor
+            color: toolBarFillColor
         }
         padding {
             left: 0
@@ -78,7 +78,7 @@ ToolBar {
                 top: parent.top
                 bottom: parent.bottom
             }
-            color: uiSeparatorColor
+            color: toolBarFillColor
             Text {
                 id: titleBox
                 visible: root.title !== ""
@@ -103,7 +103,7 @@ ToolBar {
             UIButton {
                 id: toolBarButton
                 visible: root.source !== ""
-                color: uiSeparatorColor
+                color: toolBarFillColor
                 Component.onCompleted: toolBarButton.clicked.connect(root.optionClicked)
                 anchors.left: titleBox.right
             }
@@ -123,10 +123,10 @@ ToolBar {
                 top: parent.top
                 bottom: parent.bottom
             }
-            color: uiSeparatorColor
+            color: toolBarFillColor
         }
         Rectangle {
-            color: uiSeparatorColor
+            color: toolBarFillColor
             Layout.fillWidth: true
             anchors {
                 top: parent.top
@@ -159,7 +159,7 @@ ToolBar {
         }
         UIButton {
             id: doneButton
-            color: uiSeparatorColor
+            color: toolBarFillColor
             Text {
                 color: "white"
                 anchors.centerIn: parent

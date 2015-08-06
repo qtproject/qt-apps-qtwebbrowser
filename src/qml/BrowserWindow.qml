@@ -56,10 +56,11 @@ Item {
     }
 
     property int toolBarSize: 80
-    property string uiColor: "#46a2da"
-    property string uiSeparatorColor: "#7ebee5"
-    property string toolBarSeparatorColor: "#a3d1ed"
-    property string buttonPressedColor: "#3f91c4"
+    property string uiColor: settingsView.privateBrowsingEnabled ? "#26282a" : "#46a2da"
+    property string uiSeparatorColor: settingsView.privateBrowsingEnabled ? "#717273" : "#7ebee5"
+    property string toolBarSeparatorColor: settingsView.privateBrowsingEnabled ? "#929495" : "#a3d1ed"
+    property string toolBarFillColor: settingsView.privateBrowsingEnabled ? "#46484a" : uiSeparatorColor
+    property string buttonPressedColor: settingsView.privateBrowsingEnabled ? "#3b3c3e" : "#3f91c4"
     property string uiHighlightColor: "#fddd5c"
     property string inactivePagerColor: "#bcbdbe"
     property string textFieldStrokeColor: "#3882ae"
