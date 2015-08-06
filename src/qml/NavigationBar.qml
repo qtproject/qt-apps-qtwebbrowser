@@ -167,15 +167,38 @@ ToolBar {
             placeholderText: qsTr("Search or type a URL")
 
             onActiveFocusChanged: {
-                if (activeFocus)
+                if (activeFocus) {
+                    urlBar.selectAll()
                     root.state = "enabled"
-                else
+                    urlDropDown.state = "enabled"
+                } else {
+                    urlDropDown.state = "disabled"
                     root.state = "tracking"
+                }
             }
 
             UIButton {
                 id: reloadButton
-                source: webView && webView.loading ? "qrc:///stop" : "qrc:///refresh"
+                state: cancelButton.visible ? "edit" : "load"
+                states: [
+                    State {
+                        name: "load"
+                        PropertyChanges {
+                            target: reloadButton
+                            source: webView && webView.loading ? "qrc:///stop" : "qrc:///refresh"
+                            height: 54
+                        }
+                    },
+                    State {
+                        name: "edit"
+                        PropertyChanges {
+                            target: reloadButton
+                            source: "qrc:///stop"
+                            height: 45
+                            visible: urlBar.text != ""
+                        }
+                    }
+                ]
                 height: 54
                 width: height
                 color: "transparent"
@@ -186,7 +209,14 @@ ToolBar {
                     right: parent.right
                     verticalCenter: addressBar.verticalCenter;
                 }
-                onClicked: { webView.loading ? webView.stop() : webView.reload() }
+                onClicked: {
+                    if (state == "load") {
+                        webView.loading ? webView.stop() : webView.reload()
+                        return
+                    }
+                    urlBar.selectAll()
+                    urlBar.remove(urlBar.selectionStart, urlBar.selectionEnd)
+                }
             }
             style: TextFieldStyle {
                 textColor: "black"
@@ -213,18 +243,13 @@ ToolBar {
             }
 
             onTextChanged: refresh()
-            onEditingFinished: selectAll()
-            onFocusChanged: {
-                if (focus) {
-                    forceActiveFocus()
-                    selectAll()
-                } else {
-                    urlBar.cursorPosition = 0
-                    deselect()
-                }
+            onEditingFinished: {
+                selectAll()
+                webView.forceActiveFocus()
             }
         }
         Rectangle {
+            visible: !cancelButton.visible
             Layout.fillWidth: true
             implicitWidth: 10
             anchors {
@@ -232,6 +257,25 @@ ToolBar {
                 bottom: parent.bottom
             }
             color: uiColor
+        }
+
+        UIButton {
+            id: cancelButton
+            color: uiColor
+            visible: urlDropDown.state === "enabled"
+            highlightColor: buttonPressedColor
+            Text {
+                color: "white"
+                anchors.centerIn: parent
+                text: "Cancel"
+                font.family: defaultFontFamily
+                font.pixelSize: 28
+            }
+            implicitWidth: 120
+            onClicked: {
+                urlDropDown.state = "disabled"
+                webView.forceActiveFocus()
+            }
         }
         Rectangle {
             width: 1
@@ -334,7 +378,6 @@ ToolBar {
             color: uiColor
             highlightColor: buttonPressedColor
             onClicked: {
-                tabView.interactive = false
                 settingsView.state = "enabled"
             }
         }

@@ -60,6 +60,17 @@ QUrl Engine::fromUserInput(const QString& userInput)
     return QUrl::fromUserInput(userInput);
 }
 
+bool Engine::isUrl(const QString& userInput)
+{
+    if (userInput.startsWith(QStringLiteral("www."))
+            || userInput.startsWith(QStringLiteral("http"))
+            || userInput.startsWith(QStringLiteral("ftp"))
+            || userInput.contains(QStringLiteral("://"))
+            || userInput.endsWith(QStringLiteral(".com")))
+        return true;
+    return false;
+}
+
 QString Engine::domainFromString(const QString& urlString)
 {
     return QUrl::fromUserInput(urlString).host();

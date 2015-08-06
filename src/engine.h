@@ -89,6 +89,7 @@ public:
     }
     QString settingsPath();
 
+    Q_INVOKABLE bool isUrl(const QString& userInput);
     Q_INVOKABLE QUrl fromUserInput(const QString& userInput);
     Q_INVOKABLE QString domainFromString(const QString& urlString);
     Q_INVOKABLE QString fallbackColor();

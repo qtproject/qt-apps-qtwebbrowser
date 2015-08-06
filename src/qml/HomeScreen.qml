@@ -93,10 +93,6 @@ Rectangle {
     states: [
         State {
             name: "enabled"
-            PropertyChanges {
-                target: tabView
-                interactive: false
-            }
             AnchorChanges {
                 target: homeScreen
                 anchors.top: navigation.bottom
@@ -111,10 +107,6 @@ Rectangle {
         },
         State {
             name: "edit"
-            PropertyChanges {
-                target: tabView
-                interactive: false
-            }
         }
     ]
 

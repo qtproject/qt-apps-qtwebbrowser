@@ -594,7 +594,7 @@ Rectangle {
 
         dragMargin: itemHeight
 
-        focus: interactive
+        focus: pathView.interactive
 
         property real offset: 30
 

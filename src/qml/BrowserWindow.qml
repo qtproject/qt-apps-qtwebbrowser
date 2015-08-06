@@ -55,6 +55,8 @@ Item {
         return tabView.get(tabView.currentIndex) ? tabView.get(tabView.currentIndex).item.webView : null
     }
 
+    property string googleSearchQuery: "https://www.google.com/search?sourceid=qtbrowser&ie=UTF-8&q="
+
     property int toolBarSize: 80
     property string uiColor: settingsView.privateBrowsingEnabled ? "#26282a" : "#46a2da"
     property string uiSeparatorColor: settingsView.privateBrowsingEnabled ? "#717273" : "#7ebee5"
@@ -116,7 +118,6 @@ Item {
             if (!tab)
                 return
 
-            navigation.addressBar.forceActiveFocus();
             navigation.addressBar.selectAll();
             tabView.makeCurrent(tabView.count - 1)
             navigation.addressBar.forceActiveFocus()
@@ -159,7 +160,6 @@ Item {
 
         onDoneClicked: {
             settingsView.state = "disabled"
-            tabView.interactive = true
         }
     }
 
@@ -174,8 +174,11 @@ Item {
 
     PageView {
         id: tabView
-        interactive: !sslDialog.visible && homeScreen.state == "disabled"
-
+        interactive: {
+            if (sslDialog.visible || homeScreen.state != "disabled" || urlDropDown.state == "enabled" || settingsView.state == "enabled")
+                return false
+            return true
+        }
         height: parent.height
 
         anchors {
@@ -245,6 +248,158 @@ Item {
         }
         function presentError(){
             informativeText = "SSL error from URL\n\n" + currentError.url + "\n\n" + currentError.description + "\n"
+        }
+    }
+
+    Rectangle {
+        id: urlDropDown
+        color: "white"
+        visible: navigation.visible
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: navigation.bottom
+        }
+
+        state: "disabled"
+
+        states: [
+            State {
+                name: "enabled"
+                PropertyChanges {
+                    target: homeScreen
+                    state: "disabled"
+                }
+                PropertyChanges {
+                    target: urlDropDown
+                    height: Math.min(3 * toolBarSize, historyList.childrenRect.height)
+                }
+            },
+            State {
+                name: "disabled"
+                PropertyChanges {
+                    target: urlDropDown
+                    height: 0
+                }
+            }
+        ]
+
+        ListView {
+            id: historyList
+            model: navigation.webView.navigationHistory.items
+            clip: true
+            visible: urlDropDown.state == "enabled"
+            footerPositioning: ListView.OverlayFooter
+            anchors {
+                top: parent.top
+                left: parent.left
+                right: parent.right
+            }
+            height: Math.min(childrenRect.height, parent.height)
+            delegate: Rectangle {
+                id: wrapper
+                width: historyList.width
+                height: toolBarSize
+
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        if (!url)
+                            return
+                        navigation.addressBar.text = url
+                        navigation.addressBar.accepted()
+                    }
+                }
+
+                Column {
+                    width: parent.width - 60
+                    height: parent.height
+                    anchors {
+                        verticalCenter: parent.verticalCenter
+                        horizontalCenter: parent.horizontalCenter
+                    }
+                    Text {
+                        height: wrapper.height / 2
+                        width: parent.width
+                        elide: Text.ElideRight
+                        verticalAlignment: Text.AlignBottom
+                        anchors{
+                            leftMargin: 30
+                            rightMargin: 30
+                        }
+                        id: titleLabel
+                        font.family: defaultFontFamily
+                        font.pixelSize: 23
+                        color: "black"
+                        text: title ? title : ""
+                    }
+                    Text {
+                        height: wrapper.height / 2 - 1
+                        width: parent.width
+                        elide: Text.ElideRight
+                        verticalAlignment: Text.AlignTop
+                        font.family: defaultFontFamily
+                        font.pixelSize: 23
+                        color: uiColor
+                        text: url ? url : ""
+                    }
+                    Rectangle {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        width: historyList.width
+                        height: 1
+                        color: iconStrokeColor
+                    }
+                }
+            }
+            footer: Rectangle {
+                z: 5
+                width: historyList.width
+                height: toolBarSize
+                border.color: iconStrokeColor
+                MouseArea {
+                    anchors.fill: parent
+                    onClicked: {
+                        var string = searchText.text
+                        var constructedUrl = ""
+                        if (engine.isUrl(string)) {
+                            constructedUrl = engine.fromUserInput(string)
+                        } else {
+                            constructedUrl = engine.fromUserInput(googleSearchQuery + string)
+                        }
+                        navigation.addressBar.text = constructedUrl
+                        navigation.addressBar.accepted()
+                    }
+                }
+                Row {
+                    height: parent.height
+                    Rectangle {
+                        id: searchIcon
+                        height: parent.height
+                        width: height
+                        color: "transparent"
+                        Image {
+                            anchors.centerIn: parent
+                            source: "qrc:///search"
+                        }
+                    }
+                    Text {
+                        id: searchText
+                        height: parent.height
+                        width: historyList.width - searchIcon.width - 30
+                        elide: Text.ElideRight
+                        text: navigation.addressBar.text
+                        verticalAlignment: Text.AlignVCenter
+                        font.family: defaultFontFamily
+                        font.pixelSize: 23
+                        color: "black"
+                    }
+                }
+            }
+        }
+
+
+        transitions: Transition {
+            PropertyAnimation { property: "height"; duration: animationDuration; easing.type : Easing.InSine }
         }
     }
 
