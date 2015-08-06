@@ -125,6 +125,12 @@ Rectangle {
                 enabled: root.interactive
 
                 function takeSnapshot() {
+                    if (webEngineView.url == "" || webEngineView.url == "about:blank") {
+                        tabItem.image.url = "about:blank"
+                        tabItem.image.snapshot = null
+                        return
+                    }
+
                     if (tabItem.image.url == webEngineView.url || tabItem.opacity != 1.0)
                         return
 
