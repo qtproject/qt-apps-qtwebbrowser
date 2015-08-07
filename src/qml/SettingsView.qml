@@ -58,6 +58,18 @@ Rectangle {
         { "name": "Enable Plugins",         "active": false, "notify": function(v) { pluginsEnabled = v; } }
     ]
 
+    function save() {
+        for (var i = 0; i < appSettings.length; ++i) {
+            var setting = appSettings[i]
+
+            listModel.get(i).active = setting.active
+            // Do not persist private browsing mode
+            if (setting.name === "Private Browsing")
+                continue
+            engine.saveSetting(setting.name, setting.active)
+        }
+    }
+
     state: "disabled"
 
     states: [
@@ -129,9 +141,7 @@ Rectangle {
                     onClicked: {
                         var setting = appSettings[index]
                         setting.active = checked
-                        listModel.get(index).active = checked
                         setting.notify(checked)
-                        listView.save()
                     }
                     style: SwitchStyle {
                         handle: Rectangle {
@@ -156,31 +166,18 @@ Rectangle {
             }
         }
 
-        function save() {
-            // Do not persist private browsing mode
-            appSettings[0].active = false
-            engine.saveSetting("settings", JSON.stringify(appSettings))
-        }
-
         Component.onCompleted: {
-            var string = engine.restoreSetting("settings", JSON.stringify(appSettings))
-            var list = JSON.parse(string)
-            for (var i = 0; i < list.length; ++i) {
-                var persistentSetting = list[i]
-                var localSetting = appSettings[i]
-
-                if (localSetting.name !== persistentSetting.name) {
-                    console.error("Conflicting configuration layout detected, using default setting!\nIf the problem persists please remove " + engine.settingsPath +" and restart the application.")
-                    listModel.append(localSetting)
-                    continue
+            for (var i = 0; i < appSettings.length; ++i) {
+                var setting = appSettings[i]
+                var active = JSON.parse(engine.restoreSetting(setting.name, setting.active))
+                if (setting.active !== active) {
+                    setting.active = active
+                    setting.notify(active)
                 }
-
-                listModel.append({ "name": persistentSetting.name, "active": persistentSetting.active })
-                localSetting.active = persistentSetting.active
-                localSetting.notify(persistentSetting.active)
+                listModel.append(setting)
             }
             listView.forceLayout()
         }
-        Component.onDestruction: save()
+        Component.onDestruction: root.save()
     }
 }

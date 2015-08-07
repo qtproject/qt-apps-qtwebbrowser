@@ -159,6 +159,7 @@ Item {
         }
 
         onDoneClicked: {
+            settingsView.save()
             settingsView.state = "disabled"
         }
     }
