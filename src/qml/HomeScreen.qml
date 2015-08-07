@@ -53,6 +53,10 @@ Rectangle {
     }
 
     state: "enabled"
+    onStateChanged: {
+        if (state == "enabled" && !gridView.count)
+            messageBox.state = "empty"
+    }
 
     signal add(string title, string url, string iconUrl, string fallbackColor)
     onAdd: {
@@ -76,6 +80,8 @@ Rectangle {
         listModel.remove(index)
         gridView.forceLayout()
         navigation.refresh()
+        if (!listModel.count)
+            messageBox.state = "empty"
     }
 
     function get(index) {
@@ -132,8 +138,6 @@ Rectangle {
             for (var i = 0; i < listModel.count; ++i) {
                 list[i] = listModel.get(i)
             }
-            if (!list.length)
-                return
             engine.saveSetting("bookmarks", JSON.stringify(list))
         }
     }
@@ -495,6 +499,7 @@ Rectangle {
         }
 
         Rectangle {
+            color: parent.color
             anchors {
                 top: message.bottom
                 bottom: parent.bottom
@@ -551,8 +556,12 @@ Rectangle {
                 }
                 PropertyChanges {
                     target: messageBox
-                    color: "transparent"
+                    color: "#e4e4e4"
                     visible: true
+                }
+                PropertyChanges {
+                    target: error
+                    anchors.topMargin: 30
                 }
                 PropertyChanges {
                     target: navigation
