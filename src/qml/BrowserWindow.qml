@@ -269,10 +269,6 @@ Item {
             State {
                 name: "enabled"
                 PropertyChanges {
-                    target: homeScreen
-                    state: "disabled"
-                }
-                PropertyChanges {
                     target: urlDropDown
                     height: browserWindow.height - toolBarSize - 3
                 }
@@ -285,6 +281,11 @@ Item {
                 }
             }
         ]
+
+        Rectangle {
+            anchors.fill: parent
+            color: "#e4e4e4"
+        }
 
         ListView {
             id: historyList
@@ -311,8 +312,8 @@ Item {
                     onClicked: {
                         if (!url)
                             return
-                        navigation.addressBar.text = url
-                        navigation.addressBar.accepted()
+                        navigation.webView.url = url
+                        navigation.webView.forceActiveFocus()
                     }
                 }
 
@@ -360,7 +361,6 @@ Item {
                 z: 5
                 width: historyList.width
                 height: toolBarSize
-                border.color: iconStrokeColor
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
@@ -371,8 +371,8 @@ Item {
                         } else {
                             constructedUrl = engine.fromUserInput(googleSearchQuery + string)
                         }
-                        navigation.addressBar.text = constructedUrl
-                        navigation.addressBar.accepted()
+                        navigation.webView.url = constructedUrl
+                        navigation.webView.forceActiveFocus()
                     }
                 }
                 Row {

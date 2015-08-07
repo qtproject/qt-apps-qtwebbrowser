@@ -572,7 +572,7 @@ Rectangle {
                 text: item.title
                 font.pixelSize: 16
                 font.family: defaultFontFamily
-                color: "#0B508C"
+                color: settingsView.privateBrowsingEnabled ? "white" : "#0B508C"
                 visible: wrapper.isCurrentItem && wrapper.visibility == 1.0
             }
         }

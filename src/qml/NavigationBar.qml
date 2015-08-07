@@ -171,6 +171,7 @@ ToolBar {
                 if (activeFocus) {
                     urlBar.selectAll()
                     root.state = "enabled"
+                    homeScreen.state = "disabled"
                     urlDropDown.state = "enabled"
                 } else {
                     urlDropDown.state = "disabled"
@@ -213,6 +214,7 @@ ToolBar {
                 onClicked: {
                     if (state == "load") {
                         webView.loading ? webView.stop() : webView.reload()
+                        webView.forceActiveFocus()
                         return
                     }
                     urlBar.selectAll()
@@ -295,8 +297,10 @@ ToolBar {
                 if (homeScreen.state == "disabled" || homeScreen.state == "edit") {
                     homeScreen.messageBox.state = "disabled"
                     homeScreen.state = "enabled"
-                } else if (homeScreen.state != "disabled")
+                    homeScreen.forceActiveFocus()
+                } else if (homeScreen.state != "disabled") {
                     homeScreen.state = "disabled"
+                }
             }
         }
         Rectangle {
