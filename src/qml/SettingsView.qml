@@ -48,14 +48,14 @@ Rectangle {
     property bool httpDiskCacheEnabled: appSettings[1].active
     property bool autoLoadImages: appSettings[2].active
     property bool javaScriptDisabled: appSettings[3].active
-    property bool pluginsEnabled: appSettings[4].active
+    // property bool pluginsEnabled: appSettings[4].active
 
     property var appSettings: [
         { "name": "Private Browsing",       "active": false, "notify": function(v) { privateBrowsingEnabled = v; } },
         { "name": "Enable HTTP Disk Cache", "active": true,  "notify": function(v) { httpDiskCacheEnabled = v; } },
         { "name": "Auto Load Images",       "active": true,  "notify": function(v) { autoLoadImages = v; } },
         { "name": "Disable JavaScript",     "active": false, "notify": function(v) { javaScriptDisabled = v; } },
-        { "name": "Enable Plugins",         "active": false, "notify": function(v) { pluginsEnabled = v; } }
+//        { "name": "Enable Plugins",         "active": false, "notify": function(v) { pluginsEnabled = v; } }
     ]
 
     function save() {

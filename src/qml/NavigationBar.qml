@@ -164,6 +164,7 @@ ToolBar {
             Layout.fillWidth: true
             text: webView ? webView.url : ""
             activeFocusOnPress: true
+            inputMethodHints: Qt.ImhUrlCharactersOnly | Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase | Qt.ImhPreferLowercase
             placeholderText: qsTr("Search or type a URL")
 
             onActiveFocusChanged: {

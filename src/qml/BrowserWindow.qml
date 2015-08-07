@@ -45,6 +45,7 @@ import QtQuick.Layouts 1.0
 import QtQuick.Window 2.1
 import QtQuick.Controls.Private 1.0
 import QtQuick.Dialogs 1.2
+import QtQuick.Enterprise.VirtualKeyboard 1.2
 
 import "assets"
 
@@ -273,7 +274,7 @@ Item {
                 }
                 PropertyChanges {
                     target: urlDropDown
-                    height: Math.min(3 * toolBarSize, historyList.childrenRect.height)
+                    height: browserWindow.height - toolBarSize - 3
                 }
             },
             State {
@@ -287,16 +288,19 @@ Item {
 
         ListView {
             id: historyList
+            property int remainingHeight: Math.min((historyList.count + 1) * toolBarSize, inputPanel.y - toolBarSize - 3)
             model: navigation.webView.navigationHistory.items
             clip: true
+            boundsBehavior: Flickable.StopAtBounds
+            footerPositioning: ListView.InlineFooter
             visible: urlDropDown.state == "enabled"
-            footerPositioning: ListView.OverlayFooter
+
             anchors {
                 top: parent.top
                 left: parent.left
                 right: parent.right
             }
-            height: Math.min(childrenRect.height, parent.height)
+            height: remainingHeight
             delegate: Rectangle {
                 id: wrapper
                 width: historyList.width
@@ -398,7 +402,6 @@ Item {
             }
         }
 
-
         transitions: Transition {
             PropertyAnimation { property: "height"; duration: animationDuration; easing.type : Easing.InSine }
         }
@@ -422,5 +425,31 @@ Item {
             left: parent.left
             right: parent.right
         }
+    }
+    InputPanel {
+            id: inputPanel
+            y: browserWindow.height
+            anchors {
+                left: browserWindow.left
+                right: browserWindow.right
+            }
+            states: State {
+                name: "visible"
+                when: Qt.inputMethod.visible
+                PropertyChanges {
+                    target: inputPanel
+                    y: browserWindow.height - inputPanel.height
+                }
+            }
+            transitions: Transition {
+                from: ""
+                to: "visible"
+                reversible: true
+                NumberAnimation {
+                    properties: "y"
+                    duration: animationDuration
+                    easing.type: Easing.InOutQuad
+                }
+            }
     }
 }

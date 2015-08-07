@@ -36,7 +36,7 @@
 ****************************************************************************/
 
 import QtQuick 2.5
-import QtWebEngine 1.2
+import QtWebEngine 1.1
 import QtWebEngine.experimental 1.0
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
@@ -147,7 +147,9 @@ Rectangle {
 
                 settings.autoLoadImages: settingsView.autoLoadImages
                 settings.javascriptEnabled: !settingsView.javaScriptDisabled
-                settings.pluginsEnabled: settingsView.pluginsEnabled
+
+                // This should be enabled as we can switch to Qt 5.6 (i.e. import QtWebEngine 1.2)
+                // settings.pluginsEnabled: settingsView.pluginsEnabled
 
                 onLoadingChanged: {
                     if (loading)
