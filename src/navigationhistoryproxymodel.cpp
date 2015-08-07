@@ -35,57 +35,42 @@
 **
 ****************************************************************************/
 
-#include <QGuiApplication>
-#include <QQmlContext>
-#include <QQmlEngine>
-#include <QQuickView>
-#include <QtWebEngine/qtwebengineglobal.h>
-
 #include "navigationhistoryproxymodel.h"
-#include "touchmockingapplication.h"
-#include "engine.h"
-#include "touchtracker.h"
 
-int main(int argc, char **argv)
+NavigationHistoryProxyModel::NavigationHistoryProxyModel(QObject *parent)
+    : QSortFilterProxyModel(parent)
 {
-    qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
-#if defined(HOST_BUILD)
-    // We use touch mocking on desktop and apply all the mobile switches.
-    QByteArrayList args = QByteArrayList()
-            << QByteArrayLiteral("--enable-embedded-switches");
-    const int count = args.size() + argc;
-    QVector<char*> qargv(count);
 
-    qargv[0] = argv[0];
-    for (int i = 0; i < args.size(); ++i)
-        qargv[i + 1] = args[i].data();
-    for (int i = args.size() + 1; i < count; ++i)
-        qargv[i] = argv[i - args.size()];
+}
 
-    int qAppArgCount = qargv.size();
-    TouchMockingApplication app(qAppArgCount, qargv.data());
-#else
-    QGuiApplication app(argc, argv);
-#endif
-    QtWebEngine::initialize();
+bool NavigationHistoryProxyModel::filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const
+{
+    QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
 
-    app.setOrganizationName("The Qt Company");
-    app.setOrganizationDomain("qt.io");
-    app.setApplicationName("qtbrowser");
+    // Use UrlRole and TitleRole instead of DisplayRole
+    return (sourceModel()->data(index, Qt::UserRole + 1).toString().contains(filterRegExp())
+            || sourceModel()->data(index, Qt::UserRole + 2).toString().contains(filterRegExp()));
+}
 
-    qmlRegisterType<TouchTracker>("io.qt.browser", 1, 0, "TouchTracker");
-    qmlRegisterType<NavigationHistoryProxyModel>("io.qt.browser", 1, 0, "SearchProxyModel");
+void NavigationHistoryProxyModel::setEnabled(bool enabled)
+{
+    if (dynamicSortFilter() == enabled)
+        return;
+    setDynamicSortFilter(enabled);
+    emit enabledChanged();
+}
 
-    BrowserWindow window;
-    QObject::connect(window.rootContext()->engine(), SIGNAL(quit()), &app, SLOT(quit()));
+QString NavigationHistoryProxyModel::searchString() const
+{
+    return m_searchString;
+}
 
-#if defined(HOST_BUILD)
-    window.show();
-    if (window.size().isEmpty())
-        window.setGeometry(0, 0, 800, 600);
-#else
-    window.showFullScreen();
-#endif
+void NavigationHistoryProxyModel::setSearchString(const QString &pattern)
+{
+    if (m_searchString == pattern)
+        return;
 
-    app.exec();
+    m_searchString = pattern;
+    setFilterRegExp(QRegExp(pattern, Qt::CaseInsensitive, QRegExp::FixedString));
+    emit searchStringChanged();
 }

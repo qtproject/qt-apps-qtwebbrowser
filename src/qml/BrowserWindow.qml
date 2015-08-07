@@ -48,6 +48,8 @@ import QtQuick.Dialogs 1.2
 import QtQuick.Enterprise.VirtualKeyboard 1.2
 
 import "assets"
+import io.qt.browser 1.0
+import "Utils.js" as Utils
 
 Item {
     id: browserWindow
@@ -257,6 +259,9 @@ Item {
         id: urlDropDown
         color: "white"
         visible: navigation.visible
+
+        property string searchString: navigation.addressBar.text
+
         anchors {
             left: parent.left
             right: parent.right
@@ -287,10 +292,17 @@ Item {
             color: "#e4e4e4"
         }
 
+        SearchProxyModel {
+            id: proxy
+            target: navigation.webView.navigationHistory.items
+            searchString: urlDropDown.searchString
+            enabled: urlDropDown.state == "enabled"
+        }
+
         ListView {
             id: historyList
             property int remainingHeight: Math.min((historyList.count + 1) * toolBarSize, inputPanel.y - toolBarSize - 3)
-            model: navigation.webView.navigationHistory.items
+            model: proxy
             clip: true
             boundsBehavior: Flickable.StopAtBounds
             footerPositioning: ListView.InlineFooter
@@ -325,6 +337,7 @@ Item {
                         horizontalCenter: parent.horizontalCenter
                     }
                     Text {
+                        property string highlightTitle: title ? title : ""
                         height: wrapper.height / 2
                         width: parent.width
                         elide: Text.ElideRight
@@ -337,9 +350,10 @@ Item {
                         font.family: defaultFontFamily
                         font.pixelSize: 23
                         color: "black"
-                        text: title ? title : ""
+                        text: Utils.highlight(highlightTitle, urlDropDown.searchString)
                     }
                     Text {
+                        property string highlightUrl: url ? url : ""
                         height: wrapper.height / 2 - 1
                         width: parent.width
                         elide: Text.ElideRight
@@ -347,7 +361,7 @@ Item {
                         font.family: defaultFontFamily
                         font.pixelSize: 23
                         color: uiColor
-                        text: url ? url : ""
+                        text: Utils.highlight(highlightUrl, urlDropDown.searchString)
                     }
                     Rectangle {
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -364,7 +378,7 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        var string = searchText.text
+                        var string = urlDropDown.searchString
                         var constructedUrl = ""
                         if (engine.isUrl(string)) {
                             constructedUrl = engine.fromUserInput(string)
@@ -392,7 +406,7 @@ Item {
                         height: parent.height
                         width: historyList.width - searchIcon.width - 30
                         elide: Text.ElideRight
-                        text: navigation.addressBar.text
+                        text: urlDropDown.searchString
                         verticalAlignment: Text.AlignVCenter
                         font.family: defaultFontFamily
                         font.pixelSize: 23

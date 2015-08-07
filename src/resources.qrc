@@ -9,6 +9,7 @@
         <file>qml/SettingsView.qml</file>
         <file>qml/assets/UIButton.qml</file>
         <file>qml/assets/UIToolBar.qml</file>
+        <file>qml/Utils.js</file>
         <file alias="home">qml/assets/icons/Btn_Home.png</file>
         <file alias="tabs">qml/assets/icons/Btn_Tabs.png</file>
         <file alias="forward">qml/assets/icons/Btn_Forward.png</file>

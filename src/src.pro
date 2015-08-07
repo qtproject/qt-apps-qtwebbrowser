@@ -8,13 +8,15 @@ SOURCES = main.cpp \
     touchmockingapplication.cpp \
     browserwindow.cpp \
     touchtracker.cpp \
-    engine.cpp
+    engine.cpp \
+    navigationhistoryproxymodel.cpp
 
 HEADERS = \
     touchmockingapplication.h \
     browserwindow.h \
     touchtracker.h \
-    engine.h
+    engine.h \
+    navigationhistoryproxymodel.h
 
 OTHER_FILES = \
     qml/assets/UIButton.qml \

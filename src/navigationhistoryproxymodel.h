@@ -35,57 +35,41 @@
 **
 ****************************************************************************/
 
-#include <QGuiApplication>
-#include <QQmlContext>
-#include <QQmlEngine>
-#include <QQuickView>
-#include <QtWebEngine/qtwebengineglobal.h>
+#ifndef NAVIGATIONHISTORYPROXYMODEL_H
+#define NAVIGATIONHISTORYPROXYMODEL_H
 
-#include "navigationhistoryproxymodel.h"
-#include "touchmockingapplication.h"
-#include "engine.h"
-#include "touchtracker.h"
+#include <QObject>
+#include <QAbstractItemModel>
+#include <QSortFilterProxyModel>
 
-int main(int argc, char **argv)
+class NavigationHistoryProxyModel : public QSortFilterProxyModel
 {
-    qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
-#if defined(HOST_BUILD)
-    // We use touch mocking on desktop and apply all the mobile switches.
-    QByteArrayList args = QByteArrayList()
-            << QByteArrayLiteral("--enable-embedded-switches");
-    const int count = args.size() + argc;
-    QVector<char*> qargv(count);
+    Q_OBJECT
 
-    qargv[0] = argv[0];
-    for (int i = 0; i < args.size(); ++i)
-        qargv[i + 1] = args[i].data();
-    for (int i = args.size() + 1; i < count; ++i)
-        qargv[i] = argv[i - args.size()];
+    Q_PROPERTY(QAbstractItemModel * target READ sourceModel WRITE setSourceModel)
+    Q_PROPERTY(QString searchString READ searchString WRITE setSearchString NOTIFY searchStringChanged)
+    Q_PROPERTY(bool enabled READ enabled WRITE setEnabled NOTIFY enabledChanged)
 
-    int qAppArgCount = qargv.size();
-    TouchMockingApplication app(qAppArgCount, qargv.data());
-#else
-    QGuiApplication app(argc, argv);
-#endif
-    QtWebEngine::initialize();
+public:
+    explicit NavigationHistoryProxyModel(QObject *parent = 0);
 
-    app.setOrganizationName("The Qt Company");
-    app.setOrganizationDomain("qt.io");
-    app.setApplicationName("qtbrowser");
 
-    qmlRegisterType<TouchTracker>("io.qt.browser", 1, 0, "TouchTracker");
-    qmlRegisterType<NavigationHistoryProxyModel>("io.qt.browser", 1, 0, "SearchProxyModel");
+    bool filterAcceptsRow(int sourceRow, const QModelIndex &sourceParent) const override;
 
-    BrowserWindow window;
-    QObject::connect(window.rootContext()->engine(), SIGNAL(quit()), &app, SLOT(quit()));
+    bool enabled() const { return dynamicSortFilter(); }
+    void setEnabled(bool enabled);
 
-#if defined(HOST_BUILD)
-    window.show();
-    if (window.size().isEmpty())
-        window.setGeometry(0, 0, 800, 600);
-#else
-    window.showFullScreen();
-#endif
+    void setTarget(QAbstractItemModel *t);
 
-    app.exec();
-}
+    QString searchString() const ;
+    void setSearchString(const QString &pattern);
+
+signals:
+    void searchStringChanged();
+    void enabledChanged();
+
+private:
+    QString m_searchString;
+};
+
+#endif // NAVIGATIONHISTORYPROXYMODEL_H
