@@ -160,13 +160,7 @@ ToolBar {
         UIButton {
             id: doneButton
             color: toolBarFillColor
-            Text {
-                color: "white"
-                anchors.centerIn: parent
-                text: "Done"
-                font.family: defaultFontFamily
-                font.pixelSize: 28
-            }
+            buttonText: "Done"
             implicitWidth: 120
             Component.onCompleted: doneButton.clicked.connect(root.doneClicked)
         }

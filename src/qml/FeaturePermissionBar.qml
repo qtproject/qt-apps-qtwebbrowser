@@ -40,6 +40,8 @@ import QtQuick.Controls 1.0
 import QtWebEngine 1.1
 import QtQuick.Layouts 1.0
 
+import "assets"
+
 Rectangle {
     property var requestedFeature;
     property url securityOrigin;
@@ -47,7 +49,7 @@ Rectangle {
 
     id: permissionBar
     visible: false
-    height: acceptButton.height + 4
+    height: 50
 
     onRequestedFeatureChanged: {
         message.text = securityOrigin + " wants to access " + message.textForFeature(requestedFeature);
@@ -55,39 +57,79 @@ Rectangle {
 
 
     RowLayout {
+        spacing: 0
         anchors {
             fill: permissionBar
-            leftMargin: 5
-            rightMargin: 5
         }
-        Label {
-            id: message
+        Rectangle {
+            color: uiColor
+            anchors {
+                top: parent.top
+                bottom: parent.bottom
+            }
             Layout.fillWidth: true
 
-            function textForFeature(feature) {
-                if (feature === WebEngineView.MediaAudioCapture)
-                    return "your microphone"
-                if (feature === WebEngineView.MediaVideoCapture)
-                    return "your camera"
-                if (feature === WebEngineView.MediaAudioVideoCapture)
-                    return "your camera and microphone"
-                if (feature === WebEngineView.Geolocation)
-                    return "your position"
+            Text {
+                id: message
+                width: parent.width
+                elide: Text.ElideRight
+                horizontalAlignment: Text.AlignHCenter
+                anchors {
+                    leftMargin: 15
+                    rightMargin: 15
+                    verticalCenter: parent.verticalCenter
+                    horizontalCenter: parent.horizontalCenter
+                }
+                font.family: defaultFontFamily
+                font.pixelSize: 20
+                color: "white"
+                function textForFeature(feature) {
+                    if (feature === WebEngineView.MediaAudioCapture)
+                        return "your microphone"
+                    if (feature === WebEngineView.MediaVideoCapture)
+                        return "your camera"
+                    if (feature === WebEngineView.MediaAudioVideoCapture)
+                        return "your camera and microphone"
+                    if (feature === WebEngineView.Geolocation)
+                        return "your position"
+                }
             }
         }
+        Rectangle {
+            width: 1
+            anchors {
+                top: parent.top
+                bottom: parent.bottom
+            }
+            color: uiSeparatorColor
+        }
 
-        Button {
+        UIButton {
             id: acceptButton
-            text: "Accept"
+            implicitHeight: permissionBar.height
+            implicitWidth: toolBarSize
+            buttonText: "Accept"
+            textSize: 18
             Layout.alignment: Qt.AlignRight
             onClicked: {
                 view.grantFeaturePermission(securityOrigin, requestedFeature, true);
                 permissionBar.visible = false;
             }
         }
+        Rectangle {
+            width: 1
+            anchors {
+                top: parent.top
+                bottom: parent.bottom
+            }
+            color: uiSeparatorColor
+        }
 
-        Button {
-            text: "Deny"
+        UIButton {
+            buttonText: "Deny"
+            textSize: 18
+            implicitHeight: permissionBar.height
+            implicitWidth: toolBarSize
             Layout.alignment: Qt.AlignRight
             onClicked: {
                 view.grantFeaturePermission(securityOrigin, requestedFeature, false);

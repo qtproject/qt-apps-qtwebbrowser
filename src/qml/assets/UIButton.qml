@@ -46,10 +46,20 @@ ToolButton {
     implicitHeight: toolBarSize
     implicitWidth: toolBarSize
 
+    property alias buttonText: label.text
+    property alias textColor: label.color
+    property alias textSize: label.font.pixelSize
     property string source: ""
     property real radius: 0.0
     property string color: uiColor
     property string highlightColor: buttonPressedColor
+    Text {
+        id: label
+        color: "white"
+        anchors.centerIn: parent
+        font.family: defaultFontFamily
+        font.pixelSize: 28
+    }
     style: ButtonStyle {
         background: Rectangle {
             opacity: root.enabled ? 1.0 : 0.3

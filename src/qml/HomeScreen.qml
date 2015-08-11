@@ -511,17 +511,11 @@ Rectangle {
                 color: uiColor
                 implicitWidth: 180
                 implicitHeight: 70
+                buttonText: "OK"
                 visible: messageBox.state != "empty"
                 anchors {
                     horizontalCenter: parent.horizontalCenter
                     bottom: parent.bottom
-                }
-                Text {
-                    color: "white"
-                    anchors.centerIn: parent
-                    text: "OK"
-                    font.family: defaultFontFamily
-                    font.pixelSize: 28
                 }
                 onClicked: {
                     if (messageBox.state == "tabsfull") {

@@ -102,6 +102,7 @@ Rectangle {
                     }
                 }
             }
+
             FeaturePermissionBar {
                 id: permBar
                 view: webEngineView
