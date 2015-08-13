@@ -67,7 +67,8 @@ Rectangle {
             homeScreen.forceActiveFocus()
             return
         }
-        var element = { "title": title, "url": url, "iconUrl": iconUrl, "fallbackColor": fallbackColor }
+        var icon = url.indexOf("qt.io") != -1 ? "qrc:///qt" : iconUrl
+        var element = { "title": title, "url": url, "iconUrl": icon, "fallbackColor": fallbackColor }
         listModel.append(element)
         set(listModel.count - 1)
     }

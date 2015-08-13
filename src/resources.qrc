@@ -27,6 +27,7 @@
         <file alias="up">qml/assets/icons/Btn_Up.png</file>
         <file alias="search">qml/assets/icons/Btn_Search.png</file>
         <file alias="error">qml/assets/icons/Error_Icon.png</file>
+        <file alias="qt">qml/assets/icons/qt.png</file>
         <file alias="icon">qml/assets/icons/AppLogoColor.png</file>
         <file alias="icon_grey">qml/assets/icons/AppLogoGrey.png</file>
     </qresource>
