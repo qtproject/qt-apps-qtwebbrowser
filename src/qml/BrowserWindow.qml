@@ -66,6 +66,7 @@ Item {
     property string toolBarSeparatorColor: settingsView.privateBrowsingEnabled ? "#929495" : "#a3d1ed"
     property string toolBarFillColor: settingsView.privateBrowsingEnabled ? "#46484a" : uiSeparatorColor
     property string buttonPressedColor: settingsView.privateBrowsingEnabled ? "#3b3c3e" : "#3f91c4"
+    property string emptyBackgroundColor: "#e4e4e4"
     property string uiHighlightColor: "#fddd5c"
     property string inactivePagerColor: "#bcbdbe"
     property string textFieldStrokeColor: "#3882ae"
@@ -183,12 +184,12 @@ Item {
                 return false
             return true
         }
-        height: parent.height
 
         anchors {
             top: navigation.bottom
             left: parent.left
             right: parent.right
+            bottom: inputPanel.top
         }
 
         Component.onCompleted: {
@@ -289,7 +290,7 @@ Item {
 
         Rectangle {
             anchors.fill: parent
-            color: "#e4e4e4"
+            color: emptyBackgroundColor
         }
 
         SearchProxyModel {

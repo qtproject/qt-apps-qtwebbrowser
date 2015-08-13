@@ -400,7 +400,7 @@ ToolBar {
         style: ProgressBarStyle {
             background: Rectangle {
                 height: 3
-                color: "#e4e4e4"
+                color: emptyBackgroundColor
             }
             progress: Rectangle {
                 color: settingsView.privateBrowsingEnabled ? "#46a2da" : "#317198"

@@ -246,6 +246,42 @@ Rectangle {
             }
 
             Rectangle {
+                opacity: {
+                    if (inputPanel.state === "visible")
+                        return 0.0
+                    if (webEngineView.url == "" || webEngineView.url == "about:blank")
+                        return 1.0
+                    return 0.0
+                }
+                anchors.fill: parent
+                visible: opacity != 0.0
+                color: "white"
+                Image {
+                    id: placeholder
+                    anchors {
+                        verticalCenterOffset: -toolBarSize
+                        centerIn: parent
+                    }
+                    source: "qrc:///icon"
+                }
+                Text {
+                    anchors {
+                        top: placeholder.bottom
+                        topMargin: 20
+                        horizontalCenter: placeholder.horizontalCenter
+                    }
+                    font.family: defaultFontFamily
+                    font.pixelSize: 28
+                    color: uiColor
+                    text: "Qt Browser"
+                }
+
+                Behavior on opacity {
+                    NumberAnimation { duration: animationDuration }
+                }
+            }
+
+            Rectangle {
                 id: findBar
                 anchors {
                     right: webEngineView.right
@@ -362,6 +398,7 @@ Rectangle {
         if (listModel.count === tabViewMaxTabs) {
             homeScreen.messageBox.state = "tabsfull"
             homeScreen.state = "enabled"
+            homeScreen.forceActiveFocus()
             return null
         }
 

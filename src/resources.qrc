@@ -17,7 +17,6 @@
         <file alias="refresh">qml/assets/icons/Btn_Reload.png</file>
         <file alias="stop">qml/assets/icons/Btn_Clear.png</file>
         <file alias="touchpoint">qml/assets/icons/touchpoint.png</file>
-        <file alias="icon">qml/assets/icons/icon.png</file>
         <file alias="delete">qml/assets/icons/Btn_Delete.png</file>
         <file alias="star">qml/assets/icons/Btn_Bookmarks.png</file>
         <file alias="star_checked">qml/assets/icons/Btn_Bookmark_Checked.png</file>
@@ -28,5 +27,7 @@
         <file alias="up">qml/assets/icons/Btn_Up.png</file>
         <file alias="search">qml/assets/icons/Btn_Search.png</file>
         <file alias="error">qml/assets/icons/Error_Icon.png</file>
+        <file alias="icon">qml/assets/icons/AppLogoColor.png</file>
+        <file alias="icon_grey">qml/assets/icons/AppLogoGrey.png</file>
     </qresource>
 </RCC>

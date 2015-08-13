@@ -64,6 +64,7 @@ Rectangle {
             navigation.refresh()
             messageBox.state = "full"
             state = "enabled"
+            homeScreen.forceActiveFocus()
             return
         }
         var element = { "title": title, "url": url, "iconUrl": iconUrl, "fallbackColor": fallbackColor }
@@ -550,7 +551,7 @@ Rectangle {
                 }
                 PropertyChanges {
                     target: messageBox
-                    color: "#e4e4e4"
+                    color: emptyBackgroundColor
                     visible: true
                 }
                 PropertyChanges {
