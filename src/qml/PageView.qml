@@ -628,7 +628,8 @@ Rectangle {
         model: listModel
         delegate: delegate
         highlightMoveDuration: animationDuration
-        flickDeceleration: animationDuration / 2
+        highlightRangeMode: PathView.StrictlyEnforceRange
+        snapMode: PathView.SnapToItem
         preferredHighlightBegin: 0.5
         preferredHighlightEnd: 0.5
 
