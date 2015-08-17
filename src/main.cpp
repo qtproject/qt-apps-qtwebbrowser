@@ -49,10 +49,10 @@
 int main(int argc, char **argv)
 {
     qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
-#if defined(HOST_BUILD)
     // We use touch mocking on desktop and apply all the mobile switches.
     QByteArrayList args = QByteArrayList()
-            << QByteArrayLiteral("--enable-embedded-switches");
+            << QByteArrayLiteral("--enable-embedded-switches")
+            << QByteArrayLiteral("--log-level=0");
     const int count = args.size() + argc;
     QVector<char*> qargv(count);
 
@@ -63,9 +63,10 @@ int main(int argc, char **argv)
         qargv[i] = argv[i - args.size()];
 
     int qAppArgCount = qargv.size();
+#if defined(HOST_BUILD)
     TouchMockingApplication app(qAppArgCount, qargv.data());
 #else
-    QGuiApplication app(argc, argv);
+    QGuiApplication app(qAppArgCount, qargv.data());
 #endif
     QtWebEngine::initialize();
 
