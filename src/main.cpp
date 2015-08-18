@@ -72,7 +72,7 @@ int main(int argc, char **argv)
 
     app.setOrganizationName("The Qt Company");
     app.setOrganizationDomain("qt.io");
-    app.setApplicationName("qtbrowser");
+    app.setApplicationName("qtwebbrowser");
 
     qmlRegisterType<TouchTracker>("io.qt.browser", 1, 0, "TouchTracker");
     qmlRegisterType<NavigationHistoryProxyModel>("io.qt.browser", 1, 0, "SearchProxyModel");

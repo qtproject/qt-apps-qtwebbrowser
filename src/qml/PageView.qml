@@ -257,13 +257,12 @@ Rectangle {
                 color: "white"
                 Image {
                     id: placeholder
-                    anchors {
-                        verticalCenterOffset: -toolBarSize
-                        centerIn: parent
-                    }
+                    y: placeholder.height - navigation.y
+                    anchors.horizontalCenter: parent.horizontalCenter
                     source: "qrc:///icon"
                 }
                 Text {
+                    id: label
                     anchors {
                         top: placeholder.bottom
                         topMargin: 20
@@ -272,7 +271,7 @@ Rectangle {
                     font.family: defaultFontFamily
                     font.pixelSize: 28
                     color: uiColor
-                    text: "Qt Browser"
+                    text: "Qt WebBrowser"
                 }
 
                 Behavior on opacity {

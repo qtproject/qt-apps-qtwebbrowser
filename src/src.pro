@@ -1,4 +1,4 @@
-TARGET = qtbrowser
+TARGET = qtwebbrowser
 
 DESTDIR = ../
 CONFIG += c++11
