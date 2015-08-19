@@ -188,8 +188,9 @@ Item {
             top: navigation.bottom
             left: parent.left
             right: parent.right
-            bottom: inputPanel.top
         }
+
+        height: inputPanel.y
 
         Component.onCompleted: {
             var tab = createEmptyTab()
