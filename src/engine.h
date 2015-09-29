@@ -78,8 +78,10 @@ class Engine : public QObject {
 
     Q_PROPERTY(QObject * rootWindow READ rootWindow FINAL CONSTANT)
     Q_PROPERTY(QString settingsPath READ settingsPath FINAL CONSTANT)
+    Q_PROPERTY(QString initialUrl READ initialUrl FINAL CONSTANT)
 
     QSettings m_settings;
+    QString m_initialUrl;
 
 public:
     Engine(QObject *parent);
@@ -88,6 +90,7 @@ public:
         return parent();
     }
     QString settingsPath();
+    QString initialUrl() const;
 
     Q_INVOKABLE bool isUrl(const QString& userInput);
     Q_INVOKABLE QUrl fromUserInput(const QString& userInput);

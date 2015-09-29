@@ -199,6 +199,7 @@ Item {
                 return
 
             navigation.webView = tab.webView
+            navigation.load(engine.initialUrl);
         }
         onCurrentIndexChanged: {
             if (!tabView.get(tabView.currentIndex))

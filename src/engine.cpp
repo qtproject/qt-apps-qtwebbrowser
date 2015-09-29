@@ -40,16 +40,31 @@
 #include <QtCore/QDir>
 #include <QtCore/QStandardPaths>
 #include <QStringBuilder>
+#include <QCoreApplication>
 
 Engine::Engine(QObject *parent)
     : QObject(parent)
     , m_settings(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) % QDir::separator() % "settings.ini", QSettings::IniFormat, this)
 {
+    foreach (const QString &arg, QCoreApplication::arguments().mid(1)) {
+        if (arg.startsWith('-'))
+            continue;
+        const QUrl url(arg);
+        if (url.isValid()) {
+            m_initialUrl = url.toString();
+            break;
+        }
+    }
 }
 
 QString Engine::settingsPath()
 {
     return m_settings.fileName();
+}
+
+QString Engine::initialUrl() const
+{
+    return m_initialUrl;
 }
 
 QUrl Engine::fromUserInput(const QString& userInput)
