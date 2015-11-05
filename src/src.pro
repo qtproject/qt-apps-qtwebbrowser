@@ -36,3 +36,6 @@ QT_PRIVATE += quick-private gui-private core-private
 RESOURCES += resources.qrc
 
 !cross_compile: DEFINES += HOST_BUILD
+
+target.path = /data/user/qt/qtwebbrowser
+INSTALLS += target

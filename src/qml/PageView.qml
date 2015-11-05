@@ -59,7 +59,7 @@ Rectangle {
     property string viewState: "page"
 
     onViewStateChanged: {
-        if (viewState == "page")
+        if (viewState == "page" || viewState == "fullscreen")
             homeScreen.state = "disabled"
     }
 
@@ -196,6 +196,14 @@ Rectangle {
                     permBar.securityOrigin = securityOrigin;
                     permBar.requestedFeature = feature;
                     permBar.visible = true;
+                }
+
+                onFullScreenRequested: {
+                    if (request.toggleOn)
+                        viewState = "fullscreen"
+                    else
+                        viewState = "page"
+                    request.accept()
                 }
             }
 
@@ -456,6 +464,13 @@ Rectangle {
                     PropertyChanges { target: wrapper; width: itemWidth; height: itemHeight; visibility: 1.0 }
                     PropertyChanges { target: pathView; interactive: true }
                     PropertyChanges { target: item; opacity: 0.0 }
+                },
+                State {
+                    name: "fullscreen"
+                    PropertyChanges { target: wrapper; width: root.width; height: root.height; visibility: 0.0 }
+                    PropertyChanges { target: pathView; interactive: false }
+                    PropertyChanges { target: item; opacity: 1.0 }
+                    PropertyChanges { target: navigation; state: "disabled" }
                 }
             ]
 

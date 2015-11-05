@@ -167,6 +167,22 @@ Item {
         }
     }
 
+    UIToolBar {
+        id: fullScreenBar
+        z: 6
+        title: qsTr("Leave Full Screen Mode")
+        visible: opacity != 0.0
+        opacity: tabView.viewState == "fullscreen" ? 1.0 : 0.0
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: navigation.top
+        }
+        onDoneClicked: {
+            navigation.webView.triggerWebAction(WebEngineView.ExitFullScreen);
+        }
+    }
+
     NavigationBar {
         id: navigation
 
