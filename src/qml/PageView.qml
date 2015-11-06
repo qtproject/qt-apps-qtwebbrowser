@@ -419,8 +419,6 @@ Rectangle {
         listModel.remove(index)
         pathView.decrementCurrentIndex()
         pathView.interactive = true
-        if (listModel.count == 0)
-            engine.rootWindow.close()
     }
 
     function get(index) {
@@ -558,7 +556,7 @@ Rectangle {
                     Rectangle {
                         enabled: index == pathView.currentIndex && !pathView.moving && !pathView.flicking && wrapper.visibility == 1.0
                         opacity: enabled ? 1.0 : 0.0
-                        visible: wrapper.visibility == 1.0
+                        visible: wrapper.visibility == 1.0 && listModel.count > 1
                         width: image.sourceSize.width
                         height: image.sourceSize.height - 2
                         radius: width / 2
