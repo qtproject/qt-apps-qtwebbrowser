@@ -35,58 +35,69 @@
 **
 ****************************************************************************/
 
-#include <QGuiApplication>
-#include <QQmlContext>
-#include <QQmlEngine>
-#include <QQuickView>
-#include <QtWebEngine/qtwebengineglobal.h>
+#ifndef ENGINE_H
+#define ENGINE_H
 
-#include "navigationhistoryproxymodel.h"
-#include "touchmockingapplication.h"
-#include "engine.h"
-#include "touchtracker.h"
+#include <QtCore/QEvent>
+#include <QtCore/QFileInfo>
+#include <QtCore/QSettings>
+#include <QtCore/QUrl>
+#include <QtGui/QColor>
+#include <QtQuick/QQuickItemGrabResult>
 
-int main(int argc, char **argv)
+namespace utils {
+inline bool isTouchEvent(const QEvent* event)
 {
-    qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
-    // We use touch mocking on desktop and apply all the mobile switches.
-    QByteArrayList args = QByteArrayList()
-            << QByteArrayLiteral("--enable-embedded-switches")
-            << QByteArrayLiteral("--log-level=0");
-    const int count = args.size() + argc;
-    QVector<char*> qargv(count);
-
-    qargv[0] = argv[0];
-    for (int i = 0; i < args.size(); ++i)
-        qargv[i + 1] = args[i].data();
-    for (int i = args.size() + 1; i < count; ++i)
-        qargv[i] = argv[i - args.size()];
-
-    int qAppArgCount = qargv.size();
-#if defined(HOST_BUILD)
-    TouchMockingApplication app(qAppArgCount, qargv.data());
-#else
-    QGuiApplication app(qAppArgCount, qargv.data());
-#endif
-    QtWebEngine::initialize();
-
-    app.setOrganizationName("The Qt Company");
-    app.setOrganizationDomain("qt.io");
-    app.setApplicationName("qtwebbrowser");
-
-    qmlRegisterType<TouchTracker>("io.qt.browser", 1, 0, "TouchTracker");
-    qmlRegisterType<NavigationHistoryProxyModel>("io.qt.browser", 1, 0, "SearchProxyModel");
-
-    BrowserWindow window;
-    QObject::connect(window.rootContext()->engine(), SIGNAL(quit()), &app, SLOT(quit()));
-
-#if defined(HOST_BUILD)
-    window.show();
-    if (window.size().isEmpty())
-        window.setGeometry(0, 0, 800, 600);
-#else
-    window.showFullScreen();
-#endif
-
-    app.exec();
+    switch (event->type()) {
+    case QEvent::TouchBegin:
+    case QEvent::TouchUpdate:
+    case QEvent::TouchEnd:
+        return true;
+    default:
+        return false;
+    }
 }
+
+inline bool isMouseEvent(const QEvent* event)
+{
+    switch (event->type()) {
+    case QEvent::MouseButtonPress:
+    case QEvent::MouseMove:
+    case QEvent::MouseButtonRelease:
+    case QEvent::MouseButtonDblClick:
+        return true;
+    default:
+        return false;
+    }
+}
+
+}
+
+class Engine : public QObject {
+    Q_OBJECT
+
+    Q_PROPERTY(QObject * rootWindow READ rootWindow FINAL CONSTANT)
+    Q_PROPERTY(QString settingsPath READ settingsPath FINAL CONSTANT)
+    Q_PROPERTY(QString initialUrl READ initialUrl FINAL CONSTANT)
+
+    QSettings m_settings;
+    QString m_initialUrl;
+
+public:
+    Engine(QObject *parent = 0);
+    QObject *rootWindow()
+    {
+        return parent();
+    }
+    QString settingsPath();
+    QString initialUrl() const;
+
+    Q_INVOKABLE bool isUrl(const QString& userInput);
+    Q_INVOKABLE QUrl fromUserInput(const QString& userInput);
+    Q_INVOKABLE QString domainFromString(const QString& urlString);
+    Q_INVOKABLE QString fallbackColor();
+    Q_INVOKABLE QString restoreSetting(const QString &name, const QString &defaultValue = QString());
+    Q_INVOKABLE void saveSetting(const QString &name, const QString &value);
+};
+
+#endif // ENGINE_H

@@ -44,10 +44,10 @@ import QtQuick.Layouts 1.0
 import QtQuick.Window 2.1
 import QtQuick.Controls.Private 1.0
 import QtQuick.Dialogs 1.2
-import QtQuick.Enterprise.VirtualKeyboard 1.2
+import QtQuick.Enterprise.VirtualKeyboard 2.0
 
 import "assets"
-import io.qt.browser 1.0
+import WebBrowser 1.0
 import "Utils.js" as Utils
 
 Item {
@@ -134,7 +134,7 @@ Item {
     UIToolBar {
         id: tabEditToolBar
 
-        source: "qrc:///newtab"
+        source: "icons/Btn_Add.png"
         indicator: tabView.count
 
         anchors {
@@ -215,7 +215,7 @@ Item {
                 return
 
             navigation.webView = tab.webView
-            navigation.load(engine.initialUrl);
+            navigation.load(WebEngine.initialUrl);
         }
         onCurrentIndexChanged: {
             if (!tabView.get(tabView.currentIndex))
@@ -230,7 +230,7 @@ Item {
         property var acceptedUrls : []
 
         function shouldAutoAccept(certificateError){
-            var domain = engine.domainFromString(certificateError.url)
+            var domain = WebEngine.domainFromString(certificateError.url)
             return acceptedUrls.indexOf(domain) >= 0
         }
     }
@@ -251,7 +251,7 @@ Item {
                       "Do you wish to override the security check and continue?"
         onYes: {
             var cert = certErrors.shift()
-            var domain = engine.domainFromString(cert.url)
+            var domain = WebEngine.domainFromString(cert.url)
             acceptedCertificates.acceptedUrls.push(domain)
             cert.ignoreCertificateError()
             presentError()
@@ -398,10 +398,10 @@ Item {
                     onClicked: {
                         var string = urlDropDown.searchString
                         var constructedUrl = ""
-                        if (engine.isUrl(string)) {
-                            constructedUrl = engine.fromUserInput(string)
+                        if (WebEngine.isUrl(string)) {
+                            constructedUrl = WebEngine.fromUserInput(string)
                         } else {
-                            constructedUrl = engine.fromUserInput(googleSearchQuery + string)
+                            constructedUrl = WebEngine.fromUserInput(googleSearchQuery + string)
                         }
                         navigation.webView.url = constructedUrl
                         navigation.webView.forceActiveFocus()
@@ -416,7 +416,7 @@ Item {
                         color: "transparent"
                         Image {
                             anchors.centerIn: parent
-                            source: "qrc:///search"
+                            source: "assets/icons/Btn_Search.png"
                         }
                     }
                     Text {

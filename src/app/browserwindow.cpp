@@ -36,7 +36,6 @@
 ****************************************************************************/
 
 #include "browserwindow.h"
-#include "engine.h"
 
 #include <QList>
 #include <QQmlContext>
@@ -45,6 +44,8 @@
 #include <QRectF>
 #include <QUrl>
 #include <QVariant>
+
+#include "engine.h"
 
 void BrowserWindow::ensureProfileInstance()
 {
@@ -78,7 +79,7 @@ BrowserWindow::BrowserWindow(QWindow *)
     setResizeMode(QQuickView::SizeRootObjectToView);
     setColor(Qt::black);
 
-    engine()->rootContext()->setContextProperty("engine", new Engine(this));
+    engine()->rootContext()->setContextProperty("WebEngine", new Engine(this));
     setSource(QUrl("qrc:///qml/BrowserWindow.qml"));
 }
 

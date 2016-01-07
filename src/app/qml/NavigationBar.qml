@@ -1,7 +1,44 @@
+/****************************************************************************
+**
+** Copyright (C) 2015 The Qt Company Ltd.
+** Contact: http://www.qt.io/licensing/
+**
+** This file is part of the QtBrowser project.
+**
+** $QT_BEGIN_LICENSE:GPL$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see http://www.qt.io/terms-conditions. For further
+** information use the contact form at http://www.qt.io/contact-us.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License version 2 as published by the Free Software
+** Foundation and appearing in the file LICENSE.GPLv2 included in the
+** packaging of this file. Please review the following information to
+** ensure the GNU General Public License version 2 requirements
+** will be met: http://www.gnu.org/licenses/old-licenses/gpl-2.0.html.
+**
+** GNU General Public License Usage
+** Alternatively, this file may be used under the terms of the GNU
+** General Public License version 3.0 as published by the Free Software
+** Foundation and appearing in the file LICENSE.GPL included in the
+** packaging of this file. Please review the following information to
+** ensure the GNU General Public License version 3.0 requirements will be
+** met: http://www.gnu.org/copyleft/gpl.html.
+**
+**
+** $QT_END_LICENSE$
+**
+****************************************************************************/
 import QtQuick 2.5
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.2
+import WebBrowser 1.0
 
 import "assets"
 
@@ -120,7 +157,7 @@ ToolBar {
 
         UIButton {
             id: backButton
-            source: "qrc:///back"
+            source: "icons/Btn_Back.png"
             color: uiColor
             highlightColor: buttonPressedColor
             onClicked: webView.goBack()
@@ -136,7 +173,7 @@ ToolBar {
         }
         UIButton {
             id: forwardButton
-            source: "qrc:///forward"
+            source: "icons/Btn_Forward.png"
             color: uiColor
             highlightColor: buttonPressedColor
             onClicked: webView.goForward()
@@ -187,7 +224,7 @@ ToolBar {
                         name: "load"
                         PropertyChanges {
                             target: reloadButton
-                            source: webView && webView.loading ? "qrc:///stop" : "qrc:///refresh"
+                            source: webView && webView.loading ? "icons/Btn_Clear.png" : "icons/Btn_Reload.png"
                             height: 54
                         }
                     },
@@ -195,7 +232,7 @@ ToolBar {
                         name: "edit"
                         PropertyChanges {
                             target: reloadButton
-                            source: "qrc:///stop"
+                            source: "icons/Btn_Clear.png"
                             height: 45
                             visible: urlBar.text != ""
                         }
@@ -240,7 +277,7 @@ ToolBar {
                 }
             }
             onAccepted: {
-                webView.url = engine.fromUserInput(text)
+                webView.url = WebEngine.fromUserInput(text)
                 homeScreen.state = "disabled"
                 tabView.viewState = "page"
             }
@@ -290,7 +327,7 @@ ToolBar {
         }
         UIButton {
             id: homeButton
-            source: "qrc:///home"
+            source: "icons/Btn_Home.png"
             color: uiColor
             highlightColor: buttonPressedColor
             onClicked: {
@@ -313,7 +350,7 @@ ToolBar {
         }
         UIButton {
             id: pageViewButton
-            source: "qrc:///tabs"
+            source: "icons/Btn_Tabs.png"
             color: uiColor
             highlightColor: buttonPressedColor
             onClicked: {
@@ -352,7 +389,7 @@ ToolBar {
             highlightColor: buttonPressedColor
             enabled: urlBar.text != "" && !settingsView.privateBrowsingEnabled
             property bool bookmarked: false
-            source: bookmarked ? "qrc:///star_checked" : "qrc:///star"
+            source: bookmarked ? "icons/Btn_Bookmark_Checked.png" : "icons/Btn_Bookmarks.png"
             onClicked: {
                 if (!webView)
                     return
@@ -363,7 +400,7 @@ ToolBar {
                     return
                 }
                 var count = homeScreen.count
-                homeScreen.add(webView.title, webView.url, icon, engine.fallbackColor())
+                homeScreen.add(webView.title, webView.url, icon, WebEngine.fallbackColor())
                 if (count < homeScreen.count)
                     bookmarked = true
             }
@@ -379,7 +416,7 @@ ToolBar {
         }
         UIButton {
             id: settingsButton
-            source: "qrc:///settings"
+            source: "icons/Btn_Settings.png"
             color: uiColor
             highlightColor: buttonPressedColor
             onClicked: {

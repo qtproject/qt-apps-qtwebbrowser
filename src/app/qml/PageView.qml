@@ -42,7 +42,7 @@ import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.2
 import QtGraphicalEffects 1.0
 
-import io.qt.browser 1.0
+import WebBrowser 1.0
 import "assets"
 
 Rectangle {
@@ -267,7 +267,7 @@ Rectangle {
                     id: placeholder
                     y: placeholder.height - navigation.y
                     anchors.horizontalCenter: parent.horizontalCenter
-                    source: "qrc:///icon"
+                    source: "assets/icons/AppLogoColor.png"
                 }
                 Text {
                     id: label
@@ -348,7 +348,7 @@ Rectangle {
                     }
                     UIButton {
                         id: findBackwardButton
-                        iconSource: "qrc:///back"
+                        iconSource: "assets/icons/Btn_Back.png"
                         implicitHeight: parent.height
                         onClicked: webEngineView.findText(findTextField.text, WebEngineView.FindBackward)
                     }
@@ -362,7 +362,7 @@ Rectangle {
                     }
                     UIButton {
                         id: findForwardButton
-                        iconSource: "qrc:///forward"
+                        iconSource: "assets/icons/Btn_Forward.png"
                         implicitHeight: parent.height
                         onClicked: webEngineView.findText(findTextField.text)
                     }
@@ -376,7 +376,7 @@ Rectangle {
                     }
                     UIButton {
                         id: findCancelButton
-                        iconSource: "qrc:///stop"
+                        iconSource: "assets/icons/Btn_Clear.png"
                         implicitHeight: parent.height
                         onClicked: findBar.visible = false
                     }
@@ -564,7 +564,7 @@ Rectangle {
                 Image {
                     source: {
                         if (!item.image.snapshot)
-                            return "qrc:///about"
+                            return "assets/icons/about_blank.png"
                         return item.image.snapshot.url
                     }
                     anchors.fill: parent
@@ -591,7 +591,7 @@ Rectangle {
                                 top: parent.top
                                 left: parent.left
                             }
-                            source: "qrc:///delete"
+                            source: "assets/icons/Btn_Delete.png"
                             MouseArea {
                                 id: closeButton
                                 anchors.fill: parent

@@ -1,0 +1,34 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qml/BrowserWindow.qml</file>
+        <file>qml/FeaturePermissionBar.qml</file>
+        <file>qml/MockTouchPoint.qml</file>
+        <file>qml/PageView.qml</file>
+        <file>qml/NavigationBar.qml</file>
+        <file>qml/HomeScreen.qml</file>
+        <file>qml/SettingsView.qml</file>
+        <file>qml/assets/UIButton.qml</file>
+        <file>qml/assets/UIToolBar.qml</file>
+        <file>qml/Utils.js</file>
+        <file>qml/assets/icons/Btn_Home.png</file>
+        <file>qml/assets/icons/Btn_Tabs.png</file>
+        <file>qml/assets/icons/Btn_Forward.png</file>
+        <file>qml/assets/icons/Btn_Back.png</file>
+        <file>qml/assets/icons/Btn_Reload.png</file>
+        <file>qml/assets/icons/Btn_Clear.png</file>
+        <file>qml/assets/icons/touchpoint.png</file>
+        <file>qml/assets/icons/Btn_Delete.png</file>
+        <file>qml/assets/icons/Btn_Bookmarks.png</file>
+        <file>qml/assets/icons/Btn_Bookmark_Checked.png</file>
+        <file>qml/assets/icons/Btn_Bookmark_Indicator.png</file>
+        <file>qml/assets/icons/Btn_Settings.png</file>
+        <file>qml/assets/icons/about_blank.png</file>
+        <file>qml/assets/icons/Btn_Add.png</file>
+        <file>qml/assets/icons/Btn_Up.png</file>
+        <file>qml/assets/icons/Btn_Search.png</file>
+        <file>qml/assets/icons/Error_Icon.png</file>
+        <file>qml/assets/icons/qt.png</file>
+        <file>qml/assets/icons/AppLogoColor.png</file>
+        <file>qml/assets/icons/AppLogoGrey.png</file>
+    </qresource>
+</RCC>

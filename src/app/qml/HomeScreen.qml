@@ -36,6 +36,7 @@
 ****************************************************************************/
 
 import QtQuick 2.5
+import WebBrowser 1.0
 import "assets"
 
 Rectangle {
@@ -67,7 +68,7 @@ Rectangle {
             homeScreen.forceActiveFocus()
             return
         }
-        var icon = url.indexOf("qt.io") != -1 ? "qrc:///qt" : iconUrl
+        var icon = url.indexOf("qt.io") != -1 ? "assets/icons/qt.png" : iconUrl
         var element = { "title": title, "url": url, "iconUrl": icon, "fallbackColor": fallbackColor }
         listModel.append(element)
         set(listModel.count - 1)
@@ -124,11 +125,11 @@ Rectangle {
 
     ListModel {
         id: listModel
-        property string defaultBookmarks: "[{\"fallbackColor\":\"#46a2da\",\"iconUrl\":\"qrc:///qt\",\"title\":\"Qt - Home\",\"url\":\"http://www.qt.io/\"},{\"fallbackColor\":\"#18394c\",\"iconUrl\":\"http://www.topgear.com/sites/all/themes/custom/tg/apple-touch-icon-144x144.png\",\"title\":\"Top Gear\",\"url\":\"http://www.topgear.com/\"},{\"fallbackColor\":\"#46a2da\",\"iconUrl\":\"https://duckduckgo.com/assets/icons/meta/DDG-iOS-icon_152x152.png\",\"title\":\"DuckDuckGo\",\"url\":\"https://duckduckgo.com/\"},{\"fallbackColor\":\"#ff8c0a\",\"iconUrl\":\"http://www.blogsmithmedia.com/www.engadget.com/media/favicon-160x160.png\",\"title\":\"Engadget | Technology News, Advice and Features\",\"url\":\"http://www.engadget.com/\"},{\"fallbackColor\":\"#ff8c0a\",\"iconUrl\":\"https://www.openstreetmap.org/assets/favicon-194x194-32cdac24b02b88e09f0639bb92c760b2.png\",\"title\":\"OpenStreetMap\",\"url\":\"https://www.openstreetmap.org/\"},{\"fallbackColor\":\"#5caa15\",\"iconUrl\":\"http://www.redditstatic.com/icon.png\",\"title\":\"reddit: the front page of the internet\",\"url\":\"http://www.reddit.com/\"}]"
+        property string defaultBookmarks: "[{\"fallbackColor\":\"#46a2da\",\"iconUrl\":\"assets/icons/qt.png\",\"title\":\"Qt - Home\",\"url\":\"http://www.qt.io/\"},{\"fallbackColor\":\"#18394c\",\"iconUrl\":\"http://www.topgear.com/sites/all/themes/custom/tg/apple-touch-icon-144x144.png\",\"title\":\"Top Gear\",\"url\":\"http://www.topgear.com/\"},{\"fallbackColor\":\"#46a2da\",\"iconUrl\":\"https://duckduckgo.com/assets/icons/meta/DDG-iOS-icon_152x152.png\",\"title\":\"DuckDuckGo\",\"url\":\"https://duckduckgo.com/\"},{\"fallbackColor\":\"#ff8c0a\",\"iconUrl\":\"http://www.blogsmithmedia.com/www.engadget.com/media/favicon-160x160.png\",\"title\":\"Engadget | Technology News, Advice and Features\",\"url\":\"http://www.engadget.com/\"},{\"fallbackColor\":\"#ff8c0a\",\"iconUrl\":\"https://www.openstreetmap.org/assets/favicon-194x194-32cdac24b02b88e09f0639bb92c760b2.png\",\"title\":\"OpenStreetMap\",\"url\":\"https://www.openstreetmap.org/\"},{\"fallbackColor\":\"#5caa15\",\"iconUrl\":\"http://www.redditstatic.com/icon.png\",\"title\":\"reddit: the front page of the internet\",\"url\":\"http://www.reddit.com/\"}]"
 
         Component.onCompleted: {
             listModel.clear()
-            var string = engine.restoreSetting("bookmarks", defaultBookmarks)
+            var string = WebEngine.restoreSetting("bookmarks", defaultBookmarks)
             if (!string)
                 return
             var list = JSON.parse(string)
@@ -142,7 +143,7 @@ Rectangle {
             for (var i = 0; i < listModel.count; ++i) {
                 list[i] = listModel.get(i)
             }
-            engine.saveSetting("bookmarks", JSON.stringify(list))
+            WebEngine.saveSetting("bookmarks", JSON.stringify(list))
         }
     }
 
@@ -381,7 +382,7 @@ Rectangle {
                         top: parent.top
                         left: parent.left
                     }
-                    source: "qrc:///delete"
+                    source: "assets/icons/Btn_Delete.png"
                     MouseArea {
                         id: deleteButton
                         anchors.fill: parent
@@ -470,7 +471,7 @@ Rectangle {
             }
             Image {
                 id: errorIcon
-                source: "qrc:///error"
+                source: "assets/icons/Error_Icon.png"
                 anchors {
                     horizontalCenter: parent.horizontalCenter
                     top: parent.top

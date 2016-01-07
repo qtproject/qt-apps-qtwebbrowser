@@ -41,6 +41,7 @@ import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import Qt.labs.settings 1.0
 
+import WebBrowser 1.0
 Rectangle {
     id: root
 
@@ -66,7 +67,7 @@ Rectangle {
             // Do not persist private browsing mode
             if (setting.name === "Private Browsing")
                 continue
-            engine.saveSetting(setting.name, setting.active)
+            WebEngine.saveSetting(setting.name, setting.active)
         }
     }
 
@@ -169,7 +170,7 @@ Rectangle {
         Component.onCompleted: {
             for (var i = 0; i < appSettings.length; ++i) {
                 var setting = appSettings[i]
-                var active = JSON.parse(engine.restoreSetting(setting.name, setting.active))
+                var active = JSON.parse(WebEngine.restoreSetting(setting.name, setting.active))
                 if (setting.active !== active) {
                     setting.active = active
                     setting.notify(active)

@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2015 The Qt Company Ltd.
+** Copyright (C) 2016 The Qt Company Ltd.
 ** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the QtBrowser project.
@@ -35,69 +35,63 @@
 **
 ****************************************************************************/
 
-#ifndef ENGINE_H
-#define ENGINE_H
+#ifndef TOUCHTRACKER_H
+#define TOUCHTRACKER_H
 
-#include <QtCore/QEvent>
-#include <QtCore/QFileInfo>
-#include <QtCore/QSettings>
-#include <QtCore/QUrl>
-#include <QtGui/QColor>
-#include <QtQuick/QQuickItemGrabResult>
+#include <QObject>
+#include <QQuickItem>
 
-namespace utils {
-inline bool isTouchEvent(const QEvent* event)
+class TouchTracker : public QQuickItem
 {
-    switch (event->type()) {
-    case QEvent::TouchBegin:
-    case QEvent::TouchUpdate:
-    case QEvent::TouchEnd:
-        return true;
-    default:
-        return false;
-    }
-}
-
-inline bool isMouseEvent(const QEvent* event)
-{
-    switch (event->type()) {
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseMove:
-    case QEvent::MouseButtonRelease:
-    case QEvent::MouseButtonDblClick:
-        return true;
-    default:
-        return false;
-    }
-}
-
-}
-
-class Engine : public QObject {
     Q_OBJECT
+    Q_PROPERTY(qreal touchX READ touchX NOTIFY touchChanged)
+    Q_PROPERTY(qreal touchY READ touchY NOTIFY touchChanged)
+    Q_PROPERTY(int xVelocity READ xVelocity NOTIFY velocityChanged)
+    Q_PROPERTY(int yVelocity READ yVelocity NOTIFY velocityChanged)
+    Q_PROPERTY(bool blockEvents READ blockEvents WRITE setBlockEvents NOTIFY blockEventsChanged)
+    Q_PROPERTY(QQuickItem* target READ target WRITE setTarget NOTIFY targetChanged)
 
-    Q_PROPERTY(QObject * rootWindow READ rootWindow FINAL CONSTANT)
-    Q_PROPERTY(QString settingsPath READ settingsPath FINAL CONSTANT)
-    Q_PROPERTY(QString initialUrl READ initialUrl FINAL CONSTANT)
-
-    QSettings m_settings;
-    QString m_initialUrl;
+    struct PositionInfo
+    {
+        QPointF pos;
+        qint64 ts;
+        qreal x() const { return pos.x(); }
+        qreal y() const { return pos.y(); }
+    };
 
 public:
-    Engine(QObject *parent);
-    QObject *rootWindow()
-    {
-        return parent();
-    }
-    QString settingsPath();
-    QString initialUrl() const;
+    TouchTracker(QQuickItem *parent = 0);
 
-    Q_INVOKABLE bool isUrl(const QString& userInput);
-    Q_INVOKABLE QUrl fromUserInput(const QString& userInput);
-    Q_INVOKABLE QString domainFromString(const QString& urlString);
-    Q_INVOKABLE QString fallbackColor();
-    Q_INVOKABLE QString restoreSetting(const QString &name, const QString &defaultValue = QString());
-    Q_INVOKABLE void saveSetting(const QString &name, const QString &value);
+    qreal touchX() const;
+    qreal touchY() const;
+    int xVelocity() const;
+    int yVelocity() const;
+    QQuickItem* target() const;
+    bool blockEvents() const;
+    void setBlockEvents(bool shouldBlock);
+    void setTarget(QQuickItem * target);
+
+signals:
+    void touchChanged();
+    void blockEventsChanged();
+    void targetChanged();
+    void touchBegin();
+    void touchEnd();
+    void velocityChanged();
+    void scrollDirectionChanged();
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event);
+    void touchEvent(QTouchEvent *event) override;
+
+private:
+    bool m_blockEvents;
+    int m_diff;
+    int m_previousY;
+    PositionInfo m_startPoint;
+    PositionInfo m_currentPoint;
+    QQuickItem *m_target;
+    QQuickItem *m_delegate;
 };
 
-#endif // ENGINE_H
+#endif // TOUCHTRACKER_H
