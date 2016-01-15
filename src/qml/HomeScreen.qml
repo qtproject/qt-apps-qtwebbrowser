@@ -129,7 +129,7 @@ Rectangle {
 
         Component.onCompleted: {
             listModel.clear()
-            var string = WebEngine.restoreSetting("bookmarks", defaultBookmarks)
+            var string = AppEngine.restoreSetting("bookmarks", defaultBookmarks)
             if (!string)
                 return
             var list = JSON.parse(string)
@@ -143,7 +143,7 @@ Rectangle {
             for (var i = 0; i < listModel.count; ++i) {
                 list[i] = listModel.get(i)
             }
-            WebEngine.saveSetting("bookmarks", JSON.stringify(list))
+            AppEngine.saveSetting("bookmarks", JSON.stringify(list))
         }
     }
 

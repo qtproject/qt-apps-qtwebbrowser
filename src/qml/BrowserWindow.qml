@@ -215,7 +215,9 @@ Item {
                 return
 
             navigation.webView = tab.webView
-            navigation.load(WebEngine.initialUrl);
+            var url = AppEngine.initialUrl
+
+            navigation.load();
         }
         onCurrentIndexChanged: {
             if (!tabView.get(tabView.currentIndex))
@@ -230,7 +232,7 @@ Item {
         property var acceptedUrls : []
 
         function shouldAutoAccept(certificateError){
-            var domain = WebEngine.domainFromString(certificateError.url)
+            var domain = AppEngine.domainFromString(certificateError.url)
             return acceptedUrls.indexOf(domain) >= 0
         }
     }
@@ -251,7 +253,7 @@ Item {
                       "Do you wish to override the security check and continue?"
         onYes: {
             var cert = certErrors.shift()
-            var domain = WebEngine.domainFromString(cert.url)
+            var domain = AppEngine.domainFromString(cert.url)
             acceptedCertificates.acceptedUrls.push(domain)
             cert.ignoreCertificateError()
             presentError()
@@ -398,10 +400,10 @@ Item {
                     onClicked: {
                         var string = urlDropDown.searchString
                         var constructedUrl = ""
-                        if (WebEngine.isUrl(string)) {
-                            constructedUrl = WebEngine.fromUserInput(string)
+                        if (AppEngine.isUrl(string)) {
+                            constructedUrl = AppEngine.fromUserInput(string)
                         } else {
-                            constructedUrl = WebEngine.fromUserInput(googleSearchQuery + string)
+                            constructedUrl = AppEngine.fromUserInput(googleSearchQuery + string)
                         }
                         navigation.webView.url = constructedUrl
                         navigation.webView.forceActiveFocus()

@@ -1,4 +1,0 @@
-module WebBrowser
-plugin webbrowser
-class WebBrowser
-

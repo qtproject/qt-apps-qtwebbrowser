@@ -36,15 +36,15 @@
 ****************************************************************************/
 
 #include "touchmockingapplication.h"
+#include "appengine.h"
 
 #include <qpa/qwindowsysteminterface.h>
-
-#include <QRegExp>
-#include <QEvent>
-#include <QMouseEvent>
-#include <QTouchEvent>
-
-#include "engine.h"
+#include <QtCore/QRegExp>
+#include <QtCore/QEvent>
+#include <QtGui/QMouseEvent>
+#include <QtGui/QTouchEvent>
+#include <QtQuick/QQuickItem>
+#include <QtQuick/QQuickView>
 
 using namespace utils;
 
@@ -79,7 +79,7 @@ bool TouchMockingApplication::notify(QObject* target, QEvent* event)
         return QGuiApplication::notify(target, event);
     }
 
-    BrowserWindow* window = qobject_cast<BrowserWindow*>(target);
+    QQuickView* window = qobject_cast<QQuickView*>(target);
     if (!window)
         return QGuiApplication::notify(target, event);
 
@@ -216,7 +216,7 @@ void TouchMockingApplication::updateTouchPoint(const QMouseEvent* mouseEvent, QT
     m_touchPoints.insert(mouseButton, touchPoint);
 }
 
-bool TouchMockingApplication::sendTouchEvent(BrowserWindow* window, QEvent::Type type, ulong timestamp)
+bool TouchMockingApplication::sendTouchEvent(QQuickView* window, QEvent::Type type, ulong timestamp)
 {
     static QTouchDevice* device = 0;
     if (!device) {
@@ -238,7 +238,7 @@ bool TouchMockingApplication::sendTouchEvent(BrowserWindow* window, QEvent::Type
 
     QGuiApplication::notify(window, &event);
 
-    window->updateVisualMockTouchPoints(m_holdingControl ? currentTouchPoints : QList<QTouchEvent::TouchPoint>());
+    updateVisualMockTouchPoints(window,m_holdingControl ? currentTouchPoints : QList<QTouchEvent::TouchPoint>());
 
     // Get rid of touch-points that are no longer valid
     foreach (const QTouchEvent::TouchPoint& touchPoint, currentTouchPoints) {
@@ -249,3 +249,34 @@ bool TouchMockingApplication::sendTouchEvent(BrowserWindow* window, QEvent::Type
     return event.isAccepted();
 }
 
+void TouchMockingApplication::updateVisualMockTouchPoints(QQuickView* window,const QList<QTouchEvent::TouchPoint>& touchPoints)
+{
+    if (touchPoints.isEmpty()) {
+        // Hide all touch indicator items.
+        foreach (QQuickItem* item, m_activeMockComponents.values())
+            item->setProperty("pressed", false);
+
+        return;
+    }
+
+    foreach (const QTouchEvent::TouchPoint& touchPoint, touchPoints) {
+        QQuickItem* mockTouchPointItem = m_activeMockComponents.value(touchPoint.id());
+
+        if (!mockTouchPointItem) {
+            QQmlComponent touchMockPointComponent(window->engine(), QUrl("qrc:///qml/MockTouchPoint.qml"));
+            mockTouchPointItem = qobject_cast<QQuickItem*>(touchMockPointComponent.create());
+            Q_ASSERT(mockTouchPointItem);
+            m_activeMockComponents.insert(touchPoint.id(), mockTouchPointItem);
+            mockTouchPointItem->setProperty("pointId", QVariant(touchPoint.id()));
+            mockTouchPointItem->setParent(window->rootObject());
+            mockTouchPointItem->setParentItem(window->rootObject());
+        }
+
+        QRectF touchRect = touchPoint.rect();
+        mockTouchPointItem->setX(touchRect.center().x());
+        mockTouchPointItem->setY(touchRect.center().y());
+        mockTouchPointItem->setWidth(touchRect.width());
+        mockTouchPointItem->setHeight(touchRect.height());
+        mockTouchPointItem->setProperty("pressed", QVariant(touchPoint.state() != Qt::TouchPointReleased));
+    }
+}

@@ -38,25 +38,29 @@
 #ifndef TOUCHMOCKINGAPPLICATION_H
 #define TOUCHMOCKINGAPPLICATION_H
 
-#include "browserwindow.h"
+#include <QtCore/QHash>
+#include <QtCore/QUrl>
+#include <QtGui/QGuiApplication>
+#include <QtGui/QTouchEvent>
 
-#include <QHash>
-#include <QGuiApplication>
-#include <QTouchEvent>
-#include <QUrl>
+QT_BEGIN_NAMESPACE
+class QQuickView;
+class QQuickItem;
+QT_END_NAMESPACE
 
 class TouchMockingApplication : public QGuiApplication
 {
     Q_OBJECT
 
 public:
-    TouchMockingApplication(int &argc, char** argv);
+    TouchMockingApplication(int &argc, char **argv);
 
-    virtual bool notify(QObject*, QEvent*) override;
+    virtual bool notify(QObject *, QEvent *) override;
 
 private:
-    void updateTouchPoint(const QMouseEvent*, QTouchEvent::TouchPoint, Qt::MouseButton);
-    bool sendTouchEvent(BrowserWindow *, QEvent::Type, ulong timestamp);
+    void updateTouchPoint(const QMouseEvent *, QTouchEvent::TouchPoint, Qt::MouseButton);
+    bool sendTouchEvent(QQuickView *, QEvent::Type, ulong timestamp);
+    void updateVisualMockTouchPoints(QQuickView *,const QList<QTouchEvent::TouchPoint> &touchPoints);
 
 private:
     bool m_realTouchEventReceived;
@@ -68,6 +72,7 @@ private:
 
     QHash<int, QTouchEvent::TouchPoint> m_touchPoints;
     QSet<int> m_heldTouchPoints;
+    QHash<int, QQuickItem*> m_activeMockComponents;
 
     bool m_holdingControl;
 };

@@ -35,14 +35,14 @@
 **
 ****************************************************************************/
 
-#include "engine.h"
+#include "appengine.h"
 
 #include <QtCore/QDir>
 #include <QtCore/QStandardPaths>
 #include <QStringBuilder>
 #include <QCoreApplication>
 
-Engine::Engine(QObject *parent)
+AppEngine::AppEngine(QObject *parent)
     : QObject(parent)
     , m_settings(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) % QDir::separator() % "settings.ini", QSettings::IniFormat, this)
 {
@@ -57,17 +57,17 @@ Engine::Engine(QObject *parent)
     }
 }
 
-QString Engine::settingsPath()
+QString AppEngine::settingsPath()
 {
     return m_settings.fileName();
 }
 
-QString Engine::initialUrl() const
+QString AppEngine::initialUrl() const
 {
     return m_initialUrl;
 }
 
-QUrl Engine::fromUserInput(const QString& userInput)
+QUrl AppEngine::fromUserInput(const QString& userInput)
 {
     QFileInfo fileInfo(userInput);
     if (fileInfo.exists())
@@ -75,7 +75,7 @@ QUrl Engine::fromUserInput(const QString& userInput)
     return QUrl::fromUserInput(userInput);
 }
 
-bool Engine::isUrl(const QString& userInput)
+bool AppEngine::isUrl(const QString& userInput)
 {
     if (userInput.startsWith(QStringLiteral("www."))
             || userInput.startsWith(QStringLiteral("http"))
@@ -86,12 +86,12 @@ bool Engine::isUrl(const QString& userInput)
     return false;
 }
 
-QString Engine::domainFromString(const QString& urlString)
+QString AppEngine::domainFromString(const QString& urlString)
 {
     return QUrl::fromUserInput(urlString).host();
 }
 
-QString Engine::fallbackColor()
+QString AppEngine::fallbackColor()
 {
     static QList<QString> colors = QList<QString>() << QStringLiteral("#46a2da")
                                                     << QStringLiteral("#18394c")
@@ -103,12 +103,13 @@ QString Engine::fallbackColor()
     return colors[index];
 }
 
-QString Engine::restoreSetting(const QString &name, const QString &defaultValue)
+QString AppEngine::restoreSetting(const QString &name, const QString &defaultValue)
 {
     return m_settings.value(name, defaultValue).toString();
 }
 
-void Engine::saveSetting(const QString &name, const QString &value)
+void AppEngine::saveSetting(const QString &name, const QString &value)
 {
     m_settings.setValue(name, value);
 }
+

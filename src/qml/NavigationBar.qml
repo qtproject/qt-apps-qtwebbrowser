@@ -56,7 +56,8 @@ ToolBar {
     opacity: tabView.viewState == "page" ? 1.0 : 0.0
 
     function load(url) {
-        webView.url = url
+        if (url)
+            webView.url = url
         homeScreen.state = "disabled"
     }
 
@@ -277,7 +278,7 @@ ToolBar {
                 }
             }
             onAccepted: {
-                webView.url = WebEngine.fromUserInput(text)
+                webView.url = AppEngine.fromUserInput(text)
                 homeScreen.state = "disabled"
                 tabView.viewState = "page"
             }
@@ -400,7 +401,7 @@ ToolBar {
                     return
                 }
                 var count = homeScreen.count
-                homeScreen.add(webView.title, webView.url, icon, WebEngine.fallbackColor())
+                homeScreen.add(webView.title, webView.url, icon, AppEngine.fallbackColor())
                 if (count < homeScreen.count)
                     bookmarked = true
             }

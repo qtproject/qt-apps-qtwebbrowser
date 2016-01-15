@@ -35,30 +35,66 @@
 **
 ****************************************************************************/
 
-#ifndef BROWSERWINDOW_H
-#define BROWSERWINDOW_H
+#ifndef APPENGINE_H
+#define APPENGINE_H
 
-#include <QHash>
-#include <QTouchEvent>
-#include <QQuickView>
-#include <QQmlComponent>
+#include <QtCore/QEvent>
+#include <QtCore/QFileInfo>
+#include <QtCore/QSettings>
+#include <QtCore/QUrl>
+#include <QtGui/QColor>
+#include <QtQuick/QQuickItemGrabResult>
 
-class BrowserWindow : public QQuickView
+namespace utils {
+inline bool isTouchEvent(const QEvent* event)
 {
+    switch (event->type()) {
+    case QEvent::TouchBegin:
+    case QEvent::TouchUpdate:
+    case QEvent::TouchEnd:
+        return true;
+    default:
+        return false;
+    }
+}
+
+inline bool isMouseEvent(const QEvent* event)
+{
+    switch (event->type()) {
+    case QEvent::MouseButtonPress:
+    case QEvent::MouseMove:
+    case QEvent::MouseButtonRelease:
+    case QEvent::MouseButtonDblClick:
+        return true;
+    default:
+        return false;
+    }
+}
+
+}
+
+class AppEngine : public QObject {
     Q_OBJECT
 
-    QHash<int, QQuickItem*> m_activeMockComponents;
-    QObject *m_lazyProfileInstance;
+    Q_PROPERTY(QString settingsPath READ settingsPath FINAL CONSTANT)
+    Q_PROPERTY(QString initialUrl READ initialUrl FINAL CONSTANT)
 
-    void ensureProfileInstance();
 public:
-    BrowserWindow(QWindow *parent = 0);
-    ~BrowserWindow();
+    AppEngine(QObject *parent = 0);
 
-    void updateVisualMockTouchPoints(const QList<QTouchEvent::TouchPoint>& touchPoints);
+    QString settingsPath();
+    QString initialUrl() const;
 
-public Q_SLOTS:
-    QObject *defaultProfile();
+    Q_INVOKABLE bool isUrl(const QString& userInput);
+    Q_INVOKABLE QUrl fromUserInput(const QString& userInput);
+    Q_INVOKABLE QString domainFromString(const QString& urlString);
+    Q_INVOKABLE QString fallbackColor();
+    Q_INVOKABLE QString restoreSetting(const QString &name, const QString &defaultValue = QString());
+    Q_INVOKABLE void saveSetting(const QString &name, const QString &value);
+
+private:
+    QSettings m_settings;
+    QString m_initialUrl;
 };
 
-#endif // BROWSERWINDOW_H
+#endif // APPENGINE_H

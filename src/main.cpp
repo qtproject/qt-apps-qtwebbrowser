@@ -35,22 +35,35 @@
 **
 ****************************************************************************/
 
+#include "appengine.h"
+#include "navigationhistoryproxymodel.h"
+#include "touchtracker.h"
+
+#if defined(DESKTOP_BUILD)
+#include "touchmockingapplication.h"
+#endif
+
 #include <QGuiApplication>
 #include <QQmlContext>
 #include <QQmlEngine>
 #include <QQuickView>
 #include <QtWebEngine/qtwebengineglobal.h>
 
-#include "browserwindow.h"
+static QObject *engine_factory(QQmlEngine *engine, QJSEngine *scriptEngine)
+{
+    Q_UNUSED(engine);
+    Q_UNUSED(scriptEngine);
+    AppEngine *eng = new AppEngine();
+    return eng;
+}
 
-#if defined(HOST_BUILD)
-#include "touchmockingapplication.h"
-#include "navigationhistoryproxymodel.h"
-#include "touchtracker.h"
-#endif
 int main(int argc, char **argv)
 {
     qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
+
+    //do not use any plugins installed on the device
+    qputenv("QML2_IMPORT_PATH", QByteArray());
+
     // We use touch mocking on desktop and apply all the mobile switches.
     QByteArrayList args = QByteArrayList()
             << QByteArrayLiteral("--enable-embedded-switches")
@@ -65,29 +78,38 @@ int main(int argc, char **argv)
         qargv[i] = argv[i - args.size()];
 
     int qAppArgCount = qargv.size();
-#if defined(HOST_BUILD)
-    TouchMockingApplication app(qAppArgCount, qargv.data());
 
-    qmlRegisterType<TouchTracker>("WebBrowser", 1, 0, "TouchTracker");
-    qmlRegisterType<NavigationHistoryProxyModel>("WebBrowser", 1, 0, "SearchProxyModel");
+#if defined(DESKTOP_BUILD)
+    TouchMockingApplication app(qAppArgCount, qargv.data());
 #else
     QGuiApplication app(qAppArgCount, qargv.data());
 #endif
+
+    qmlRegisterType<NavigationHistoryProxyModel>("WebBrowser", 1, 0, "SearchProxyModel");
+    qmlRegisterType<TouchTracker>("WebBrowser", 1, 0, "TouchTracker");
+    qmlRegisterSingletonType<AppEngine>("WebBrowser", 1, 0, "AppEngine", engine_factory);
+
     QtWebEngine::initialize();
 
     app.setOrganizationName("The Qt Company");
     app.setOrganizationDomain("qt.io");
     app.setApplicationName("qtwebbrowser");
 
-    BrowserWindow window;
-    QObject::connect(window.rootContext()->engine(), SIGNAL(quit()), &app, SLOT(quit()));
+    QQuickView view;
+    view.setTitle("Yet Another Browser");
+    view.setFlags(Qt::Window | Qt::WindowTitleHint);
+    view.setResizeMode(QQuickView::SizeRootObjectToView);
+    view.setColor(Qt::black);
+    view.setSource(QUrl("qrc:///qml/BrowserWindow.qml"));
 
-#if defined(HOST_BUILD)
-    window.show();
-    if (window.size().isEmpty())
-        window.setGeometry(0, 0, 800, 600);
+    QObject::connect(view.engine(), SIGNAL(quit()), &app, SLOT(quit()));
+
+#if defined(DESKTOP_BUILD)
+    view.show();
+    if (view.size().isEmpty())
+        view.setGeometry(0, 0, 800, 600);
 #else
-    window.showFullScreen();
+    view.showFullScreen();
 #endif
 
     app.exec();

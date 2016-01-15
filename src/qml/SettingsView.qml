@@ -67,7 +67,7 @@ Rectangle {
             // Do not persist private browsing mode
             if (setting.name === "Private Browsing")
                 continue
-            WebEngine.saveSetting(setting.name, setting.active)
+            AppEngine.saveSetting(setting.name, setting.active)
         }
     }
 
@@ -170,7 +170,7 @@ Rectangle {
         Component.onCompleted: {
             for (var i = 0; i < appSettings.length; ++i) {
                 var setting = appSettings[i]
-                var active = JSON.parse(WebEngine.restoreSetting(setting.name, setting.active))
+                var active = JSON.parse(AppEngine.restoreSetting(setting.name, setting.active))
                 if (setting.active !== active) {
                     setting.active = active
                     setting.notify(active)
