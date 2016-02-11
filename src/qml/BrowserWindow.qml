@@ -41,10 +41,8 @@ import QtWebEngine 1.1
 import QtQuick.Controls 1.0
 import QtQuick.Controls.Styles 1.0
 import QtQuick.Layouts 1.0
-import QtQuick.Window 2.1
 import QtQuick.Controls.Private 1.0
 import QtQuick.Dialogs 1.2
-import QtQuick.Enterprise.VirtualKeyboard 2.0
 
 import "assets"
 import WebBrowser 1.0
@@ -459,31 +457,5 @@ Item {
             left: parent.left
             right: parent.right
         }
-    }
-    InputPanel {
-            id: inputPanel
-            y: browserWindow.height
-            anchors {
-                left: browserWindow.left
-                right: browserWindow.right
-            }
-            states: State {
-                name: "visible"
-                when: Qt.inputMethod.visible
-                PropertyChanges {
-                    target: inputPanel
-                    y: browserWindow.height - inputPanel.height
-                }
-            }
-            transitions: Transition {
-                from: ""
-                to: "visible"
-                reversible: true
-                NumberAnimation {
-                    properties: "y"
-                    duration: animationDuration
-                    easing.type: Easing.InOutQuad
-                }
-            }
     }
 }

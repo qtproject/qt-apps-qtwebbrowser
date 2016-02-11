@@ -30,5 +30,7 @@
         <file>qml/assets/icons/qt.png</file>
         <file>qml/assets/icons/AppLogoColor.png</file>
         <file>qml/assets/icons/AppLogoGrey.png</file>
+        <file>qml/Keyboard.qml</file>
+        <file>qml/Main.qml</file>
     </qresource>
 </RCC>

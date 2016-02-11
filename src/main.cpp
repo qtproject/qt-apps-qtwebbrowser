@@ -100,7 +100,7 @@ int main(int argc, char **argv)
     view.setFlags(Qt::Window | Qt::WindowTitleHint);
     view.setResizeMode(QQuickView::SizeRootObjectToView);
     view.setColor(Qt::black);
-    view.setSource(QUrl("qrc:///qml/BrowserWindow.qml"));
+    view.setSource(QUrl("qrc:///qml/Main.qml"));
 
     QObject::connect(view.engine(), SIGNAL(quit()), &app, SLOT(quit()));
 

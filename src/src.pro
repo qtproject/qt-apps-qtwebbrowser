@@ -25,6 +25,8 @@ OTHER_FILES = \
     qml/NavigationBar.qml \
     qml/HomeScreen.qml \
     qml/SettingsView.qml \
+    qml/Keyboard.qml \
+    qml/Window.qml
 
 QT += qml quick webengine
 
