@@ -1,0 +1,185 @@
+/****************************************************************************
+**
+** Copyright (C) 2016 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
+**
+** This file is part of the documentation of the Qt WebBrowser application.
+**
+** $QT_BEGIN_LICENSE:FDL$
+** Commercial License Usage
+** Licensees holding valid commercial Qt licenses may use this file in
+** accordance with the commercial license agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and The Qt Company. For licensing terms
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
+**
+** GNU Free Documentation License Usage
+** Alternatively, this file may be used under the terms of the GNU Free
+** Documentation License version 1.3 as published by the Free Software
+** Foundation and appearing in the file included in the packaging of
+** this file. Please review the following information to ensure
+** the GNU Free Documentation License version 1.3 requirements
+** will be met: https://www.gnu.org/licenses/fdl-1.3.html.
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+/*!
+\page qtwebbrowser-index.html
+
+\title Qt WebBrowser
+
+The Qt WebBrowser (codename \c{Roadtrip}) is a browser for embedded
+devices developed using the capabilities of Qt and \l{Qt WebEngine}.
+Using recent \l{Chromium Project}{Chromium}, it features up-to-date
+HTML technologies behind a minimal but slick touch-friendly
+user interface written in \l{Qt Quick}.
+
+\image webbrowser.png
+
+\section1 User Interface
+
+The user interface of the browser is designed for embedded devices
+using a touch screen. It uses flat icons and minimalistic transitions to
+provide a contemporary look and feel.
+
+All central actions are conveniently accessible in the menu bar at the
+top. When the user scrolls down a page, the menu bar disappears to
+leave more screen space for content. It appears again if
+the user scrolls upwards.
+
+\image menubar.png
+
+The \uicontrol Back button (1) and \uicontrol Forward button (2) navigate
+through the history of pages already visited.
+The input bar (3) allows the user to type and edit URL's,
+or search for text. It also allows to reload a page, or stop a page currently
+loading.
+Pages can be bookmarked with the \uicontrol Bookmark button (6),
+the bookmarked pages are accessible through the \uicontrol Home button (4).
+The \uicontrol Pages button (5) allows the user to manage the pages
+currently opened. The \uicontrol Settings button (7) brings up a view of
+the current settings.
+
+\section2 Opening Pages
+
+The input bar supports typing in either a full URL or a query
+that is automatically passed to \l{Google}. Url suggestions of visited pages
+matching the text are suggested during typing. The current text can be
+cleared by pressing the \uicontrol Cancel button on the right.
+
+\image inputhelp.png
+
+When the user finishes editing, a blue line serves as a progress indicator
+for the page currently loading. The loading can be stopped by pressing
+the \uicontrol Cancel button. After the page finished loading
+this button is replaced by a \uicontrol Reload button, that forces a reload
+of the page when pressed.
+
+\section2 Page Scrolling
+
+The view of the page can be moved around by pressing and moving a finger.
+
+\section2 Page Zooming
+
+Zoom in or out a particular section of the page by pinching fingers.
+
+\section2 Bookmark Management
+
+Individual pages can be bookmarked by pressing the \uicontrol Bookmark
+button. By pressing the same button again the page is removed from the
+bookmarks.
+
+The \uicontrol Home button lets the user browse the bookmarked pages
+in a multi-page grid. Each page is represented by its name and icon,
+if available.
+
+\image bookmarks.png
+
+\section2 Page Management
+
+The \uicontrol Pages button enables the user to open new pages and to
+switch between them using the Carousel UI pattern:
+
+\image pageselection.png
+
+The number of pages that can be opened simultaneously is intentionally
+limited to 10.
+
+\section2 User Settings
+
+A settings page is available by pressing the \uicontrol Settings button.
+The page contains options for enabling a \e {private browsing} mode
+that does not leave traces in the history and cookies.
+
+\image settings.png
+
+\section2 Virtual Keyboard
+
+The integrated \l{Qt Virtual Keyboard}
+slides in whenever text input is required. It enables typing text in a
+great variety of different languages.
+
+\image virtualkeyboard.png
+
+\section1 Features
+
+Qt WebEngine leverages \l{Chromium Project}{Chromium} to provide
+a state-of-the art, high performance HTML5 web engine.
+
+\image html5test.png
+
+\section2 Video and Audio
+
+Chromium and therefore Qt WebEngine directly
+integrate with OS services to access video and audio devices.
+After the user acknowledges access to them, solutions using WebRTC, such as
+video and audio conferencing, work out-of-the-box, provided that the
+required codecs are available.
+
+\section2 Location Information
+
+Qt WebEngine uses \l {Qt Location} to provide pages with location
+information. Again, the users have to explicitly give their consent to each
+page attempting to access this information.
+
+\section2 Fullscreen Mode
+
+Videos can be played in fullscreen mode.
+
+\section1 Developer Features
+
+\section2 Developer Tools
+
+Qt WebEngine supports remotely accessing the built-in Chromium Developer
+Tools. This allows debugging and optimizing individual pages on the device.
+
+For more information, see the \l{Qt WebEngine} documentation on
+\l{Qt WebEngine Debugging and Profiling}{Debugging and Profiling}.
+
+\section2 Simulation of Touch Input
+
+While the Qt WebBrowser is optimized for touch devices,
+it can also be tested on all the desktop operating systems.
+Keyboard and mouse input works out of the box. Touch input
+can be simulated by using several mouse buttons
+while pressing the \c Ctrl key.
+
+\section1 Platform Requirements
+
+Qt WebBrowser requires the \l{Qt WebEngine},
+\l{Qt Quick} and
+\l{Qt Virtual Keyboard} modules in version 5.7 or
+newer.
+
+\image block-diagram.png
+
+At minimum 1 GB of RAM is advised to provide a seamless experience
+for different pages. Depending on the exact configuration and the
+pages visited this can be further optimized.
+
+Qt Quick and Qt WebEngine use OpenGL for rendering. Best performance
+therefore requires dedicated graphics hardware with drivers supporting
+OpenGL.
+*/
