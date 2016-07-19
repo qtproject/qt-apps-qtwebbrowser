@@ -88,7 +88,7 @@ int main(int argc, char **argv)
     app.setApplicationName("qtwebbrowser");
 
     QQuickView view;
-    view.setTitle("Yet Another Browser");
+    view.setTitle("Qt WebBrowser");
     view.setFlags(Qt::Window | Qt::WindowTitleHint);
     view.setResizeMode(QQuickView::SizeRootObjectToView);
     view.setColor(Qt::black);
