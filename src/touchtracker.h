@@ -73,7 +73,7 @@ signals:
     void scrollDirectionChanged();
 
 protected:
-    bool eventFilter(QObject *obj, QEvent *event);
+    bool eventFilter(QObject *obj, QEvent *event) override;
     void touchEvent(QTouchEvent *event) override;
 
 private:
