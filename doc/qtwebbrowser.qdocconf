@@ -1,2 +1,2 @@
-include(config/qtwebbrowser-project.qdocconf)
-include($QT_INSTALL_DOCS/global/qt-html-templates-offline.qdocconf)
+include($QT_INSTALL_DOCS/global/qt-module-defaults-offline.qdocconf)
+include(qtwebbrowser-project.qdocconf)
