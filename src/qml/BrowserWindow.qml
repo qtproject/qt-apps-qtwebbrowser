@@ -207,7 +207,7 @@ Item {
             navigation.webView = tab.webView
             var url = AppEngine.initialUrl
 
-            navigation.load();
+            navigation.load(url);
         }
         onCurrentIndexChanged: {
             if (!tabView.get(tabView.currentIndex))
