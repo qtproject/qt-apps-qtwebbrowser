@@ -100,13 +100,12 @@ Rectangle {
 
     ListView {
         id: listView
-        leftMargin: 230
-        rightMargin: leftMargin
         anchors.fill: parent
         model: listModel
         delegate: Rectangle {
             height: 100
             width: 560
+            anchors.horizontalCenter: parent.horizontalCenter
             Text {
                 anchors.verticalCenter: parent.verticalCenter
                 font.family: defaultFontFamily
