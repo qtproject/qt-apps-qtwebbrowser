@@ -159,10 +159,7 @@ ToolBar {
         }
         Rectangle {
             width: 1
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-            }
+            height: parent.height
             color: uiSeparatorColor
         }
         UIButton {
@@ -175,19 +172,13 @@ ToolBar {
         }
         Rectangle {
             width: 1
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-            }
+            height: parent.height
             color: uiSeparatorColor
         }
         Rectangle {
             Layout.fillWidth: true
             implicitWidth: 10
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-            }
+            height: parent.height
             color: uiColor
         }
         TextField {
@@ -286,10 +277,7 @@ ToolBar {
             visible: !cancelButton.visible
             Layout.fillWidth: true
             implicitWidth: 10
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-            }
+            height: parent.height
             color: uiColor
         }
 
@@ -313,10 +301,7 @@ ToolBar {
         }
         Rectangle {
             width: 1
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-            }
+            height: parent.height
             color: uiSeparatorColor
         }
         UIButton {
@@ -336,10 +321,7 @@ ToolBar {
         }
         Rectangle {
             width: 1
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-            }
+            height: parent.height
             color: uiSeparatorColor
         }
         UIButton {
@@ -371,10 +353,7 @@ ToolBar {
         }
         Rectangle {
             width: 1
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-            }
+            height: parent.height
             color: uiSeparatorColor
         }
         UIButton {
@@ -402,10 +381,7 @@ ToolBar {
         }
         Rectangle {
             width: 1
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-            }
+            height: parent.height
             color: uiSeparatorColor
         }
         UIButton {

@@ -55,10 +55,7 @@ Rectangle {
         }
         Rectangle {
             color: uiColor
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-            }
+            height: parent.height
             Layout.fillWidth: true
 
             Text {
@@ -89,10 +86,7 @@ Rectangle {
         }
         Rectangle {
             width: 1
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-            }
+            height: parent.height
             color: uiSeparatorColor
         }
 
@@ -110,10 +104,7 @@ Rectangle {
         }
         Rectangle {
             width: 1
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-            }
+            height: parent.height
             color: uiSeparatorColor
         }
 

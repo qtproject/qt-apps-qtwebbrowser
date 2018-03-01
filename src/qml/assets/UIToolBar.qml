@@ -62,14 +62,14 @@ ToolBar {
     RowLayout {
         spacing: 0
         height: toolBarSize
-        anchors.fill: parent
+        anchors {
+            top: parent.top
+            right: parent.right
+            left: parent.left
+        }
         Rectangle {
             width: childrenRect.width
-            anchors {
-                left: parent.left
-                top: parent.top
-                bottom: parent.bottom
-            }
+            height: parent.height
             color: toolBarFillColor
             Text {
                 id: titleBox
@@ -103,27 +103,18 @@ ToolBar {
         Rectangle {
             visible: toolBarButton.visible
             width: 1
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-            }
+            height: parent.height
             color: toolBarSeparatorColor
         }
         Rectangle {
             width: indicatorWidth
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-            }
+            height: parent.height
             color: toolBarFillColor
         }
         Rectangle {
             color: toolBarFillColor
             Layout.fillWidth: true
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-            }
+            height: parent.height
             Rectangle {
                 visible: root.indicator !== ""
                 color: "transparent"
@@ -143,10 +134,7 @@ ToolBar {
         }
         Rectangle {
             width: 1
-            anchors {
-                top: parent.top
-                bottom: parent.bottom
-            }
+            height: parent.height
             color: toolBarSeparatorColor
         }
         UIButton {
