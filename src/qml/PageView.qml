@@ -28,7 +28,7 @@
 ****************************************************************************/
 
 import QtQuick 2.5
-import QtWebEngine 1.1
+import QtWebEngine 1.9
 import QtQuick.Controls 1.4
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.2
@@ -62,6 +62,7 @@ Rectangle {
     property QtObject defaultProfile: WebEngineProfile {
         storageName: "YABProfile"
         offTheRecord: false
+        useForGlobalCertificateVerification: true
     }
 
     Component {
