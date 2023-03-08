@@ -4,5 +4,5 @@ SUBDIRS = \
     doc \
     src
 
-requires(qtHaveModule(webengine))
+requires(qtHaveModule(webenginequick))
 

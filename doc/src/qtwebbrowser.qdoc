@@ -170,7 +170,7 @@ while pressing the \c Ctrl key.
 
 Qt WebBrowser requires the \l{Qt WebEngine},
 \l{Qt Quick} and
-\l{Qt Virtual Keyboard} modules in version 5.7 or
+\l{Qt Virtual Keyboard} modules in version 6.2 or
 newer.
 
 \image block-diagram.png

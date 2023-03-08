@@ -17,7 +17,6 @@ HEADERS = \
 OTHER_FILES = \
     qml/assets/UIButton.qml \
     qml/assets/UIToolBar.qml \
-    qml/ApplicationRoot.qml \
     qml/BrowserWindow.qml \
     qml/FeaturePermissionBar.qml \
     qml/MockTouchPoint.qml \
@@ -25,10 +24,9 @@ OTHER_FILES = \
     qml/NavigationBar.qml \
     qml/HomeScreen.qml \
     qml/SettingsView.qml \
-    qml/Keyboard.qml \
-    qml/Window.qml
+    qml/Keyboard.qml
 
-QT += qml quick webengine
+QT += qml quick webenginequick
 
 RESOURCES += resources.qrc
 

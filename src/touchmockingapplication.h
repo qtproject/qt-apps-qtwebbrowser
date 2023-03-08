@@ -33,7 +33,8 @@
 #include <QtCore/QHash>
 #include <QtCore/QUrl>
 #include <QtGui/QGuiApplication>
-#include <QtGui/QTouchEvent>
+#include <QEventPoint>
+#include <QMouseEvent>
 
 QT_BEGIN_NAMESPACE
 class QQuickView;
@@ -62,7 +63,7 @@ private:
     QPointF m_lastScreenPos;
     QPointF m_startScreenPos;
 
-    QHash<int, QTouchEvent::TouchPoint> m_touchPoints;
+    QHash<int, QEventPoint> m_touchPoints;
     QSet<int> m_heldTouchPoints;
     QHash<int, QQuickItem*> m_activeMockComponents;
 

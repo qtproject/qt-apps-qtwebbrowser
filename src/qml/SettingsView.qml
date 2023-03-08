@@ -27,11 +27,10 @@
 **
 ****************************************************************************/
 
-import QtQuick 2.5
-import QtQuick.Layouts 1.0
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
-import Qt.labs.settings 1.0
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls
+import Qt.labs.settings
 
 import WebBrowser 1.0
 Rectangle {
@@ -41,14 +40,14 @@ Rectangle {
     property bool httpDiskCacheEnabled: appSettings[1].active
     property bool autoLoadImages: appSettings[2].active
     property bool javaScriptDisabled: appSettings[3].active
-    // property bool pluginsEnabled: appSettings[4].active
+    property bool pluginsEnabled: appSettings[4].active
 
     property var appSettings: [
         { "name": "Private Browsing",       "active": false, "notify": function(v) { privateBrowsingEnabled = v; } },
         { "name": "Enable HTTP Disk Cache", "active": true,  "notify": function(v) { httpDiskCacheEnabled = v; } },
         { "name": "Auto Load Images",       "active": true,  "notify": function(v) { autoLoadImages = v; } },
         { "name": "Disable JavaScript",     "active": false, "notify": function(v) { javaScriptDisabled = v; } },
-//        { "name": "Enable Plugins",         "active": false, "notify": function(v) { pluginsEnabled = v; } }
+        { "name": "Enable Plugins",         "active": false, "notify": function(v) { pluginsEnabled = v; } }
     ]
 
     function save() {
@@ -135,24 +134,25 @@ Rectangle {
                         setting.active = checked
                         setting.notify(checked)
                     }
-                    style: SwitchStyle {
-                        handle: Rectangle {
-                            width: 42
-                            height: 42
-                            radius: height / 2
-                            color: "white"
-                            border.color: control.checked ? "#5caa14" : "#9b9b9b"
-                            border.width: 1
-                        }
 
-                        groove: Rectangle {
-                            implicitWidth: 72
-                            height: 42
-                            radius: height / 2
-                            border.color: control.checked ? "#5caa14" : "#9b9b9b"
-                            color: control.checked ? "#5cff14" : "white"
-                            border.width: 1
-                        }
+                    indicator: Rectangle {
+                        x: sw.checked ? parent.width - width : 0
+                        width: 42
+                        height: 42
+                        radius: height / 2
+                        color: "white"
+                        border.color: sw.checked ? "#5caa14" : "#9b9b9b"
+                        border.width: 1
+
+                    }
+
+                    background: Rectangle {
+                        implicitWidth: 72
+                        height: 42
+                        radius: height / 2
+                        border.color: sw.checked ? "#5caa14" : "#9b9b9b"
+                        color: sw.checked ? "#5cff14" : "white"
+                        border.width: 1
                     }
                 }
             }

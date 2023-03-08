@@ -27,10 +27,10 @@
 **
 ****************************************************************************/
 
-import QtQuick 2.1
-import QtQuick.Controls 1.0
-import QtWebEngine 1.1
-import QtQuick.Layouts 1.0
+import QtQuick
+import QtQuick.Controls
+import QtWebEngine
+import QtQuick.Layouts
 
 import "assets"
 

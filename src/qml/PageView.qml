@@ -27,12 +27,11 @@
 **
 ****************************************************************************/
 
-import QtQuick 2.5
-import QtWebEngine 1.9
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
-import QtQuick.Layouts 1.2
-import QtGraphicalEffects 1.0
+import QtQuick
+import QtWebEngine
+import QtQuick.Controls
+import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
 
 import WebBrowser 1.0
 import "assets"
@@ -62,7 +61,6 @@ Rectangle {
     property QtObject defaultProfile: WebEngineProfile {
         storageName: "YABProfile"
         offTheRecord: false
-        useForGlobalCertificateVerification: true
     }
 
     Component {
@@ -73,7 +71,7 @@ Rectangle {
             property alias title: webEngineView.title
 
             property var image: QtObject {
-                property var snapshot: null
+                property var grabberUrl: null
                 property string url: "about:blank"
             }
 
@@ -120,29 +118,25 @@ Rectangle {
                 function takeSnapshot() {
                     if (webEngineView.url == "" || webEngineView.url == "about:blank") {
                         tabItem.image.url = "about:blank"
-                        tabItem.image.snapshot = null
+                        tabItem.image.grabberUrl = null
                         return
                     }
 
-                    if (tabItem.image.url == webEngineView.url || tabItem.opacity != 1.0)
+                    if (tabItem.image.url === webEngineView.url || tabItem.opacity != 1.0)
                         return
 
                     tabItem.image.url = webEngineView.url
                     webEngineView.grabToImage(function(result) {
-                        tabItem.image.snapshot = result;
-                        console.log("takeSnapshot("+result.url+")")
+                        tabItem.image.grabberUrl = result.url;
                     });
                 }
 
                 // Trigger a refresh to check if the new url is bookmarked.
                 onUrlChanged: navigation.refresh()
 
-
                 settings.autoLoadImages: settingsView.autoLoadImages
                 settings.javascriptEnabled: !settingsView.javaScriptDisabled
-
-                // This should be enabled as we can switch to Qt 5.6 (i.e. import QtWebEngine 1.2)
-                // settings.pluginsEnabled: settingsView.pluginsEnabled
+                settings.pluginsEnabled: settingsView.pluginsEnabled
 
                 onLoadingChanged: {
                     if (loading)
@@ -158,7 +152,7 @@ Rectangle {
                     }
                 }
 
-                onNewViewRequested: {
+                onNewWindowRequested: {
                     webEngineView.takeSnapshot()
                     var tab
                     if (!request.userInitiated) {
@@ -305,19 +299,18 @@ Rectangle {
                         onAccepted: {
                             webEngineView.findText(text)
                         }
-                        style: TextFieldStyle {
-                            textColor: "black"
-                            font.family: defaultFontFamily
-                            font.pixelSize: 28
-                            selectionColor: uiHighlightColor
-                            selectedTextColor: "black"
-                            placeholderTextColor: placeholderColor
-                            background: Rectangle {
-                                implicitWidth: 514
-                                implicitHeight: toolBarSize / 2
-                                border.color: textFieldStrokeColor
-                                border.width: 1
-                            }
+
+                        color: "black"
+                        font.family: defaultFontFamily
+                        font.pixelSize: 28
+                        selectionColor: uiHighlightColor
+                        selectedTextColor: "black"
+                        placeholderTextColor: placeholderColor
+                        background: Rectangle {
+                            implicitWidth: 514
+                            implicitHeight: toolBarSize / 2
+                            border.color: textFieldStrokeColor
+                            border.width: 1
                         }
                     }
                     Rectangle {
@@ -332,7 +325,7 @@ Rectangle {
                     }
                     UIButton {
                         id: findBackwardButton
-                        iconSource: "assets/icons/Btn_Back.png"
+                        icon.source: "assets/icons/Btn_Back.png"
                         implicitHeight: parent.height
                         onClicked: webEngineView.findText(findTextField.text, WebEngineView.FindBackward)
                     }
@@ -343,7 +336,7 @@ Rectangle {
                     }
                     UIButton {
                         id: findForwardButton
-                        iconSource: "assets/icons/Btn_Forward.png"
+                        icon.source: "assets/icons/Btn_Forward.png"
                         implicitHeight: parent.height
                         onClicked: webEngineView.findText(findTextField.text)
                     }
@@ -354,7 +347,7 @@ Rectangle {
                     }
                     UIButton {
                         id: findCancelButton
-                        iconSource: "assets/icons/Btn_Clear.png"
+                        icon.source: "assets/icons/Btn_Clear.png"
                         implicitHeight: parent.height
                         onClicked: findBar.visible = false
                     }
@@ -389,7 +382,7 @@ Rectangle {
         var element = {"item": null }
         element.item = component.createObject(root, { "width": root.width, "height": root.height, "opacity": 0.0 })
 
-        if (element.item == null) {
+        if (element.item === null) {
             console.log("PageView::add(): Error creating object");
             return
         }
@@ -498,12 +491,12 @@ Rectangle {
             MouseArea {
                 enabled: pathView.interactive
                 anchors.fill: wrapper
-                onClicked: {
+                onClicked: mouse => {
                     mouse.accepted = true
                     if (index < 0)
                         return
 
-                    if (index == pathView.currentIndex) {
+                    if (index === pathView.currentIndex) {
                         if (root.viewState == "list")
                             root.viewState = "page"
                         return
@@ -525,6 +518,7 @@ Rectangle {
                 width: snapshot.width
                 height: snapshot.height
             }
+
             GaussianBlur {
                 anchors.fill: shadow
                 source: shadow
@@ -541,13 +535,13 @@ Rectangle {
 
                 Image {
                     source: {
-                        if (!item.image.snapshot)
+                        if (!item.image.grabberUrl)
                             return "assets/icons/about_blank.png"
-                        return item.image.snapshot.url
+                        return item.image.grabberUrl
                     }
                     anchors.fill: parent
                     Rectangle {
-                        enabled: index == pathView.currentIndex && !pathView.moving && !pathView.flicking && wrapper.visibility == 1.0
+                        enabled: index === pathView.currentIndex && !pathView.moving && !pathView.flicking && wrapper.visibility == 1.0
                         opacity: enabled ? 1.0 : 0.0
                         visible: wrapper.visibility == 1.0 && listModel.count > 1
                         width: image.sourceSize.width

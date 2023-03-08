@@ -27,10 +27,9 @@
 **
 ****************************************************************************/
 
-import QtQuick 2.5
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
-import QtQuick.Layouts 1.2
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
 import WebBrowser 1.0
 
 import "assets"
@@ -63,18 +62,11 @@ ToolBar {
 
     state: "enabled"
 
-    style: ToolBarStyle {
-        background: Rectangle {
-            color: uiColor
-            implicitHeight: toolBarSize + 3
-        }
-        padding {
-            left: 0
-            right: 0
-            top: 0
-            bottom: 0
-        }
+    background: Rectangle {
+        color: uiColor
+        implicitHeight: toolBarSize + 3
     }
+    padding: 0
 
     Behavior on y {
         NumberAnimation { duration: animationDuration }
@@ -243,24 +235,23 @@ ToolBar {
                     urlBar.remove(urlBar.selectionStart, urlBar.selectionEnd)
                 }
             }
-            style: TextFieldStyle {
-                textColor: "black"
-                font.family: defaultFontFamily
-                font.pixelSize: 28
-                selectionColor: uiHighlightColor
-                selectedTextColor: "black"
-                placeholderTextColor: placeholderColor
-                background: Rectangle {
-                    implicitWidth: 514
-                    implicitHeight: 56
-                    border.color: settingsView.privateBrowsingEnabled ? "black" : textFieldStrokeColor
-                    border.width: 1
-                }
-                padding {
-                    left: 15
-                    right: reloadButton.width
-                }
+
+            color: "black"
+            font.family: defaultFontFamily
+            font.pixelSize: 28
+            selectionColor: uiHighlightColor
+            selectedTextColor: "black"
+            placeholderTextColor: placeholderColor
+            background: Rectangle {
+                implicitWidth: 514
+                implicitHeight: 56
+                border.color: settingsView.privateBrowsingEnabled ? "black" : textFieldStrokeColor
+                border.width: 1
             }
+            leftPadding: 15
+            rightPadding: reloadButton.width
+            topPadding: 10
+
             onAccepted: {
                 webView.url = AppEngine.fromUserInput(text)
                 homeScreen.state = "disabled"
@@ -404,17 +395,18 @@ ToolBar {
             leftMargin: -10
             rightMargin: -10
         }
-        style: ProgressBarStyle {
-            background: Rectangle {
-                height: 3
-                color: emptyBackgroundColor
-            }
-            progress: Rectangle {
-                color: settingsView.privateBrowsingEnabled ? "#46a2da" : "#317198"
-            }
+
+        background: Rectangle {
+            height: 3
+            color: emptyBackgroundColor
         }
-        minimumValue: 0
-        maximumValue: 100
+
+        contentItem: Rectangle {
+            width: progressBar.visualPosition * parent.width
+            color: settingsView.privateBrowsingEnabled ? "#46a2da" : "#317198"
+        }
+        from: 0
+        to: 100
         value: (webView && webView.loadProgress < 100) ? webView.loadProgress : 0
     }
 }

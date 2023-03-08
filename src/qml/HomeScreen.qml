@@ -27,8 +27,8 @@
 **
 ****************************************************************************/
 
-import QtQuick 2.5
-import WebBrowser 1.0
+import QtQuick
+import WebBrowser
 import "assets"
 
 Rectangle {
@@ -172,7 +172,7 @@ Rectangle {
             var margin = (parent.width - 4 * gridView.cellWidth - homeScreen.padding) / 2
             var padding = gridView.page - Math.round(gridView.count % gridViewPageItemCount / 2) * gridView.cellWidth
 
-            if (padding == gridView.page)
+            if (padding === gridView.page)
                 return margin
 
             return margin + padding

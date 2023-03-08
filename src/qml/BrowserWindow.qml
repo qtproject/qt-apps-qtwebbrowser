@@ -27,14 +27,12 @@
 **
 ****************************************************************************/
 
-import QtQuick 2.5
-import QtWebEngine 1.1
+import QtQuick
+import QtWebEngine
+import QtQuick.Controls
+import QtQuick.Layouts
+import Qt.labs.platform
 
-import QtQuick.Controls 1.0
-import QtQuick.Controls.Styles 1.0
-import QtQuick.Layouts 1.0
-import QtQuick.Controls.Private 1.0
-import QtQuick.Dialogs 1.2
 
 import "assets"
 import WebBrowser 1.0
@@ -162,7 +160,7 @@ Item {
         z: 6
         title: qsTr("Leave Full Screen Mode")
         visible: opacity != 0.0
-        opacity: tabView.viewState == "fullscreen" ? 1.0 : 0.0
+        opacity: tabView.viewState === "fullscreen" ? 1.0 : 0.0
         anchors {
             left: parent.left
             right: parent.right
@@ -233,22 +231,21 @@ Item {
         property var certErrors: []
         property var currentError: null
         visible: certErrors.length > 0
-        icon: StandardIcon.Warning
-        standardButtons: StandardButton.No | StandardButton.Yes
+        buttons: MessageDialog.No | MessageDialog.Yes
         title: "Server's certificate not trusted"
         text: "Do you wish to continue?"
         detailedText: "If you wish so, you may continue with an unverified certificate. " +
                       "Accepting an unverified certificate means " +
                       "you may not be connected with the host you tried to connect to.\n" +
                       "Do you wish to override the security check and continue?"
-        onYes: {
+        onYesClicked: {
             var cert = certErrors.shift()
             var domain = AppEngine.domainFromString(cert.url)
             acceptedCertificates.acceptedUrls.push(domain)
             cert.ignoreCertificateError()
             presentError()
         }
-        onNo: reject()
+        onNoClicked: reject()
         onRejected: reject()
 
         function reject(){
@@ -304,7 +301,7 @@ Item {
 
         SearchProxyModel {
             id: proxy
-            target: navigation.webView.navigationHistory.items
+            target: navigation.webView.history.items
             searchString: urlDropDown.searchString
             enabled: urlDropDown.state == "enabled"
         }

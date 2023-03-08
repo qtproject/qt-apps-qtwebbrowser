@@ -40,8 +40,8 @@ bool NavigationHistoryProxyModel::filterAcceptsRow(int sourceRow, const QModelIn
     QModelIndex index = sourceModel()->index(sourceRow, 0, sourceParent);
 
     // Use UrlRole and TitleRole instead of DisplayRole
-    return (sourceModel()->data(index, Qt::UserRole + 1).toString().contains(filterRegExp())
-            || sourceModel()->data(index, Qt::UserRole + 2).toString().contains(filterRegExp()));
+    return (sourceModel()->data(index, Qt::UserRole + 1).toString().contains(filterRegularExpression())
+            || sourceModel()->data(index, Qt::UserRole + 2).toString().contains(filterRegularExpression()));
 }
 
 void NavigationHistoryProxyModel::setEnabled(bool enabled)
@@ -63,6 +63,6 @@ void NavigationHistoryProxyModel::setSearchString(const QString &pattern)
         return;
 
     m_searchString = pattern;
-    setFilterRegExp(QRegExp(pattern, Qt::CaseInsensitive, QRegExp::FixedString));
+    setFilterRegularExpression(QRegularExpression(pattern, QRegularExpression::CaseInsensitiveOption));
     emit searchStringChanged();
 }

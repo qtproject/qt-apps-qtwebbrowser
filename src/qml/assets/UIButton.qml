@@ -27,10 +27,9 @@
 **
 ****************************************************************************/
 
-import QtQuick 2.5
-import QtQuick.Controls 1.4
-import QtQuick.Controls.Styles 1.4
-import QtQuick.Layouts 1.2
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
 
 
 ToolButton {
@@ -52,17 +51,16 @@ ToolButton {
         font.family: defaultFontFamily
         font.pixelSize: 28
     }
-    style: ButtonStyle {
-        background: Rectangle {
-            opacity: root.enabled ? 1.0 : 0.3
-            color: root.pressed || root.checked ? root.highlightColor : root.color
-            radius: root.radius
-            Image {
-                source: root.source
-                width: Math.min(sourceSize.width, root.width)
-                height: Math.min(sourceSize.height, root.height)
-                anchors.centerIn: parent
-            }
+
+    background: Rectangle {
+        opacity: root.enabled ? 1.0 : 0.3
+        color: root.pressed || root.checked ? root.highlightColor : root.color
+        radius: root.radius
+        Image {
+            source: root.source
+            width: Math.min(sourceSize.width, root.width)
+            height: Math.min(sourceSize.height, root.height)
+            anchors.centerIn: parent
         }
     }
 }

@@ -27,10 +27,9 @@
 **
 ****************************************************************************/
 
-import QtQuick 2.5
-import QtQuick.Controls 1.0
-import QtQuick.Controls.Styles 1.0
-import QtQuick.Layouts 1.0
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
 
 ToolBar {
     id: root
@@ -46,18 +45,10 @@ ToolBar {
     signal doneClicked()
 
     height: navigation.height
-
-    style: ToolBarStyle {
-        background: Rectangle {
-            color: toolBarFillColor
-        }
-        padding {
-            left: 0
-            right: 0
-            top: 0
-            bottom: 0
-        }
+    background: Rectangle {
+        color: toolBarFillColor
     }
+    padding: 0
 
     RowLayout {
         spacing: 0

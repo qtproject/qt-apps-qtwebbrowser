@@ -107,9 +107,9 @@ bool TouchTracker::eventFilter(QObject *obj, QEvent *event)
         return QQuickItem::eventFilter(obj, event);
 
     const QTouchEvent *touch = static_cast<QTouchEvent*>(event);
-    const QList<QTouchEvent::TouchPoint> &points = touch->touchPoints();
+    const QList<QEventPoint> &points = touch->points();
     m_previousY = m_currentPoint.y();
-    m_currentPoint.pos = m_target->mapToScene(points.at(0).pos());
+    m_currentPoint.pos = m_target->mapToScene(points.at(0).position());
     m_currentPoint.ts = QDateTime::currentMSecsSinceEpoch();
     int currentDiff = m_previousY - m_currentPoint.y();
 
@@ -138,8 +138,8 @@ void TouchTracker::touchEvent(QTouchEvent * event)
 
     event->setAccepted(false);
 
-    const QList<QTouchEvent::TouchPoint> &points = event->touchPoints();
-    m_currentPoint.pos = m_target->mapToScene(points.at(0).pos());
+    const QList<QEventPoint> &points = event->points();
+    m_currentPoint.pos = m_target->mapToScene(points.at(0).position());
     m_currentPoint.ts = QDateTime::currentMSecsSinceEpoch();
 
     if (event->type() ==  QEvent::TouchBegin) {
